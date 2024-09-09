@@ -1,3 +1,4 @@
+//C:\CPRG306\CapstoneV2\pages\index.js
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Banner from './Banner';
@@ -7,10 +8,12 @@ function Home({ user, onLogout }) {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
-  // 获取所有的items
   useEffect(() => {
     axios.get('http://localhost:3001/items') // 后端获取items的API
-      .then(response => setItems(response.data))
+      .then(response => {
+        console.log(response.data); // 检查 API 返回的数据
+        setItems(response.data);    // 假设 API 返回的是数组
+      })
       .catch(error => console.error('Error fetching items:', error));
   }, []);
 
@@ -19,8 +22,9 @@ function Home({ user, onLogout }) {
     if (newItem.trim()) {
       axios.post('http://localhost:3001/items', { name: newItem })
         .then(response => {
-          setItems([...items, response.data]); // 更新items列表
-          setNewItem('');
+          // 更新items列表，将新增的item对象追加到items中
+          setItems([...items, response.data]); 
+          setNewItem(''); // 清空输入框
         })
         .catch(error => console.error('Error adding item:', error));
     }
@@ -51,17 +55,21 @@ function Home({ user, onLogout }) {
           Add Item
         </button>
         <ul className="mt-4">
-          {items.map(item => (
-            <li key={item.id} className="flex justify-between items-center border-b py-2">
-              {item.name}
-              <button
-                onClick={() => deleteItem(item.id)}
-                className="bg-red-600 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
+          {Array.isArray(items) && items.length > 0 ? (
+            items.map(item => (
+              <li key={item.id} className="flex justify-between items-center border-b py-2">
+                {item.name}
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  className="bg-red-600 text-white px-2 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))
+          ) : (
+            <li>No items found</li>
+          )}
         </ul>
       </div>
     </div>

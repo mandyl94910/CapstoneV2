@@ -24,29 +24,27 @@ require("./passportConfig")(passport);
 app.post('/register', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    const email = req.body.email;  // 获取 email
+    const email = req.body.email;
 
-    const query1 = "INSERT INTO users (`username`, `password`, `email`) VALUES (?, ?, ?)";
-    const query2 = "SELECT * FROM users WHERE username = ?";
+    const query1 = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)";
+    const query2 = "SELECT * FROM users WHERE username = $1";
 
     db.query(query2, [username], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).send('Database error');
         }
-        if (result.length > 0) {
+        if (result.rows.length > 0) {
             return res.send({ message: "Username already exists" });
         } else {
             const hashedPassword = bcrypt.hashSync(password, 10);
             db.query(query1, [username, hashedPassword, email], (err, result) => {
                 if (err) {
-                    console.error('Database insertion error:', err); // 检查插入时的错误
+                    console.error('Database insertion error:', err);
                     return res.status(500).send('Database error');
                 }
-                console.log('User successfully inserted:', result); // 插入成功时打印返回结果
                 res.send({ message: "User created" });
             });
-            
         }
     });
 });
@@ -88,20 +86,20 @@ app.get('/items', (req, res) => {
             console.error('Database error:', err);
             return res.status(500).send('Database error');
         }
-        res.send(result);
+        res.send(result.rows); // 只返回查询到的rows
     });
 });
 
 // 添加新item的路由
 app.post('/items', (req, res) => {
     const { name } = req.body;
-    const query = "INSERT INTO items (name) VALUES (?)";
+    const query = "INSERT INTO items (name) VALUES ($1) RETURNING id";
     db.query(query, [name], (err, result) => {
         if (err) {
             console.error('Database insertion error:', err);
             return res.status(500).send('Database error');
         }
-        const newItem = { id: result.insertId, name }; // 新增的item对象
+        const newItem = { id: result.rows[0].id, name }; // 获取新插入的item的id
         res.send(newItem); // 返回新增的item
     });
 });

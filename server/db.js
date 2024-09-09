@@ -1,12 +1,12 @@
 //C:\CPRG306\CapstoneV1\server\db.js
-const mysql = require('mysql');
+const { Pool } = require('pg');
 
-const db = mysql.createPool({
-    connectionLimit: 10,
+const db = new Pool({
+    user: 'postgres',
     host: 'localhost',
-    user: 'root',
+    database: 'capstonedatabase2', // 在这里填写你要使用的数据库名称
     password: 'password',
-    database: 'capstonedatabase'
+    port: 5432, // PostgreSQL 的默认端口
 });
 
 module.exports = db;
