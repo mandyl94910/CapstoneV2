@@ -5,7 +5,7 @@ const db = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'capstonedatabase2', // 在这里填写你要使用的数据库名称
-    password: 'password',
+    password: 'Password',
     port: 5432, // PostgreSQL 的默认端口
 });
 
