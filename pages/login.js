@@ -4,9 +4,8 @@ import axios from 'axios';
 import Link from 'next/link';
 
 export default function Login() {
-  const [loginUsername, setLoginUsername] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState(''); // 单一输入框用于邮箱或用户名
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
   const [welcomeMessage, setWelcomeMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -14,9 +13,8 @@ export default function Login() {
     axios({
       method: "post",
       data: {
-        username: loginUsername,
-        password: loginPassword,
-        email: loginEmail
+        identifier: loginIdentifier,  // 传递邮箱或用户名
+        password: loginPassword
       },
       withCredentials: true,
       url: "http://localhost:3001/login",
@@ -61,16 +59,16 @@ export default function Login() {
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Welcome back!</h1>
         <form className="w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); login(); }}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="identifier">
+              Email or Username
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
+              id="identifier"
               type="text"
-              placeholder="Username"
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
+              placeholder="Email or Username"
+              value={loginIdentifier}
+              onChange={(e) => setLoginIdentifier(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -84,19 +82,6 @@ export default function Login() {
               placeholder="Password"
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="Email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
             />
           </div>
           <button

@@ -70,6 +70,7 @@ app.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+
 // 获取当前用户信息的路由
 app.get('/getUser', (req, res) => {
     if (!req.user) {
