@@ -1,17 +1,20 @@
-const db = require('./db');  // 确保正确导入数据库模块
+const db = require('./db');  // Ensure correct import of the database module
 const bcrypt = require('bcrypt');
 const localStrategy = require('passport-local').Strategy;
 
 module.exports = function(passport) {
     passport.use(
         new localStrategy({ usernameField: 'identifier' }, (identifier, password, done) => {
+            // SQL queries to find user by username or email
             const queryByUsername = "SELECT * FROM users WHERE username = $1";
             const queryByEmail = "SELECT * FROM users WHERE email = $1";
 
-            const isEmail = identifier.includes('@');  // 判断 identifier 是邮箱还是用户名
+            // Determine if the identifier is an email or username
+            const isEmail = identifier.includes('@');
             const query = isEmail ? queryByEmail : queryByUsername;
 
-            db.query(query, [identifier], (err, result) => {  // db 查询
+            // Database query
+            db.query(query, [identifier], (err, result) => {
                 if (err) {
                     return done(err);
                 }
@@ -19,7 +22,7 @@ module.exports = function(passport) {
                     return done(null, false, { message: 'No user found' });
                 }
 
-                // 对比密码
+                // Compare password
                 bcrypt.compare(password, result.rows[0].password, (err, isMatch) => {
                     if (err) {
                         return done(err);
@@ -34,10 +37,12 @@ module.exports = function(passport) {
         })
     );
 
+    // Serialize the user for the session
     passport.serializeUser((user, done) => {
         done(null, user.id);
     });
 
+    // Deserialize the user from the session
     passport.deserializeUser((id, done) => {
         const query = "SELECT * FROM users WHERE id = $1";
         db.query(query, [id], (err, result) => {
