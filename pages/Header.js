@@ -8,8 +8,8 @@ function Header({ user, onLogout }) {
   return (
     <header className="flex bg-white p-4 flex justify-between items-center shadow-md">
       <nav className="flex space-x-16"> {/* Increase space between the links */}
-        <Link href="#">
-          Tap
+        <Link href="/admin-dashboard">
+          admin dashboard
         </Link>
         <Link href="#">
           Tap
