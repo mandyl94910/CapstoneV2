@@ -11,6 +11,9 @@ function Header({ user, onLogout }) {
         <Link href="/admin-dashboard">
           admin dashboard
         </Link>
+        <Link href="/categoryPage/categorypage">
+          categorypage
+        </Link>
         <Link href="#">
           Tap
         </Link>

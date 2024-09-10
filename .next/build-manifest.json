@@ -27,10 +27,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/admin-dashboard.js"
     ],
-    "/register": [
+    "/categoryPage/categorypage": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/register.js"
+      "static/chunks/pages/categoryPage/categorypage.js"
+    ],
+    "/login": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/login.js"
     ]
   },
   "ampFirstPages": []
