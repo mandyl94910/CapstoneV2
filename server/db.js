@@ -4,9 +4,9 @@ const { Pool } = require('pg');
 const db = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'capstonedatabase2', // 在这里填写你要使用的数据库名称
+    database: 'capstonedatabase2', // Fill in the name of the database you want to use here
     password: 'password',
-    port: 5432, // PostgreSQL 的默认端口
+    port: 5432, // Default Port for PostgreSQL
 });
 
 module.exports = db;

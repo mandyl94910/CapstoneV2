@@ -1,19 +1,28 @@
-//C:\CPRG306\CapstoneV2\server\passportConfig.js
-const db = require('./db');
+const db = require('./db');  // Ensure correct import of the database module
 const bcrypt = require('bcrypt');
 const localStrategy = require('passport-local').Strategy;
 
 module.exports = function(passport) {
     passport.use(
-        new localStrategy((username, password, done) => {
-            const query = "SELECT * FROM users WHERE username = $1";
-            db.query(query, [username], (err, result) => {
+        new localStrategy({ usernameField: 'identifier' }, (identifier, password, done) => {
+            // SQL queries to find user by username or email
+            const queryByUsername = "SELECT * FROM customer WHERE customer_name = $1";
+            const queryByEmail = "SELECT * FROM customer WHERE email = $1";
+
+            // Determine if the identifier is an email or customer_name
+            const isEmail = identifier.includes('@');
+            const query = isEmail ? queryByEmail : queryByUsername;
+
+            // Database query
+            db.query(query, [identifier], (err, result) => {
                 if (err) {
                     return done(err);
                 }
                 if (result.rows.length === 0) {
                     return done(null, false, { message: 'No user found' });
                 }
+
+                // Compare password
                 bcrypt.compare(password, result.rows[0].password, (err, isMatch) => {
                     if (err) {
                         return done(err);
@@ -28,19 +37,22 @@ module.exports = function(passport) {
         })
     );
 
+    // Serialize the user for the session
     passport.serializeUser((user, done) => {
-        done(null, user.id);
+        // Use 'customer_id' instead of 'id'
+        done(null, user.customer_id);
     });
-    
+
+    // Deserialize the user from the session
     passport.deserializeUser((id, done) => {
-        const query = "SELECT * FROM users WHERE id = $1";
+        const query = "SELECT * FROM customer WHERE customer_id = $1";  // Use 'customer_id'
         db.query(query, [id], (err, result) => {
             if (err) {
                 return done(err);
             }
             const userInfo = {
-                id: result.rows[0].id,
-                username: result.rows[0].username,
+                id: result.rows[0].customer_id,  // Use 'customer_id'
+                username: result.rows[0].customer_name,
                 email: result.rows[0].email
             };
             done(null, userInfo);
