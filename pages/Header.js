@@ -6,10 +6,13 @@ import logo from '../public/logo.png';
 
 function Header({ user, onLogout }) {
   return (
-    <header className="flex bg-white p-4 flex justify-between items-center shadow-md">
-      <nav className="flex space-x-16"> {/* Increase space between the links */}
-        <Link href="#">
-          Tap
+    <header className="bg-white p-4 flex justify-between items-center shadow-md">
+      <nav className="flex space-x-6 pl-6"> {/* Increase space between the links */}
+        <Link href="/admin-dashboard">
+          admin dashboard
+        </Link>
+        <Link href="/all-products">
+          All Products
         </Link>
         <Link href="#">
           Tap
@@ -18,16 +21,18 @@ function Header({ user, onLogout }) {
           Tap
         </Link>
       </nav>
-      <div className="flex items-center space-x-2"> {/* Adjust space between logo and text */}
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          width={40}
-          height={40}
-          className="cursor-pointer"
-        />
-        <div className="text-2xl font-bold">TOP Tradings</div>
-      </div>
+      <Link href="/">
+        <div className="flex items-center space-x-2"> {/* Adjust space between logo and text */}
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={40}
+            height={40}
+            className="cursor-pointer"
+          />
+          <div className="text-2xl font-bold">TOP Tradings</div>
+        </div>
+      </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
           <input
@@ -52,7 +57,7 @@ function Header({ user, onLogout }) {
           </div>
         ) : (
           <Link href="/login">
-            LOG IN {/* Removed <a> tag */}
+            <button className="bg-blue-500 text-white rounded-lg px-4 py-2 font-medium">LOG IN</button>
           </Link>
         )}
       </div>
