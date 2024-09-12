@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import CateSidebar from '../../components/category/CateSidebar';
 import ProductGrid from '../../components/category/ProductGrid';
 import Header from '../Header';
+import Footer from '../../components/common/Footer';
 
 const categories = [
   { name: 'All Products', isSubcategory: false },
@@ -63,6 +64,8 @@ export default function Products({user, onLogout}) {
                 <ProductGrid products={products} />
             </div>
         </div>
+
+        <Footer />
     </main>
   );
 }

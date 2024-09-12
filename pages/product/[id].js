@@ -3,6 +3,7 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Header from '../Header';
+import Footer from '../../components/common/Footer';
 
 const ProductPage = () => {
     const [quantity, setQuantity] = useState(1);
@@ -139,6 +140,7 @@ const ProductPage = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </main>
     );
 };
