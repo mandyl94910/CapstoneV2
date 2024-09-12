@@ -81,7 +81,7 @@ const ProductPage = () => {
                         <div className="flex items-center mb-4">
                             <button
                                 onClick={handleDecrease}
-                                className="bg-gray-300 text-gray-800 px-6 rounded-l text-xl"
+                                className="h-12 bg-gray-300 text-gray-800 px-6 rounded-l-lg text-3xl"
                                 disabled={quantity <= 1} // disable the minus button if the quantity is equal or less than 1
                             >
                                 -
@@ -91,11 +91,11 @@ const ProductPage = () => {
                                 value={quantity}
                                 onChange={handleInputChange}
                                 onBlur={handleBlur}
-                                className="w-full text-center border-2 border-gray-300"
+                                className="w-full h-12 text-center border-2 border-gray-300"
                             />
                             <button
                                 onClick={handleIncrease}
-                                className="bg-gray-300 text-gray-800 px-6 rounded-r text-xl"
+                                className="h-12 bg-gray-300 text-gray-800 px-6 rounded-r-lg text-3xl"
                             >
                                 +
                             </button>
