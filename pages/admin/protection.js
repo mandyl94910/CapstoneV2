@@ -5,13 +5,13 @@ import Header from '../../components/admin/Header';
 const ProtectionPage = () => {
   const [pin, setPin] = useState(['', '', '', '']);
 
-  // PIN 입력을 처리하는 함수
+  // PIN input
   const handlePinChange = (e, index) => {
     const newPin = [...pin];
     newPin[index] = e.target.value;
     setPin(newPin);
 
-    // 입력이 되면 다음 input으로 포커스 이동
+    // focus moving after pin input
     if (e.target.value && index < 3) {
       document.getElementById(`pin-${index + 1}`).focus();
     }
