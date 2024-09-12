@@ -5,30 +5,31 @@ import ProductGrid from '../../components/category/ProductGrid';
 import Header from '../Header';
 
 const categories = [
-  'All Products',
-  'Computers & Accessories',
-  'Computers',
-  'Keyboard',
-  'Mouse',
-  'Mobile Phones & Accessories',
-  'Smart Home Devices',
-  'TVs & Home Entertainment',
-  'Gaming Accessories',
-  'Cameras & Photography Gear'
+  { name: 'All Products', isSubcategory: false },
+  { name: 'Computers & Accessories', isSubcategory: false },
+  { name: 'Computers', isSubcategory: true, parent: 'Computers & Accessories' },
+  { name: 'Keyboard', isSubcategory: true, parent: 'Computers & Accessories' },
+  { name: 'Mouse', isSubcategory: true, parent: 'Computers & Accessories' },
+  { name: 'Mobile Phones & Accessories', isSubcategory: false },
+  { name: 'Smart Home Devices', isSubcategory: false },
+  { name: 'TVs & Home Entertainment', isSubcategory: false },
+  { name: 'Gaming Accessories', isSubcategory: false },
+  { name: 'Cameras & Photography Gear', isSubcategory: false }
 ];
 
+// initial products are all products
 const initialProducts = [
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
-  { name: 'Product Name', price: '10.99', image: '/products/laptop.jpg' },
+  { id:1, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:2, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:3, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:4, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:5, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:6, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:7, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
+  { id:8, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
 ];
 
-export default function CategoryPage({user, onLogout}) {
+export default function Products({user, onLogout}) {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [products, setProducts] = useState(initialProducts);
 

@@ -8,11 +8,11 @@ const Sidebar2 = ({ categories, selectedCategory, onCategorySelect }) => {
           <li
             key={index}
             className={`cursor-pointer p-2 ${
-              selectedCategory === category ? 'bg-blue-500 text-white' : 'hover:bg-blue-100'
-            }`}
-            onClick={() => onCategorySelect(category)}
+              selectedCategory === category.name ? 'bg-blue-500 text-white' : 'hover:bg-blue-100'
+            } ${category.isSubcategory ? 'pl-6' : ''}`}
+            onClick={() => onCategorySelect(category.name)}
           >
-            {category}
+            {category.name}
           </li>
         ))}
       </ul>
