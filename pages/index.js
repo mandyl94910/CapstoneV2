@@ -1,42 +1,42 @@
-//C:\CPRG306\CapstoneV2\pages\index.js
+// C:\CPRG306\CapstoneV2\pages\index.js
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Banner from './Banner';
-import axios from 'axios'; // 使用axios进行HTTP请求
+import axios from 'axios'; // Use axios for HTTP requests
 
 function Home({ user, onLogout }) {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/items') // 后端获取items的API
+    axios.get('http://localhost:3001/products')
       .then(response => {
-        console.log(response.data); // 检查 API 返回的数据
-        setItems(response.data);    // 假设 API 返回的是数组
+        console.log('Received data:', response.data); // Log the received data structure
+        setItems(response.data); // Set state to store product data
       })
-      .catch(error => console.error('Error fetching items:', error));
+      .catch(error => console.error('Error fetching products:', error));
   }, []);
-
-  // 添加新item
+  
+  // Add a new product
   const addItem = () => {
     if (newItem.trim()) {
-      axios.post('http://localhost:3001/items', { name: newItem })
+      axios.post('http://localhost:3001/products', { product_name: newItem })
         .then(response => {
-          // 更新items列表，将新增的item对象追加到items中
-          setItems([...items, response.data]); 
-          setNewItem(''); // 清空输入框
+          const newProduct = response.data; // Here we get the full product information returned by the backend.
+          setItems(items => [...items, newProduct]); // Update status with returned new products
+          setNewItem(''); // Clear input fields
         })
-        .catch(error => console.error('Error adding item:', error));
+        .catch(error => console.error('Error adding product:', error));
     }
   };
 
-  // 删除item
-  const deleteItem = (id) => {
-    axios.delete(`http://localhost:3001/items/${id}`)
+  // Delete a product
+  const deleteItem = (product_id) => {
+    axios.delete(`http://localhost:3001/products/${product_id}`) // Use the new field name for deletion operation
       .then(() => {
-        setItems(items.filter(item => item.id !== id));
+        setItems(currentItems => currentItems.filter(item => item.product_id !== product_id)); // Remove the deleted product from the list
       })
-      .catch(error => console.error('Error deleting item:', error));
+      .catch(error => console.error('Error deleting product:', error));
   };
 
   return (
@@ -57,10 +57,10 @@ function Home({ user, onLogout }) {
         <ul className="mt-4">
           {Array.isArray(items) && items.length > 0 ? (
             items.map(item => (
-              <li key={item.id} className="flex justify-between items-center border-b py-2">
-                {item.name}
+              <li key={item.product_id} className="flex justify-between items-center border-b py-2">
+                {item.product_name} {/* Use the new field names to display product names */}
                 <button
-                  onClick={() => deleteItem(item.id)}
+                  onClick={() => deleteItem(item.product_id)} // Use the new field name to delete products
                   className="bg-red-600 text-white px-2 py-1 rounded"
                 >
                   Delete
