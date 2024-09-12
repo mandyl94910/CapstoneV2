@@ -1,17 +1,16 @@
-// Header.js
 import React from "react";
 
-const Header = () => {
+const Header = ({ title }) => {
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-xl font-bold">{title}</h1>
       <div className="flex space-x-4 items-center">
-        <i className="icon icon-lock text-2xl"></i>
-        <i className="icon icon-mail text-2xl"></i>
-        <i className="icon icon-notification text-2xl"></i>
+        <i className="text-xl">lock</i>
+        <i className="text-xl">mail</i>
+        <i className="text-xl">notification</i>
         <img
-          className="w-10 h-10 rounded-full"
-          src="user.jpg"
+          className="w-8 h-8 rounded-full"
+          src="https://via.placeholder.com/150"
           alt="User Profile"
         />
       </div>

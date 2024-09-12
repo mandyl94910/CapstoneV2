@@ -1,23 +1,27 @@
 import React from "react";
+import Link from 'next/link';
 
 const Sidebar = () => {
   return (
-    <div className="w-20 h-screen bg-gray-800 text-white flex flex-col items-center py-4">
-      <ul className="space-y-6">
+    <div className="w-40 h-screen bg-indigo-400 flex flex-col items-center py-4 space-y-6">
+      <div className="w-full text-white flex justify-center mb-6">
+        <i className="icon icon-dashboard"></i>
+      </div>
+      <ul className="space-y-6 text-white">
         <li>
-          <i className="icon icon-dashboard text-2xl"></i>
+          <Link href="/admin/dashboard">Dashboard</Link>
         </li>
         <li>
-          <i className="icon icon-products text-2xl"></i>
+          <Link href="/admin/products">Products</Link>
         </li>
         <li>
-          <i className="icon icon-users text-2xl"></i>
+          <Link href="/admin/users">Users</Link>
         </li>
         <li>
-          <i className="icon icon-sales text-2xl"></i>
+          <Link href="/admin/sales">Sales</Link>
         </li>
         <li>
-          <i className="icon icon-settings text-2xl"></i>
+          <Link href="/admin/settings">Settings</Link>
         </li>
       </ul>
     </div>

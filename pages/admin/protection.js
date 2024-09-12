@@ -1,5 +1,9 @@
+import Sidebar from "../../components/dashboard/Sidebar";
+
 export default function Protection() {
     return(
-        <div></div>
+        <div className="flex">
+           <Sidebar /> 
+        </div>
     )
 }
