@@ -14,22 +14,22 @@ export default function Login() {
     axios({
       method: "post",
       data: {
-        identifier: loginIdentifier, // Pass email or username
+        identifier: loginIdentifier, // Can be either username or email
         password: loginPassword
       },
       withCredentials: true,
-      url: "http://localhost:3001/login",
+      url: "http://localhost:3001/login", // Points to the backend login route
     })
     .then((res) => {
       if (res.data === 'User logged in') {
-        getUser(); // Fetch user info after successful login
+        getUser(); // Fetch user information after successful login
       } else {
-        setError(res.data); // Display error message returned from server
+        setError(res.data); // Display server returned error messages
         setWelcomeMessage(''); // Clear welcome message
       }
     })
     .catch((err) => {
-      setError(err.response?.data?.message || err.message); // Capture and display any errors
+      setError(err.response?.data?.message || err.message); // Capture and display error messages
       setWelcomeMessage(''); // Clear welcome message
     });
   };

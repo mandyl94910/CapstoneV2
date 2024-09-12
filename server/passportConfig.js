@@ -6,10 +6,10 @@ module.exports = function(passport) {
     passport.use(
         new localStrategy({ usernameField: 'identifier' }, (identifier, password, done) => {
             // SQL queries to find user by username or email
-            const queryByUsername = "SELECT * FROM users WHERE username = $1";
-            const queryByEmail = "SELECT * FROM users WHERE email = $1";
+            const queryByUsername = "SELECT * FROM customer WHERE customer_name = $1";
+            const queryByEmail = "SELECT * FROM customer WHERE email = $1";
 
-            // Determine if the identifier is an email or username
+            // Determine if the identifier is an email or customer_name
             const isEmail = identifier.includes('@');
             const query = isEmail ? queryByEmail : queryByUsername;
 
@@ -39,19 +39,20 @@ module.exports = function(passport) {
 
     // Serialize the user for the session
     passport.serializeUser((user, done) => {
-        done(null, user.id);
+        // Use 'customer_id' instead of 'id'
+        done(null, user.customer_id);
     });
 
     // Deserialize the user from the session
     passport.deserializeUser((id, done) => {
-        const query = "SELECT * FROM users WHERE id = $1";
+        const query = "SELECT * FROM customer WHERE customer_id = $1";  // Use 'customer_id'
         db.query(query, [id], (err, result) => {
             if (err) {
                 return done(err);
             }
             const userInfo = {
-                id: result.rows[0].id,
-                username: result.rows[0].username,
+                id: result.rows[0].customer_id,  // Use 'customer_id'
+                username: result.rows[0].customer_name,
                 email: result.rows[0].email
             };
             done(null, userInfo);

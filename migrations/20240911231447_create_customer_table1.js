@@ -26,8 +26,6 @@ exports.up = function(knex) {
                .checkLength('>=', 2)
                .checkRegex('^[A-Za-z0-9]+$'); // Customer login name, must be 2 or more characters and contain only letters and numbers
           table.string('password', 255).notNullable()
-               .checkLength('>=', 6)
-               .checkRegex('^(?=.*[A-Za-z])(?=.*[0-9]).+$'); // Password must be at least 6 characters long and contain both letters and numbers
           table.string('email', 255).notNullable().unique()
                .checkRegex('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'); // Email must follow standard format: %@%.%
           table.string('phone', 10).notNullable()
