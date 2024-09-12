@@ -1,40 +1,40 @@
-//C:\CPRG306\CapstoneV2\pages\login.js
+// C:\CPRG306\CapstoneV2\pages\login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 
 export default function Login() {
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [welcomeMessage, setWelcomeMessage] = useState('');
-  const [error, setError] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState(''); // State for user identifier (email or username)
+  const [loginPassword, setLoginPassword] = useState(''); // State for password input
+  const [welcomeMessage, setWelcomeMessage] = useState(''); // State to store welcome message
+  const [error, setError] = useState(''); // State to store error messages
 
+  // Function to handle login
   const login = () => {
     axios({
       method: "post",
       data: {
-        username: loginUsername,
-        password: loginPassword,
-        email: loginEmail
+        identifier: loginIdentifier, // Can be either username or email
+        password: loginPassword
       },
       withCredentials: true,
-      url: "http://localhost:3001/login",
+      url: "http://localhost:3001/login", // Points to the backend login route
     })
     .then((res) => {
       if (res.data === 'User logged in') {
-        getUser();  // 登录成功后获取用户信息
+        getUser(); // Fetch user information after successful login
       } else {
-        setError(res.data);  // 显示服务器返回的错误信息
-        setWelcomeMessage('');  // 清空欢迎信息
+        setError(res.data); // Display server returned error messages
+        setWelcomeMessage(''); // Clear welcome message
       }
     })
     .catch((err) => {
-      setError(err.response?.data?.message || err.message);  // 捕获错误并显示
-      setWelcomeMessage('');  // 清空欢迎信息
+      setError(err.response?.data?.message || err.message); // Capture and display error messages
+      setWelcomeMessage(''); // Clear welcome message
     });
   };
 
+  // Function to fetch user information
   const getUser = () => {
     axios({
       method: 'get',
@@ -42,12 +42,12 @@ export default function Login() {
       url: 'http://localhost:3001/getUser',
     })
     .then((res) => {
-      setWelcomeMessage(`Welcome user ${res.data.username}`);  // 显示用户名
-      setError('');  // 登录成功后清空错误信息
+      setWelcomeMessage(`Welcome user ${res.data.username}`); // Display username in welcome message
+      setError(''); // Clear error message after successful login
     })
     .catch((err) => {
-      setError(err.response?.data?.message || err.message);  // 捕获错误并显示
-      setWelcomeMessage('');  // 清空欢迎信息
+      setError(err.response?.data?.message || err.message); // Capture and display any errors
+      setWelcomeMessage(''); // Clear welcome message
     });
   };
 
@@ -61,16 +61,16 @@ export default function Login() {
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Welcome back!</h1>
         <form className="w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); login(); }}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="identifier">
+              Email or Username
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
+              id="identifier"
               type="text"
-              placeholder="Username"
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
+              placeholder="Email or Username"
+              value={loginIdentifier}
+              onChange={(e) => setLoginIdentifier(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -86,19 +86,6 @@ export default function Login() {
               onChange={(e) => setLoginPassword(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="Email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-            />
-          </div>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline"
             type="submit"
@@ -106,7 +93,7 @@ export default function Login() {
             Login
           </button>
 
-          {/* 合并错误和欢迎信息的显示 */}
+          {/* Display error and welcome messages */}
           {(error || welcomeMessage) && (
             <p className={`text-center mt-4 ${error ? 'text-red-500' : 'text-green-500'}`}>
               {error || welcomeMessage}
