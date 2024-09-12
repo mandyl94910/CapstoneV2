@@ -1,9 +1,9 @@
 import React from "react";
-import Sidebar from "../../components/dashboard/Sidebar";
-import Header from "../../components/dashboard/Header";
-import Stats from "../../components/dashboard/Stats";
-import Product from "../../components/dashboard/Products";
-import SalesReport from "../../components/dashboard/SalesReport";
+import Sidebar from "../../components/admin/Sidebar";
+import Header from "../../components/admin/Header";
+import Stats from "../../components/admin/dashboard/Stats";
+import Product from "../../components/admin/dashboard/Products";
+import SalesReport from "../../components/admin/dashboard/SalesReport";
 
 export default function Dashboard() {
   return (

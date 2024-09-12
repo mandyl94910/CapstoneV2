@@ -10,7 +10,7 @@ const Products = () => {
   ]);
 
   return (
-    <div className="overflow-x-auto bg-white p-4 rounded shadow-md border border-blue-200">
+    <div className="overflow-x-auto bg-white p-4 rounded shadow-md border border-indigo-500">
       <table className="min-w-full bg-gray-100 border-separate border-spacing-y-3">
         <thead>
           <tr>
