@@ -30,9 +30,9 @@ const ProductPage = () => {
         }
     };
     
-      // once pointer leave the input, check if the input is bigger than 1
-      // if not, set it to 1 
-      const handleBlur = () => {
+    // once pointer leave the input, check if the input is bigger than 1
+    // if not, set it to 1 
+    const handleBlur = () => {
         if (quantity === "" || quantity < 1) {
           setQuantity(1); 
         }

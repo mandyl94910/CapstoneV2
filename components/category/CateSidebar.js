@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar2 = ({ categories, selectedCategory, onCategorySelect }) => {
+const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   return (
     <div className="w-64 bg-white border-r-2 border-gray-200 p-4">
       <ul>
@@ -9,7 +9,7 @@ const Sidebar2 = ({ categories, selectedCategory, onCategorySelect }) => {
             key={index}
             className={`cursor-pointer p-2 ${
               selectedCategory === category.name ? 'bg-blue-500 text-white' : 'hover:bg-blue-100'
-            } ${category.isSubcategory ? 'pl-6' : ''}`}
+            } ${category.isSubcategory ? 'pl-6' : ''} `}
             onClick={() => onCategorySelect(category.name)}
           >
             {category.name}
@@ -20,4 +20,4 @@ const Sidebar2 = ({ categories, selectedCategory, onCategorySelect }) => {
   );
 };
 
-export default Sidebar2;
+export default CateSidebar;

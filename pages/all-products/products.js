@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import Sidebar2 from '../../components/category/Sidebar2';
+import CateSidebar from '../../components/category/CateSidebar';
 import ProductGrid from '../../components/category/ProductGrid';
 import Header from '../Header';
 
@@ -41,8 +41,8 @@ export default function Products({user, onLogout}) {
     <main>
         <Header user={user} onLogout={onLogout} />
         
-        <div className="flex">
-            <Sidebar2
+        <div className="flex ml-6 mt-6">
+            <CateSidebar
                 categories={categories}
                 selectedCategory={selectedCategory}
                 onCategorySelect={handleCategorySelect}

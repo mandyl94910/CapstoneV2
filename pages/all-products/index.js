@@ -1,4 +1,4 @@
-import Products from "./allProduct/products";
+import Products from "./products";
 
 
 export default function AllProducts(){

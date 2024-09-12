@@ -7,7 +7,7 @@ import logo from '../public/logo.png';
 function Header({ user, onLogout }) {
   return (
     <header className="bg-white p-4 flex justify-between items-center shadow-md">
-      <nav className="flex space-x-6"> {/* Increase space between the links */}
+      <nav className="flex space-x-6 pl-6"> {/* Increase space between the links */}
         <Link href="/admin-dashboard">
           admin dashboard
         </Link>
