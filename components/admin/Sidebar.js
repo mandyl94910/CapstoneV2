@@ -1,5 +1,5 @@
 import React from "react";
-import Link from 'next/link';
+import Link from "next/link";
 
 const Sidebar = () => {
   return (
@@ -21,7 +21,7 @@ const Sidebar = () => {
           <Link href="/admin/sales">Sales</Link>
         </li>
         <li>
-          <Link href="/admin/settings">Settings</Link>
+          <Link href="/admin/settings/settings">Settings</Link>
         </li>
       </ul>
     </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { FaShieldAlt, FaEnvelope, FaBell } from 'react-icons/fa';
+import { FaShieldAlt, FaEnvelope, FaBell } from "react-icons/fa";
 
 const Header = ({ title }) => {
   return (
@@ -11,17 +11,17 @@ const Header = ({ title }) => {
         <Link href="/admin/protection">
           <FaShieldAlt className="text-2xl text-indigo-500" />
         </Link>
-        
+
         {/* Mail */}
         <Link href="/admin/">
           <FaEnvelope className="text-2xl text-indigo-500" />
         </Link>
-        
+
         {/* Notification */}
         <Link href="/admin/">
           <FaBell className="text-2xl text-indigo-500" />
         </Link>
-        
+
         {/* User Profile */}
         <img
           className="w-10 h-10 rounded-full"
