@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CateSidebar from '../../components/category/CateSidebar';
 import ProductGrid from '../../components/category/ProductGrid';
-import Header from '../Header';
+import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const categories = [
   { name: 'All Products', isSubcategory: false },
@@ -31,11 +33,29 @@ const initialProducts = [
 ];
 
 export default function Products({user, onLogout}) {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [products, setProducts] = useState(initialProducts);
 
+  useEffect(()=> {
+    const { category } = router.query;
+    if (category) {
+      setSelectedCategory(decodeURIComponent(category));
+
+      // axios.get(`http://localhost:3001/products?category=${encodeURIComponent(category)}`)
+      //   .then((response) => {
+      //     setProducts(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.error('Error fetching products:', error);
+      //   });
+    }
+  },[router.query]);
+
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+
+    router.push(`/all-products?category=${encodeURIComponent(category)}`);
   };
 
   return (

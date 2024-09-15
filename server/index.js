@@ -95,16 +95,38 @@ app.get('/getUser', (req, res) => {
 });
 
 // Route to get products
-app.get('/products', (req, res) => {
-    const query = "SELECT * FROM product"; // Query all products
-    db.query(query, (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).send('Database error');
-      }
-      res.send(result.rows);
-    });
-  });
+// app.get('/products', (req, res) => {
+//     const query = "SELECT * FROM product"; // Query all products
+//     db.query(query, (err, result) => {
+//       if (err) {
+//         console.error('Database error:', err);
+//         return res.status(500).send('Database error');
+//       }
+//       res.send(result.rows);
+//     });
+//   });
+
+// Rout to get products according to category
+app.get('/products', async(req, res) => {
+  const { category } = req.query;
+
+  try {
+    let query = 'SELECT * FROM produc'; // query all products by default
+    const queryParams = [];
+
+    // if there is specific category pass by, modify the query request
+    if (category && category !== 'All Products'){
+      query += ' WHERE category_name = $1';
+      queryParams.push(category);
+    }
+
+    const result = await Pool.query(query, queryParams);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Database error:', err);
+    res.status(500).send('Database error');
+  }
+});
 
 // Route to add products
 app.post('/products', (req, res) => {
