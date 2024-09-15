@@ -1,8 +1,10 @@
 // C:\CPRG306\CapstoneV2\pages\index.js
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
+import Header from '../components/common/Header';
 import Banner from './Banner';
 import axios from 'axios'; // Use axios for HTTP requests
+import Footer from '../components/common/Footer';
+import CategoryHomeGrid from '../components/category/CategoryHomeGrid';
 
 function Home({ user, onLogout }) {
   const [items, setItems] = useState([]);
@@ -43,6 +45,7 @@ function Home({ user, onLogout }) {
     <div>
       <Header user={user} onLogout={onLogout} />
       <Banner />
+      <CategoryHomeGrid />
       <div className="container mx-auto mt-8">
         <input
           type="text"
@@ -72,6 +75,7 @@ function Home({ user, onLogout }) {
           )}
         </ul>
       </div>
+      <Footer/>
     </div>
   );
 }
