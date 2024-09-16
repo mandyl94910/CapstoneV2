@@ -59,9 +59,9 @@ exports.up = function(knex) {
       // Add constraints to customer table
       .then(() => {
         return knex.schema.raw(`
-          ALTER TABLE customer 
-          ADD CONSTRAINT customer_name_check 
-          CHECK (LENGTH(customer_name) >= 2 AND customer_name ~ '^[A-Za-z0-9]+$')
+        ALTER TABLE customer 
+        ADD CONSTRAINT customer_name_check 
+        CHECK (LENGTH(customer_name) >= 2 AND customer_name ~ '^[A-Za-z0-9]+$' AND customer_name ~ '[A-Za-z]')
         `);
       })
       .then(() => {
@@ -127,28 +127,28 @@ exports.up = function(knex) {
       // Insert product data
       .then(() => {
         return knex('product').insert([
-          { product_name: 'Smartphone X1', price: 699.99, product_description: 'A high-end smartphone with advanced features.', category_id: 11, quantity: 50, folder: 11, image: 'CapstoneV2/image/product/11/example.webp', visibility: true },
-          { product_name: 'Smartphone Y1', price: 799.99, product_description: 'A powerful smartphone with a sleek design.', category_id: 11, quantity: 40, folder: 11, image: 'CapstoneV2/image/product/11/example.webp', visibility: true },
-          { product_name: 'Phone Case A', price: 19.99, product_description: 'Durable and stylish phone case.', category_id: 12, quantity: 200, folder: 12, image: 'CapstoneV2/image/product/12/example.webp', visibility: true },
-          { product_name: 'Phone Case B', price: 15.99, product_description: 'Sleek phone case with a minimalist design.', category_id: 12, quantity: 150, folder: 12, image: 'CapstoneV2/image/product/12/example.webp', visibility: true },
-          { product_name: 'Wireless Headphones', price: 89.99, product_description: 'Noise-canceling wireless headphones.', category_id: 13, quantity: 100, folder: 13, image: 'CapstoneV2/image/product/13/example.webp', visibility: true },
-          { product_name: 'In-Ear Headphones', price: 29.99, product_description: 'Comfortable in-ear headphones.', category_id: 13, quantity: 300, folder: 13, image: 'CapstoneV2/image/product/13/example.webp', visibility: true },
-          { product_name: 'Laptop Pro 15', price: 1299.99, product_description: 'A powerful laptop for professionals.', category_id: 15, quantity: 30, folder: 15, image: 'CapstoneV2/image/product/15/example.webp', visibility: true },
-          { product_name: 'Gaming Laptop Z1', price: 1599.99, product_description: 'A high-performance gaming laptop.', category_id: 15, quantity: 25, folder: 15, image: 'CapstoneV2/image/product/15/example.webp', visibility: true },
-          { product_name: 'Mechanical Keyboard', price: 79.99, product_description: 'A mechanical keyboard with RGB lighting.', category_id: 17, quantity: 120, folder: 17, image: 'CapstoneV2/image/product/17/example.webp', visibility: true },
-          { product_name: 'Wireless Keyboard', price: 49.99, product_description: 'A wireless keyboard with long battery life.', category_id: 17, quantity: 80, folder: 17, image: 'CapstoneV2/image/product/17/example.webp', visibility: true },
-          { product_name: '4K Monitor', price: 299.99, product_description: 'A 27-inch 4K monitor for work and gaming.', category_id: 19, quantity: 60, folder: 19, image: 'CapstoneV2/image/product/19/example.webp', visibility: true },
-          { product_name: 'Ultrawide Monitor', price: 399.99, product_description: 'A 34-inch ultrawide monitor.', category_id: 19, quantity: 45, folder: 19, image: 'CapstoneV2/image/product/19/example.webp', visibility: true },
-          { product_name: 'Smart Speaker A1', price: 59.99, product_description: 'A voice-controlled smart speaker.', category_id: 20, quantity: 150, folder: 20, image: 'CapstoneV2/image/product/20/example.webp', visibility: true },
-          { product_name: 'Smart Speaker B1', price: 89.99, product_description: 'A premium smart speaker with great sound quality.', category_id: 20, quantity: 80, folder: 20, image: 'CapstoneV2/image/product/20/example.webp', visibility: true },
-          { product_name: 'Smart TV 55"', price: 599.99, product_description: 'A 55-inch 4K smart TV.', category_id: 23, quantity: 40, folder: 23, image: 'CapstoneV2/image/product/23/example.webp', visibility: true },
-          { product_name: 'OLED TV 65"', price: 1299.99, product_description: 'A 65-inch OLED 4K TV.', category_id: 23, quantity: 20, folder: 23, image: 'CapstoneV2/image/product/23/example.webp', visibility: true },
-          { product_name: 'Next-Gen Console X', price: 499.99, product_description: 'A next-generation gaming console.', category_id: 26, quantity: 100, folder: 26, image: 'CapstoneV2/image/product/26/example.webp', visibility: true },
-          { product_name: 'Gaming Console Y', price: 399.99, product_description: 'A budget-friendly gaming console.', category_id: 26, quantity: 120, folder: 26, image: 'CapstoneV2/image/product/26/example.webp', visibility: true },
-          { product_name: 'DSLR Camera A1', price: 899.99, product_description: 'A high-quality DSLR camera for photography.', category_id: 29, quantity: 35, folder: 29, image: 'CapstoneV2/image/product/29/example.webp', visibility: true },
-          { product_name: 'Mirrorless Camera B1', price: 1199.99, product_description: 'A mirrorless camera with advanced features.', category_id: 29, quantity: 25, folder: 29, image: 'CapstoneV2/image/product/29/example.webp', visibility: true },
-          { product_name: 'Smartwatch Pro', price: 199.99, product_description: 'A smartwatch with fitness tracking features.', category_id: 32, quantity: 90, folder: 32, image: 'CapstoneV2/image/product/32/example.webp', visibility: true },
-          { product_name: 'Smartwatch Lite', price: 149.99, product_description: 'A lightweight smartwatch for everyday use.', category_id: 32, quantity: 120, folder: 32, image: 'CapstoneV2/image/product/32/example.webp', visibility: true }
+          { product_name: 'Smartphone X1', price: 699.99, product_description: 'A high-end smartphone with advanced features.', category_id: 11, quantity: 50, folder: 11, image: 'product/11/example.webp', visibility: true },
+          { product_name: 'Smartphone Y1', price: 799.99, product_description: 'A powerful smartphone with a sleek design.', category_id: 11, quantity: 40, folder: 11, image: 'product/11/example.webp', visibility: true },
+          { product_name: 'Phone Case A', price: 19.99, product_description: 'Durable and stylish phone case.', category_id: 12, quantity: 200, folder: 12, image: 'product/12/example.webp', visibility: true },
+          { product_name: 'Phone Case B', price: 15.99, product_description: 'Sleek phone case with a minimalist design.', category_id: 12, quantity: 150, folder: 12, image: 'product/12/example.webp', visibility: true },
+          { product_name: 'Wireless Headphones', price: 89.99, product_description: 'Noise-canceling wireless headphones.', category_id: 13, quantity: 100, folder: 13, image: 'product/13/example.webp', visibility: true },
+          { product_name: 'In-Ear Headphones', price: 29.99, product_description: 'Comfortable in-ear headphones.', category_id: 13, quantity: 300, folder: 13, image: 'product/13/example.webp', visibility: true },
+          { product_name: 'Laptop Pro 15', price: 1299.99, product_description: 'A powerful laptop for professionals.', category_id: 15, quantity: 30, folder: 15, image: 'product/15/example.webp', visibility: true },
+          { product_name: 'Gaming Laptop Z1', price: 1599.99, product_description: 'A high-performance gaming laptop.', category_id: 15, quantity: 25, folder: 15, image: 'product/15/example.webp', visibility: true },
+          { product_name: 'Mechanical Keyboard', price: 79.99, product_description: 'A mechanical keyboard with RGB lighting.', category_id: 17, quantity: 120, folder: 17, image: 'product/17/example.webp', visibility: true },
+          { product_name: 'Wireless Keyboard', price: 49.99, product_description: 'A wireless keyboard with long battery life.', category_id: 17, quantity: 80, folder: 17, image: 'product/17/example.webp', visibility: true },
+          { product_name: '4K Monitor', price: 299.99, product_description: 'A 27-inch 4K monitor for work and gaming.', category_id: 19, quantity: 60, folder: 19, image: 'product/19/example.webp', visibility: true },
+          { product_name: 'Ultrawide Monitor', price: 399.99, product_description: 'A 34-inch ultrawide monitor.', category_id: 19, quantity: 45, folder: 19, image: 'product/19/example.webp', visibility: true },
+          { product_name: 'Smart Speaker A1', price: 59.99, product_description: 'A voice-controlled smart speaker.', category_id: 20, quantity: 150, folder: 20, image: 'product/20/example.webp', visibility: true },
+          { product_name: 'Smart Speaker B1', price: 89.99, product_description: 'A premium smart speaker with great sound quality.', category_id: 20, quantity: 80, folder: 20, image: 'product/20/example.webp', visibility: true },
+          { product_name: 'Smart TV 55"', price: 599.99, product_description: 'A 55-inch 4K smart TV.', category_id: 23, quantity: 40, folder: 23, image: 'product/23/example.webp', visibility: true },
+          { product_name: 'OLED TV 65"', price: 1299.99, product_description: 'A 65-inch OLED 4K TV.', category_id: 23, quantity: 20, folder: 23, image: 'product/23/example.webp', visibility: true },
+          { product_name: 'Next-Gen Console X', price: 499.99, product_description: 'A next-generation gaming console.', category_id: 26, quantity: 100, folder: 26, image: 'product/26/example.webp', visibility: true },
+          { product_name: 'Gaming Console Y', price: 399.99, product_description: 'A budget-friendly gaming console.', category_id: 26, quantity: 120, folder: 26, image: 'product/26/example.webp', visibility: true },
+          { product_name: 'DSLR Camera A1', price: 899.99, product_description: 'A high-quality DSLR camera for photography.', category_id: 29, quantity: 35, folder: 29, image: 'product/29/example.webp', visibility: true },
+          { product_name: 'Mirrorless Camera B1', price: 1199.99, product_description: 'A mirrorless camera with advanced features.', category_id: 29, quantity: 25, folder: 29, image: 'product/29/example.webp', visibility: true },
+          { product_name: 'Smartwatch Pro', price: 199.99, product_description: 'A smartwatch with fitness tracking features.', category_id: 32, quantity: 90, folder: 32, image: 'product/32/example.webp', visibility: true },
+          { product_name: 'Smartwatch Lite', price: 149.99, product_description: 'A lightweight smartwatch for everyday use.', category_id: 32, quantity: 120, folder: 32, image: 'product/32/example.webp', visibility: true }
         ]);
       });
   };
@@ -166,7 +166,7 @@ exports.up = function(knex) {
   
 // SQL version of the migration file:
 
-//   -- Drop tables if they exist
+// -- Drop tables if they exist
 // DROP TABLE IF EXISTS customer;
 // DROP TABLE IF EXISTS product;
 // DROP TABLE IF EXISTS category;
@@ -214,7 +214,8 @@ exports.up = function(knex) {
 // -- Add constraints to customer table
 // ALTER TABLE customer 
 // ADD CONSTRAINT customer_name_check 
-// CHECK (LENGTH(customer_name) >= 2 AND customer_name ~ '^[A-Za-z0-9]+$');
+// CHECK (LENGTH(customer_name) >= 2 AND customer_name ~ '^[A-Za-z0-9]+$' AND customer_name ~ '[A-Za-z]');
+
 
 // ALTER TABLE customer 
 // ADD CONSTRAINT email_format_check 
@@ -294,77 +295,77 @@ exports.up = function(knex) {
 
 // -- Smartphones (folder 11)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 11, 50, 11, 'CapstoneV2/image/product/11/example.webp', TRUE);
+// VALUES ('Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 11, 50, 11, 'product/11/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 11, 40, 11, 'CapstoneV2/image/product/11/example.webp', TRUE);
+// VALUES ('Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 11, 40, 11, 'product/11/example.webp', TRUE);
 
 // -- Phone Cases (folder 12)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Phone Case A', 19.99, 'Durable and stylish phone case.', 12, 200, 12, 'CapstoneV2/image/product/12/example.webp', TRUE);
+// VALUES ('Phone Case A', 19.99, 'Durable and stylish phone case.', 12, 200, 12, 'product/12/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 12, 150, 12, 'CapstoneV2/image/product/12/example.webp', TRUE);
+// VALUES ('Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 12, 150, 12, 'product/12/example.webp', TRUE);
 
 // -- Headphones (folder 13)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 13, 100, 13, 'CapstoneV2/image/product/13/example.webp', TRUE);
+// VALUES ('Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 13, 100, 13, 'product/13/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 13, 300, 13, 'CapstoneV2/image/product/13/example.webp', TRUE);
+// VALUES ('In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 13, 300, 13, 'product/13/example.webp', TRUE);
 
 // -- Laptops (folder 15)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 15, 30, 15, 'CapstoneV2/image/product/15/example.webp', TRUE);
+// VALUES ('Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 15, 30, 15, 'product/15/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 15, 25, 15, 'CapstoneV2/image/product/15/example.webp', TRUE);
+// VALUES ('Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 15, 25, 15, 'product/15/example.webp', TRUE);
 
 // -- Keyboards (folder 17)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 17, 120, 17, 'CapstoneV2/image/product/17/example.webp', TRUE);
+// VALUES ('Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 17, 120, 17, 'product/17/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 17, 80, 17, 'CapstoneV2/image/product/17/example.webp', TRUE);
+// VALUES ('Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 17, 80, 17, 'product/17/example.webp', TRUE);
 
 // -- Monitors (folder 19)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 19, 60, 19, 'CapstoneV2/image/product/19/example.webp', TRUE);
+// VALUES ('4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 19, 60, 19, 'product/19/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 19, 45, 19, 'CapstoneV2/image/product/19/example.webp', TRUE);
+// VALUES ('Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 19, 45, 19, 'product/19/example.webp', TRUE);
 
 // -- Smart Speakers (folder 20)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smart Speaker A1', 59.99, 'A voice-controlled smart speaker.', 20, 150, 20, 'CapstoneV2/image/product/20/example.webp', TRUE);
+// VALUES ('Smart Speaker A1', 59.99, 'A voice-controlled smart speaker.', 20, 150, 20, 'product/20/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smart Speaker B1', 89.99, 'A premium smart speaker with great sound quality.', 20, 80, 20, 'CapstoneV2/image/product/20/example.webp', TRUE);
+// VALUES ('Smart Speaker B1', 89.99, 'A premium smart speaker with great sound quality.', 20, 80, 20, 'product/20/example.webp', TRUE);
 
 // -- Televisions (folder 23)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 23, 40, 23, 'CapstoneV2/image/product/23/example.webp', TRUE);
+// VALUES ('Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 23, 40, 23, 'product/23/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 23, 20, 23, 'CapstoneV2/image/product/23/example.webp', TRUE);
+// VALUES ('OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 23, 20, 23, 'product/23/example.webp', TRUE);
 
 // -- Gaming Consoles (folder 26)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Next-Gen Console X', 499.99, 'A next-generation gaming console.', 26, 100, 26, 'CapstoneV2/image/product/26/example.webp', TRUE);
+// VALUES ('Next-Gen Console X', 499.99, 'A next-generation gaming console.', 26, 100, 26, 'product/26/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 26, 120, 26, 'CapstoneV2/image/product/26/example.webp', TRUE);
+// VALUES ('Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 26, 120, 26, 'product/26/example.webp', TRUE);
 
 // -- Cameras (folder 29)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 29, 35, 29, 'CapstoneV2/image/product/29/example.webp', TRUE);
+// VALUES ('DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 29, 35, 29, 'product/29/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 29, 25, 29, 'CapstoneV2/image/product/29/example.webp', TRUE);
+// VALUES ('Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 29, 25, 29, 'product/29/example.webp', TRUE);
 
 // -- Smartwatches (folder 32)
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 32, 90, 32, 'CapstoneV2/image/product/32/example.webp', TRUE);
+// VALUES ('Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 32, 90, 32, 'product/32/example.webp', TRUE);
 
 // INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-// VALUES ('Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 32, 120, 32, 'CapstoneV2/image/product/32/example.webp', TRUE);
+// VALUES ('Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 32, 120, 32, 'product/32/example.webp', TRUE);
