@@ -1,5 +1,7 @@
-// Please run command: " TRUNCATE TABLE knex_migrations ", in PGadmin before
-// running the migration command: npx knex migrate:latest
+// Please run command: npm install @faker-js/faker
+//                     npx knex migrate:latest  | for change table structure
+//                     npx knex seed:run  | for insert data
+
 
 
 /**

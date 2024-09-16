@@ -1,7 +1,10 @@
+// Command: npx knex seed:run --specific=insert_initial_data.js
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
+
 exports.seed = async function(knex) {
   // Deletes ALL existing entries in product and category tables
   await knex('product').del();
