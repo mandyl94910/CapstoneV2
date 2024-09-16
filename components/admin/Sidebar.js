@@ -12,10 +12,10 @@ const Sidebar = () => {
           <Link href="/admin/dashboard">Dashboard</Link>
         </li>
         <li>
-          <Link href="/admin/products">Products</Link>
+          <Link href="/admin/product">Products</Link>
         </li>
         <li>
-          <Link href="/admin/users">Users</Link>
+          <Link href="/admin/user">Users</Link>
         </li>
         <li>
           <Link href="/admin/sales">Sales</Link>
