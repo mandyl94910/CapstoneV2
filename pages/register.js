@@ -11,7 +11,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
-
+//6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsClient(true);
@@ -55,28 +55,22 @@ export default function Register() {
       return false;
     }
 
-    const recaptchaResponse = document.getElementById('g-recaptcha-response').value;
-    if (!recaptchaResponse) {
-      setError('Please complete the reCAPTCHA.');
-      return false;
-    }
-
     return true;
   };
 
   const register = (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // 获取 reCAPTCHA token
+  const recaptchaResponse = window.grecaptcha.getResponse();
+  if (!recaptchaResponse) {
+    setError('Please complete the reCAPTCHA.');
+    setIsLoading(false);
+    return;
+  }
   
     if (!validateForm()) {
-      setIsLoading(false);
-      return;
-    }
-  
-     // Fetching the reCAPTCHA token
-    const recaptchaResponse = window.grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-      setError('Please complete the reCAPTCHA.');
       setIsLoading(false);
       return;
     }

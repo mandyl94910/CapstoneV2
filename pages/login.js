@@ -25,7 +25,7 @@ export default function Login() {
       };
 
       // Delay to ensure the reCAPTCHA library is loaded
-      setTimeout(renderRecaptcha, 500);
+      setTimeout(renderRecaptcha, 100);
     }
   }, []);
 
