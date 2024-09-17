@@ -42,13 +42,14 @@ export default function Products({user, onLogout}) {
     if (category) {
       setSelectedCategory(decodeURIComponent(category));
 
-      // axios.get(`http://localhost:3001/products?category=${encodeURIComponent(category)}`)
-      //   .then((response) => {
-      //     setProducts(response.data);
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error fetching products:', error);
-      //   });
+      axios.get(`http://localhost:3001/all-products?category=${encodeURIComponent(category)}`)
+        .then((response) => {
+          console.log(`products in ${category}:`, response.data); 
+          setProducts(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching products:', error);
+        });
     }
   },[router.query]);
 

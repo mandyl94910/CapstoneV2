@@ -95,35 +95,40 @@ app.get('/getUser', (req, res) => {
 });
 
 // Route to get products
-// app.get('/products', (req, res) => {
-//     const query = "SELECT * FROM product"; // Query all products
-//     db.query(query, (err, result) => {
-//       if (err) {
-//         console.error('Database error:', err);
-//         return res.status(500).send('Database error');
-//       }
-//       res.send(result.rows);
-//     });
-//   });
+app.get('/products', (req, res) => {
+    const query = "SELECT * FROM product"; // Query all products
+    db.query(query, (err, result) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).send('Database error');
+      }
+      res.send(result.rows);
+    });
+  });
 
 // Rout to get products according to category
-app.get('/products', async(req, res) => {
+app.get('/all-products', async(req, res) => {
   const { category } = req.query;
 
   try {
-    let query = 'SELECT * FROM produc'; // query all products by default
+    let query = `
+      SELECT product.*, category.name
+      From product
+      JOIN category ON product.category_id = category.id`; // query all products by default
     const queryParams = [];
 
     // if there is specific category pass by, modify the query request
     if (category && category !== 'All Products'){
-      query += ' WHERE category_name = $1';
+      query += ' WHERE category.name = $1';
       queryParams.push(category);
     }
 
-    const result = await Pool.query(query, queryParams);
+    console.log('Executing query:', query, 'with params:', queryParams); // Debugging SQL query
+    
+    const result = await db.query(query, queryParams);
     res.json(result.rows);
   } catch (error) {
-    console.error('Database error:', err);
+    console.error('Database error:', error);
     res.status(500).send('Database error');
   }
 });
