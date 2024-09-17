@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function Register() {
+   // State hooks to store input values and control states
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
@@ -15,7 +16,7 @@ export default function Register() {
     if (typeof window !== 'undefined') {
       setIsClient(true);
   
-      // 确保reCAPTCHA库已加载并且容器元素存在于DOM中
+      // Ensures reCAPTCHA is loaded and container element is in the DOM
       window.grecaptcha.ready(() => {
         const intervalId = setInterval(() => {
           const recaptchaElement = document.getElementById('recaptcha-container');
@@ -23,14 +24,15 @@ export default function Register() {
             window.grecaptcha.render('recaptcha-container', {
               sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ',
             });
-            clearInterval(intervalId);
+            clearInterval(intervalId);// Clear the interval once reCAPTCHA is rendered
           }
-        }, 100);  // 每100毫秒检查一次
+        }, 100);   // Check every 100ms if the element is available
       });
     }
   }, []);
 
   const validateForm = () => {
+    // Form validation for empty fields, password match, and formats
     if (!registerEmail || !registerPassword || !registerUsername || !registerPhone || !registerPasswordConfirm) {
       setError('Please fill in all fields.');
       return false;
@@ -71,7 +73,7 @@ export default function Register() {
       return;
     }
   
-    // 使用 grecaptcha.getResponse() 获取 reCAPTCHA token
+     // Fetching the reCAPTCHA token
     const recaptchaResponse = window.grecaptcha.getResponse();
     if (!recaptchaResponse) {
       setError('Please complete the reCAPTCHA.');
