@@ -1,65 +1,110 @@
-// C:\CPRG306\CapstoneV2\pages\register.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function Register() {
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState(''); // Second password input
+  const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  const register = () => {
-    // Front-end validation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
+  
+      window.grecaptcha.ready(() => {
+        window.grecaptcha.render('recaptcha-container', {
+          sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ',
+        });
+      });
+    }
+  }, []);
+
+  const validateForm = () => {
     if (!registerEmail || !registerPassword || !registerUsername || !registerPhone || !registerPasswordConfirm) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(registerEmail)) {
-      setError("The e-mail is not formatted correctly.");
-      return;
-    }
-    if (!/^\d{10}$/.test(registerPhone)) {
-      setError("Phone number must be exactly 10 digits.");
-      return;
+      setError('Please fill in all fields.');
+      return false;
     }
     if (registerPassword !== registerPasswordConfirm) {
-      setError("Passwords do not match.");
-      return;
+      setError('Passwords do not match.');
+      return false;
+    }
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*[0-9]).{6,}$/;
+    if (!passwordRegex.test(registerPassword)) {
+      setError('Password must be at least 6 characters long and contain both letters and numbers.');
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(registerEmail)) {
+      setError('The e-mail is not formatted correctly.');
+      return false;
+    }
+    if (!/^\d{10}$/.test(registerPhone)) {
+      setError('Phone number must be exactly 10 digits.');
+      return false;
     }
 
-    // Register by inserting username, password, email, and phone_number into customer table
+    const recaptchaResponse = document.getElementById('g-recaptcha-response').value;
+    if (!recaptchaResponse) {
+      setError('Please complete the reCAPTCHA.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const register = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+  
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
+  
+    // 使用 grecaptcha.getResponse() 获取 reCAPTCHA token
+    const recaptchaResponse = window.grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+      setError('Please complete the reCAPTCHA.');
+      setIsLoading(false);
+      return;
+    }
+  
     axios({
-      method: "post",
+      method: 'post',
       data: {
         username: registerUsername,
         password: registerPassword,
         email: registerEmail,
-        phone_number: registerPhone
+        phone: registerPhone,
+        recaptchaToken: recaptchaResponse,  // 提交 reCAPTCHA token
       },
       withCredentials: true,
-      url: "http://localhost:3001/register",
+      url: 'http://localhost:3001/register',
     })
-      .then((res) => {
-        if (res.data.message) {
-          setError(res.data.message);
-        } else {
-          setError('');
-          // Logic after successful registration, such as redirecting to login page
-        }
-      })
-      .catch((err) => {
-        setError(err.response?.data?.message || "Registration failed, please try again later.");
-      });
+    .then((res) => {
+      setIsLoading(false);
+      if (res.data.message) {
+        setError(res.data.message);
+      } else {
+        setError('');
+      }
+    })
+    .catch((err) => {
+      setIsLoading(false);
+      setError(err.response?.data?.message || 'Registration failed, please try again later.');
+    });
   };
+  
 
   return (
     <div className="flex h-screen slide-in">
       <div className="w-full h-full flex flex-col justify-center items-center bg-white p-8">
         <img src="/login-logo.png" alt="Logo" className="h-20 mb-8 cursor-pointer" />
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Create Account</h1>
-        <form className="w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); register(); }}>
+        <form className="w-full max-w-sm" onSubmit={register}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
               Username
@@ -125,11 +170,17 @@ export default function Register() {
               onChange={(e) => setRegisterPhone(e.target.value)}
             />
           </div>
+
+          {isClient && (
+            <div id="recaptcha-container" className="g-recaptcha ml-10"></div>
+          )}
+
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-3 rounded focus:outline-none focus:shadow-outline w-full"
             type="submit"
+            disabled={isLoading}
           >
-            Register
+            {isLoading ? 'Please wait...' : 'Register'}
           </button>
           {error && (
             <p className="text-red-500 text-center mt-4">
