@@ -4,7 +4,7 @@ import Header from "../../components/admin/Header";
 import DataTable from "../../components/admin/management/DataTable";
 import InfoCards from "../../components/admin/management/InfoCards";
 
-// product info
+// order info
 const orderData = [
   {
     orderNo: "1000A2T34",
@@ -24,7 +24,7 @@ const orderData = [
   },
 ];
 
-// product status
+// order status
 const orderStats = [
   {
     title: "Total Sales",
@@ -39,7 +39,7 @@ const orderStats = [
   { title: "Total Orders", value: "22", description: "Based on 28 June 2024" },
 ];
 
-const ProductPage = () => {
+const OrderPage = () => {
   const orderColumns = [
     "Order No",
     "Product name",
@@ -61,7 +61,7 @@ const ProductPage = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
-        <Header title="Product Management" />
+        <Header title="Order Management" />
         <div className="bg-white p-4 rounded shadow-md">
           <DataTable
             columns={orderColumns}
@@ -76,4 +76,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default OrderPage;

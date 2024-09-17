@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 
-const ProductManagement = () => {
+const OrderManagement = () => {
   const [orders, setOrders] = useState([
     {
       orderNo: "1000A2T34",
@@ -37,7 +37,6 @@ const ProductManagement = () => {
 
   const handleDelete = (index) => {
     console.log("Delete order:", index);
-    // Add logic to delete the order
   };
 
   const orderStats = [
@@ -74,4 +73,4 @@ const ProductManagement = () => {
   );
 };
 
-export default ProductManagement;
+export default OrderManagement;

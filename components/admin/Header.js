@@ -9,17 +9,17 @@ const Header = ({ title }) => {
       <div className="flex space-x-6 items-center">
         {/* Protection */}
         <Link href="/admin/protection">
-          <FaShieldAlt className="text-2xl text-indigo-500" />
+          <FaShieldAlt className="text-2xl text-green-500" />
         </Link>
 
         {/* Mail */}
         <Link href="/admin/">
-          <FaEnvelope className="text-2xl text-indigo-500" />
+          <FaEnvelope className="text-2xl text-yellow-500" />
         </Link>
 
         {/* Notification */}
         <Link href="/admin/">
-          <FaBell className="text-2xl text-indigo-500" />
+          <FaBell className="text-2xl text-orange-500" />
         </Link>
 
         {/* User Profile */}
