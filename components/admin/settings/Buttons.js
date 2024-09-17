@@ -1,20 +1,33 @@
-import React from 'react';
+import React from "react";
+import Link from "next/link";
 
 const Buttons = () => {
   return (
     <div className="flex flex-col items-center space-y-4 mt-6">
-      <button className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm">
+      <Link
+        href="/admin/settings/editAccount"
+        className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm text-center"
+      >
         Edit Account Detail
-      </button>
-      <button className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm">
+      </Link>
+      <Link
+        href="/admin/settings/changePin"
+        className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm text-center"
+      >
         Change PIN-number
-      </button>
-      <button className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm">
+      </Link>
+      <Link
+        href="/admin/settings/changePassword"
+        className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm text-center"
+      >
         Change Password
-      </button>
-      <button className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm">
+      </Link>
+      <Link
+        href="/"
+        className="bg-indigo-400 py-2 px-4 rounded w-64 text-sm text-center"
+      >
         Log-out
-      </button>
+      </Link>
     </div>
   );
 };
