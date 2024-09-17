@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const Products = () => {
-  // 제품 데이터를 useState로 관리
   const [products, setProducts] = useState([
     { id: 1, name: "Product 1", status: "Active", sold: 2, view: 25 },
     { id: 2, name: "Product 2", status: "Active", sold: 2, view: 125 },
@@ -25,7 +24,9 @@ const Products = () => {
           {products.map((product, index) => (
             <tr
               key={product.id}
-              className={`bg-gray-400 rounded-lg ${index === 2 ? "border-blue-500 border-2" : ""}`}
+              className={`bg-gray-400 rounded-lg ${
+                index === 2 ? "border-blue-500 border-2" : ""
+              }`}
             >
               <td className="py-2 px-4 rounded-l-lg">{product.id}</td>
               <td className="py-2 px-4">{product.name}</td>

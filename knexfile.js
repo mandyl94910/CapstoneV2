@@ -1,3 +1,5 @@
+// Update with your config settings.
+
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
@@ -27,39 +29,33 @@ module.exports = {
   },
 
   staging: {
-    client: 'pg',
+    client: 'postgresql',
     connection: {
-      host: '127.0.0.1',
-      user: 'postgres',
-      password: 'password',
-      database: 'capstonedatabase2',
-      port: 5432,
+      database: 'my_db',
+      user:     'username',
+      password: 'password'
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      directory: './migrations',
       tableName: 'knex_migrations'
     }
   },
 
   production: {
-    client: 'pg',
+    client: 'postgresql',
     connection: {
-      host: '127.0.0.1',
-      user: 'postgres',
-      password: 'password',
-      database: 'capstonedatabase2',
-      port: 5432,
+      database: 'my_db',
+      user:     'username',
+      password: 'password'
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      directory: './migrations',
       tableName: 'knex_migrations'
     }
   }
