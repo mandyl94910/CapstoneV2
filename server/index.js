@@ -28,20 +28,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
+
+
 // Registration route
 app.post('/register', async (req, res) => {
   const { username, password, email, phone, recaptchaToken } = req.body;
 
-  try {
-    const recaptchaScore = await verifyRecaptchaToken(recaptchaToken);
-    if (recaptchaScore < 0.5) {
-      return res.status(400).send({ message: "reCAPTCHA validation failed. You might be a bot." });
+  const recaptchaIsValid = await verifyRecaptchaToken(recaptchaToken, res);
+    if (!recaptchaIsValid) {
+        return;  // End the request-response cycle if reCAPTCHA validation fails
     }
-  } catch (error) {
-    return res.status(500).send({ message: "reCAPTCHA verification failed" });
-  }
-
-  try {
+ try {
     // Check for username or email in Redis cache
     const cachedUsername = await redisClient.get(`username_${username}`);
     const cachedEmail = await redisClient.get(`email_${email}`);
@@ -94,14 +91,10 @@ app.post('/login', async (req, res, next) => {
     return res.status(400).send({ message: "Missing credentials" });
   }
 
-  try {
-      const recaptchaScore = await verifyRecaptchaToken(recaptchaToken);
-      if (recaptchaScore < 0.5) {
-          return res.status(400).send({ message: "reCAPTCHA validation failed. You might be a bot." });
-      }
-  } catch (error) {
-      return res.status(500).send({ message: "reCAPTCHA verification failed" });
-  }
+  const recaptchaIsValid = await verifyRecaptchaToken(recaptchaToken, res);
+    if (!recaptchaIsValid) {
+        return;  // End the request-response cycle if reCAPTCHA validation fails
+    }
 
   // Determine if the identifier is an email or username
   const isEmail = loginIdentifier.includes('@');
