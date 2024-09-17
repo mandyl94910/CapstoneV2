@@ -1,9 +1,10 @@
 // C:\CPRG306\CapstoneV2\pages\product\[id].js
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
+import Header from '../../components/common/Header';
 import axios from 'axios';
-import Header from '../Header';
 import Footer from '../../components/common/Footer';
+import { CartContext } from '../../context/CartContext';
 
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data
