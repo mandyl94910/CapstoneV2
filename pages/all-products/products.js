@@ -1,92 +1,79 @@
-
 import React, { useEffect, useState } from 'react';
 import CateSidebar from '../../components/category/CateSidebar';
 import ProductGrid from '../../components/category/ProductGrid';
 import Header from '../../components/common/Header';
+//C:\CPRG306\CapstoneV2\pages\all-products\products.js
+import axios from 'axios';
+import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import Footer from '../../components/common/Footer';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-const categories = [
-  { name: 'All Products', isSubcategory: false },
-  { name: 'Computers & Accessories', isSubcategory: false },
-  { name: 'Computers', isSubcategory: true, parent: 'Computers & Accessories' },
-  { name: 'Keyboard', isSubcategory: true, parent: 'Computers & Accessories' },
-  { name: 'Mouse', isSubcategory: true, parent: 'Computers & Accessories' },
-  { name: 'Mobile Phones & Accessories', isSubcategory: false },
-  { name: 'Smart Home Devices', isSubcategory: false },
-  { name: 'TVs & Home Entertainment', isSubcategory: false },
-  { name: 'Gaming Accessories', isSubcategory: false },
-  { name: 'Cameras & Photography Gear', isSubcategory: false }
-];
+// Dynamically load ProductGrid component, disable SSR
+const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
 
-// initial products are all products
-const initialProducts = [
-  { id:1, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:2, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:3, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:4, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:5, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:6, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:7, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-  { id:8, name: 'Product Name', price: '100.99', image: '/products/laptop.jpg' },
-];
-
-export default function Products({user, onLogout}) {
-  const router = useRouter();
+export default function Products({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
-  const [products, setProducts] = useState([initialProducts]);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);  // Initialize as an empty array
 
-  useEffect(()=> {
-    const { category } = router.query;
-    if (category) {
-      setSelectedCategory(decodeURIComponent(category));
+  // Fetch categories and products when the component mounts
+  useEffect(() => {
+    async function fetchCategoriesAndProducts() {
+      try {
+        // Fetch category data from the API
+        const response = await axios.get('http://localhost:3001/api/categories');
+        const categoriesData = response.data;
 
-      axios.get(`http://localhost:3001/all-products?category=${encodeURIComponent(category)}`)
-        .then((response) => {
-          console.log(`products in ${category}:`, response.data); 
-          setProducts(response.data);
-        })
-        .catch((error) => {
-          console.error('Error fetching products:', error);
-        });
+        // Build a tree structure for the categories
+        const categoryTree = categoriesData
+          .filter(cat => cat.sub_for === 1) // Filter top-level categories
+          .map(parent => ({
+            ...parent,
+            subcategories: categoriesData.filter(sub => sub.sub_for === parent.id), // Find all subcategories
+          }));
+
+        setCategories(categoryTree);
+
+        // Fetch all products, no longer filtering by category
+        const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
+        setProducts(productsResponse.data);
+      } catch (error) {
+        console.error('Error fetching categories or products:', error);  // Log any errors
+      }
     }
-  },[router.query]);
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
+    fetchCategoriesAndProducts();
+  }, []);
 
-    router.push(`/all-products?category=${encodeURIComponent(category)}`);
+  // Handle category selection and fetch products for the selected category
+  const handleCategorySelect = async (category) => {
+    setSelectedCategory(category.name); // Update the selected category
+    try {
+      const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
+      setProducts(response.data);  // Update products based on the selected category
+    } catch (error) {
+      console.error('Error fetching products by category:', error);  // Log any errors
+    }
   };
 
   return (
     <main>
-        <Header user={user} onLogout={onLogout} />
-        
-        <div className="flex ml-6 mt-6">
-            <CateSidebar
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onCategorySelect={handleCategorySelect}
-            />
-
-            {/* Product Grid */}
-            <div className="flex-1 p-6">
-                <div className="flex justify-between mb-6">
-                <h1 className="text-2xl font-bold">{selectedCategory}</h1>
-                <div>
-                    <label htmlFor="sort" className="mr-2">Sort By</label>
-                    <select id="sort" className="border rounded-md p-1">
-                    <option value="price">Price</option>
-                    <option value="name">Name</option>
-                    </select>
-                </div>
-                </div>
-                <ProductGrid products={products} />
-            </div>
+      <Header user={user} onLogout={onLogout} />  {/* Pass user and logout functionality to the Header */}
+      <div className="flex ml-6 mt-6">
+        <CateSidebar
+          categories={categories}  // Pass categories data to CateSidebar
+          selectedCategory={selectedCategory}  // Pass the selected category to CateSidebar
+          onCategorySelect={handleCategorySelect}  // Handle category selection
+        />
+        <div className="flex-1 p-6">
+          <div className="flex justify-between mb-6">
+            <h1 className="text-2xl font-bold">{selectedCategory}</h1>  {/* Display the selected category */}
+          </div>
+          <ProductGrid products={products} />  {/* ProductGrid is only rendered on the client side */}
         </div>
-
-        <Footer />
+      </div>
+      <Footer />  {/* Render the Footer component */}
     </main>
   );
 }
