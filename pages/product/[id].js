@@ -1,12 +1,14 @@
 
 
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import Header from '../Header';
+import { useContext, useState } from 'react';
+import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import { CartContext } from '../../context/CartContext';
 
 const ProductPage = () => {
-    const [quantity, setQuantity] = useState(1);
+    const [ quantity, setQuantity ] = useState(1);
+    const { addToCart } = useContext(CartContext);
     const router = useRouter();
     const { id } = router.query;
 
@@ -39,11 +41,16 @@ const ProductPage = () => {
         }
     };
 
+    const handleAddToCart = () => {
+        addToCart(product, quantity);
+        router.push('/cart-page');
+    }
+
     // productData
     const productData = {
-        1: { name: 'Product 1', description: 'Description of Product 1', price: '$100' },
-        2: { name: 'Product 2', description: 'Description of Product 2', price: '$150' },
-        3: { name: 'Product 3', description: 'Description of Product 3', price: '$200' },
+        1: { name: 'Product 1', description: 'Description of Product 1', price: 100 },
+        2: { name: 'Product 2', description: 'Description of Product 2', price: 150 },
+        3: { name: 'Product 3', description: 'Description of Product 3', price: 200 },
     };
 
     const product = productData[id];
@@ -60,23 +67,23 @@ const ProductPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     {/* main image */}
                     <div className="border p-4 min-w-10 max-w-lg">
-                    <img src="/products/computer-accessories/computers/01/01.jpg" alt="Creative Zen Hybrid" className="w-full object-cover rounded-lg" />
-                    <div className="flex mt-4 space-x-4">
-                        {/* small images */}
-                        <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 1" className="w-16 h-16 object-cover border rounded" />
-                        <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 2" className="w-16 h-16 object-cover border rounded" />
-                        <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 3" className="w-16 h-16 object-cover border rounded" />
-                    </div>
+                        <img src="/products/computer-accessories/computers/01/01.jpg" alt="Creative Zen Hybrid" className="w-full object-cover rounded-lg" />
+                        <div className="flex mt-4 space-x-4">
+                            {/* small images */}
+                            <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 1" className="w-16 h-16 object-cover border rounded" />
+                            <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 2" className="w-16 h-16 object-cover border rounded" />
+                            <img src="/products/computer-accessories/computers/01/02.jpg" alt="Small view 3" className="w-16 h-16 object-cover border rounded" />
+                        </div>
                     </div>
 
                     {/* productData */}
                     <div className="p-4">
-                    <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-                    <p className="text-gray-600">{product.description}</p>
-                    <p className="text-2xl font-bold my-4">{product.price}</p>
-                    <p className="text-gray-700 mb-6">
-                        This pair of over-ear headphones is the perfect combination of versatility and performance...
-                    </p>
+                        <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+                        <p className="text-gray-600">{product.description}</p>
+                        <p className="text-2xl font-bold my-4">{product.price}</p>
+                        <p className="text-gray-700 mb-6">
+                            This pair of over-ear headphones is the perfect combination of versatility and performance...
+                        </p>
 
                         {/* set quantity */}
                         <div className="flex items-center mb-4">
@@ -103,7 +110,9 @@ const ProductPage = () => {
                         </div>
 
                         {/* Add to cart */}
-                        <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                        <button 
+                            onClick={handleAddToCart}
+                            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
                             Add to cart
                         </button>
                     </div>
