@@ -1,53 +1,111 @@
-// C:\CPRG306\CapstoneV2\pages\login.js
-import React, { useState } from 'react';
+//C:\CPRG306\CapstoneV2\pages\login.js
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 
 export default function Login() {
   const [loginIdentifier, setLoginIdentifier] = useState(''); // State for user identifier (email or username)
   const [loginPassword, setLoginPassword] = useState(''); // State for password input
-  const [welcomeMessage, setWelcomeMessage] = useState(''); // State to store welcome message
-  const [error, setError] = useState(''); // State to store error messages
+  const [welcomeMessage, setWelcomeMessage] = useState(''); // State to store welcome message after successful login
+  const [error, setError] = useState(''); // State to store error messages from login attempts
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State to indicate if a login request is in progress
 
-  // Function to handle login
-  const login = () => {
-    axios({
-      method: "post",
-      data: {
-        identifier: loginIdentifier, // Can be either username or email
-        password: loginPassword
-      },
-      withCredentials: true,
-      url: "http://localhost:3001/login", // Points to the backend login route
-    })
-    .then((res) => {
-      if (res.data === 'User logged in') {
-        getUser(); // Fetch user information after successful login
-      } else {
-        setError(res.data); // Display server returned error messages
-        setWelcomeMessage(''); // Clear welcome message
-      }
-    })
-    .catch((err) => {
-      setError(err.response?.data?.message || err.message); // Capture and display error messages
-      setWelcomeMessage(''); // Clear welcome message
-    });
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
+
+      // Function to render the reCAPTCHA widget
+      const renderRecaptcha = () => {
+        if (window.grecaptcha && document.getElementById('login-recaptcha-container')) {
+          window.grecaptcha.render('login-recaptcha-container', {
+            sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ', // Your sitekey here
+          });
+        }
+      };
+
+      // Delay to ensure the reCAPTCHA library is loaded
+      setTimeout(renderRecaptcha, 100);
+    }
+  }, []);
+
+  // Function to validate the login form
+  const validateLoginForm = () => {
+    const emailOrUsernameRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/; // Regex to check for valid email or username format
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Regex to check for valid password format
+  
+    if (!emailOrUsernameRegex.test(loginIdentifier)) {
+      setError('Username or email format is invalid.');
+      return false;
+    }
+  
+    if (!passwordRegex.test(loginPassword)) {
+      setError('Password must be at least 6 characters long and contain both letters and numbers.');
+      return false;
+    }
+  
+    setError('');
+    return true;
   };
 
-  // Function to fetch user information
+  // Function to handle login
+const login = () => {
+  if (!validateLoginForm()) {
+    return;
+  }
+
+  setIsLoading(true);
+  const recaptchaResponse = window.grecaptcha.getResponse(); // Get the reCAPTCHA token
+
+  if (!recaptchaResponse) {
+    setError('Please complete the reCAPTCHA.');
+    setIsLoading(false);
+    return;
+  }
+
+  axios({
+    method: "post",
+    data: {
+      loginIdentifier: loginIdentifier,  
+      password: loginPassword,
+      recaptchaToken: recaptchaResponse,
+    },
+    withCredentials: true,
+    url: "http://localhost:3001/login",
+  })
+  .then((res) => {
+    setIsLoading(false);
+    if (res.data.success) {
+      getUser();
+    } else {
+      setError(res.data.message);
+      setWelcomeMessage(''); 
+    }
+  })
+  .catch((err) => {
+    setIsLoading(false);
+    setError(err.response?.data?.message || err.message);
+    setWelcomeMessage('');
+  });
+};
+  
+
+  // Function to fetch user details post-login
   const getUser = () => {
     axios({
-      method: 'get',
-      withCredentials: true,
-      url: 'http://localhost:3001/getUser',
+        method: 'get',
+        withCredentials: true,
+        url: 'http://localhost:3001/getUser',
     })
     .then((res) => {
-      setWelcomeMessage(`Welcome user ${res.data.username}`); // Display username in welcome message
-      setError(''); // Clear error message after successful login
+        console.log("Received user info:", res.data);
+        setWelcomeMessage(`Welcome user ${res.data.username}`); // Set welcome message with username
+        setError('');
     })
     .catch((err) => {
-      setError(err.response?.data?.message || err.message); // Capture and display any errors
-      setWelcomeMessage(''); // Clear welcome message
+        console.error("Error fetching user info:", err);
+        setError(err.response?.data?.message || "Error retrieving user session");
+        setWelcomeMessage('');
     });
   };
 
@@ -71,6 +129,7 @@ export default function Login() {
               placeholder="Email or Username"
               value={loginIdentifier}
               onChange={(e) => setLoginIdentifier(e.target.value)}
+              disabled={isLoading} // Disable input during loading
             />
           </div>
           <div className="mb-4">
@@ -84,16 +143,20 @@ export default function Login() {
               placeholder="Password"
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
+              disabled={isLoading} // Disable input during loading
             />
           </div>
+          {isClient && (
+            <div id="login-recaptcha-container" className="g-recaptcha ml-12"></div>
+          )}
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline mt-3"
             type="submit"
+            disabled={isLoading} // Disable button during loading
           >
-            Login
+            {isLoading ? 'Please wait...' : 'Login'}
           </button>
 
-          {/* Display error and welcome messages */}
           {(error || welcomeMessage) && (
             <p className={`text-center mt-4 ${error ? 'text-red-500' : 'text-green-500'}`}>
               {error || welcomeMessage}
