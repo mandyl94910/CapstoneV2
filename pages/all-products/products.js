@@ -35,7 +35,7 @@ const initialProducts = [
 export default function Products({user, onLogout}) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('All Products');
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([initialProducts]);
 
   useEffect(()=> {
     const { category } = router.query;
