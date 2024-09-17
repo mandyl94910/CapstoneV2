@@ -1,10 +1,13 @@
+import React, { useEffect, useState } from 'react';
+import CateSidebar from '../../components/category/CateSidebar';
+import ProductGrid from '../../components/category/ProductGrid';
+import Header from '../../components/common/Header';
 //C:\CPRG306\CapstoneV2\pages\all-products\products.js
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
-import CateSidebar from '../../components/category/CateSidebar';
-import Header from '../Header';
 import Footer from '../../components/common/Footer';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
