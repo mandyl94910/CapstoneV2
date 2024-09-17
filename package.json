@@ -5,7 +5,8 @@
     "server": "nodemon server/index.js",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "redis-server": "redis-server"
   },
   "dependencies": {
     "@faker-js/faker": "^9.0.1",
