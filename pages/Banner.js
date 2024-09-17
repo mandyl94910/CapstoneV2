@@ -3,14 +3,16 @@ import Image from 'next/image';
 
 function Banner() {
   return (
-    <div className="relative">
+    <div className="relative h-[500px]">
       <Image
         src="/banner.jpg"  // From public folder
         alt="Banner"
-        layout="responsive"
-        width={1920}
-        height={600}
-        className="w-full h-auto"
+        //layout="responsive"
+        layout='fill'
+        objectFit='cover'
+        // width={1920}
+        // height={400}
+        className="w-full h-auto px-16 py-6"
       />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
         <h1 className="text-6xl font-extrabold mb-6"> {/* Bold and slightly reduced margin */}

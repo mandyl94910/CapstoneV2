@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import CateSidebar from '../../components/category/CateSidebar';
-import Header from '../Header';
+import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 
 // Dynamically load ProductGrid component, disable SSR
