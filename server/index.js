@@ -28,28 +28,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
-// // Function to verify reCAPTCHA token
-// async function verifyRecaptchaToken(token) {
-//   const secretKey = '6LfBy0IqAAAAABgteFy0r2tdUCAC2C7bLllmjm0g';  // Use the correct reCAPTCHA secret key
-
-//   try {
-//     const response = await axios.post('https://www.google.com/recaptcha/api/siteverify', null, {
-//       params: {
-//         secret: secretKey,
-//         response: token,
-//       },
-//     });
-//     console.log("Google reCAPTCHA API response:", response.data);  // Print the response from Google API
-//     const { success, score, error_codes } = response.data;
-//     if (!success) {
-//       throw new Error('reCAPTCHA verification failed');
-//     }
-//     return score;
-//   } catch (error) {
-//     throw new Error('Error during reCAPTCHA verification');
-//   }
-// }
-
 // Registration route
 app.post('/register', async (req, res) => {
   const { username, password, email, phone, recaptchaToken } = req.body;
