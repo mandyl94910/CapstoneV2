@@ -1,37 +1,25 @@
-//C:\CPRG306\CapstoneV2\components\category\CateSidebar.js
-import React, { useState } from 'react';
+import React from 'react';
 
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
-  // Use an array to store the IDs of multiple expanded categories, allowing multiple parent categories to be expanded simultaneously
-  const [expandedCategories, setExpandedCategories] = useState([]);
 
-  // Toggle expand/collapse state
-  const toggleExpandCategory = (categoryId) => {
-    setExpandedCategories(prevState =>
-      prevState.includes(categoryId) 
-        ? prevState.filter(id => id !== categoryId) // If already expanded, collapse on click
-        : [...prevState, categoryId] // If not expanded, expand on click
-    );
-  };
-
-  // Recursive function to render categories and their subcategories
+  // 函数用于渲染类目和它的子类目
   const renderCategories = (category, level = 0) => {
-    const isExpanded = expandedCategories.includes(category.id); // Check if the current category is expanded
-    const isParent = category.subcategories && category.subcategories.length > 0; // Check if it is a parent category
+    const isParent = category.subcategories && category.subcategories.length > 0; // 判断是否是父类目
 
     return (
       <li
         key={category.id}
-        className={`cursor-pointer p-2 mb-2 rounded ${selectedCategory === category.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6' : ''}`}
-        onClick={() => isParent ? toggleExpandCategory(category.id) : onCategorySelect(category)} // Expand/collapse parent category on click, select subcategory on click
+        className={`p-2 mb-2 rounded ${selectedCategory === category.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : ''}`} // 子类才是可点击的
+        onClick={() => {
+          if (!isParent) {
+            onCategorySelect(category); // 只有子类能触发产品加载
+          }
+        }}
       >
         {category.name}
         {isParent && (
-          <span className="ml-2">{isExpanded ? '-' : '+'}</span> // Display an arrow for parent categories
-        )}
-        {isExpanded && isParent && (
-          <ul className="ml-4 mt-2">
-            {category.subcategories.map(subcategory => renderCategories(subcategory, level + 1))}
+          <ul className="ml-4 mt-2"> {/* 直接显示子类 */}
+            {category.subcategories.map(subcategory => renderCategories(subcategory, level + 1))} {/* 递归渲染子类 */}
           </ul>
         )}
       </li>
@@ -42,8 +30,8 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
     <div className="w-64 bg-white border-r-2 border-gray-200 p-4">
       <ul>
         {categories
-          .filter(category => category.name !== 'All Products') // Filter out "All Products"
-          .map(category => renderCategories(category)) // Render categories
+          .filter(category => category.name !== 'All Products') // 过滤掉 "All Products"
+          .map(category => renderCategories(category)) // 渲染类目
         }
       </ul>
     </div>
