@@ -1,19 +1,19 @@
-const db = require('../../../server/models');  // 注意这里导入的是整个 db 对象
-const Category = db.Category;  // 从 db 对象中获取 Category 模型
+const db = require('../../../server/models');  // Note that the entire db object is imported here
+const Category = db.Category;  // Extract the Category model from the db object
 
-// 定义 getCategories 函数
+// Define the getCategories function
 const getCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
-      attributes: ['id', 'name', 'sub_for'],  // 确保只获取相关字段
+      attributes: ['id', 'name', 'sub_for'],  // Ensure that only relevant fields are retrieved
     });
-    console.log("Categories:", categories);  // 打印获取到的类别数据
-    res.json(categories);
+    console.log("Categories:", categories);  // Log the retrieved category data
+    res.json(categories);  // Send the category data as a JSON response
   } catch (error) {
-    console.error('Failed to retrieve categories', error);
-    res.status(500).send('Server Error');
+    console.error('Failed to retrieve categories', error);  // Log the error if categories retrieval fails
+    res.status(500).send('Server Error');  // Return a 500 status code in case of a server error
   }
 };
 
-// 导出 getCategories 函数
+// Export the getCategories function
 module.exports = { getCategories };

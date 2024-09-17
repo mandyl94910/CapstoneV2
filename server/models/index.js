@@ -2,12 +2,12 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('postgres://postgres:password@localhost:5432/capstonedatabase2');
 
-// 导入模型
+// Importing models
 const Category = require('./Category')(sequelize, DataTypes);
 // const User = require('./User')(sequelize, DataTypes);
 
-// 定义模型之间的关系（如果有的话）
-// 例如：Category.hasMany(Product); Product.belongsTo(Category);
+// Define relationships between models (if any)
+// examples：Category.hasMany(Product); Product.belongsTo(Category);
 
 const db = {
   Category,

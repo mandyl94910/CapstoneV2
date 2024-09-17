@@ -1,3 +1,4 @@
+//C:\CPRG306\CapstoneV2\pages\login.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
@@ -48,45 +49,45 @@ export default function Login() {
   };
 
   // Function to handle login
-  const login = () => {
-    if (!validateLoginForm()) {
-      return;
-    }
-    
-    setIsLoading(true);
-    const recaptchaResponse = window.grecaptcha.getResponse(); // Get the reCAPTCHA token
+const login = () => {
+  if (!validateLoginForm()) {
+    return;
+  }
 
-    if (!recaptchaResponse) {
-      setError('Please complete the reCAPTCHA.');
-      setIsLoading(false);
-      return;
+  setIsLoading(true);
+  const recaptchaResponse = window.grecaptcha.getResponse(); // Get the reCAPTCHA token
+
+  if (!recaptchaResponse) {
+    setError('Please complete the reCAPTCHA.');
+    setIsLoading(false);
+    return;
+  }
+
+  axios({
+    method: "post",
+    data: {
+      loginIdentifier: loginIdentifier,  
+      password: loginPassword,
+      recaptchaToken: recaptchaResponse,
+    },
+    withCredentials: true,
+    url: "http://localhost:3001/login",
+  })
+  .then((res) => {
+    setIsLoading(false);
+    if (res.data.success) {
+      getUser();
+    } else {
+      setError(res.data.message);
+      setWelcomeMessage(''); 
     }
-  
-    axios({
-      method: "post",
-      data: {
-        identifier: loginIdentifier,
-        password: loginPassword,
-        recaptchaToken: recaptchaResponse,
-      },
-      withCredentials: true,
-      url: "http://localhost:3001/login",
-    })
-    .then((res) => {
-      setIsLoading(false);
-      if (res.data === 'User logged in') {
-        getUser();
-      } else {
-        setError(res.data);
-        setWelcomeMessage(''); 
-      }
-    })
-    .catch((err) => {
-      setIsLoading(false);
-      setError(err.response?.data?.message || err.message);
-      setWelcomeMessage('');
-    });
-  };
+  })
+  .catch((err) => {
+    setIsLoading(false);
+    setError(err.response?.data?.message || err.message);
+    setWelcomeMessage('');
+  });
+};
   
 
   // Function to fetch user details post-login

@@ -24,8 +24,8 @@ export default function ProductCard({ product }) {
                         e.target.style.display = 'none';  // Hide the image if it fails to load
                     }}
                 />
-                <h3 className="text-lg font-bold mb-2">{product.product_name}</h3>  // Display the product name
-                <p className="text-gray-700">${product.price}</p>  // Display the product price
+                <h3 className="text-lg font-bold mb-2">{product.product_name}</h3>  
+                <p className="text-gray-700">${product.price}</p>  
             </Link>
         </div>
     );

@@ -15,10 +15,17 @@ export default function Register() {
     if (typeof window !== 'undefined') {
       setIsClient(true);
   
+      // 确保reCAPTCHA库已加载并且容器元素存在于DOM中
       window.grecaptcha.ready(() => {
-        window.grecaptcha.render('recaptcha-container', {
-          sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ',
-        });
+        const intervalId = setInterval(() => {
+          const recaptchaElement = document.getElementById('recaptcha-container');
+          if (recaptchaElement) {
+            window.grecaptcha.render('recaptcha-container', {
+              sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ',
+            });
+            clearInterval(intervalId);
+          }
+        }, 100);  // 每100毫秒检查一次
       });
     }
   }, []);
