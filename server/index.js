@@ -34,11 +34,11 @@ require("./passportConfig")(passport);  // Initialize Passport for authenticatio
 app.post('/register', async (req, res) => {
   const { username, password, email, phone, recaptchaToken } = req.body;
 
-  const recaptchaIsValid = await verifyRecaptchaToken(recaptchaToken, res);
-    if (!recaptchaIsValid) {
-        return;  // End the request-response cycle if reCAPTCHA validation fails
+  const recaptchaResult = await verifyRecaptchaToken(recaptchaToken);
+  if (!recaptchaResult.isValid) {
+      return res.status(400).send({ message: recaptchaResult.message });
     }
- try {
+  try {
     // Check for username or email in Redis cache
     const cachedUsername = await redisClient.get(`username_${username}`);
     const cachedEmail = await redisClient.get(`email_${email}`);
@@ -85,16 +85,15 @@ app.post('/register', async (req, res) => {
 
 // Login route
 app.post('/login', async (req, res, next) => {
-  console.log(req.body);  // Ensure loginIdentifier and password are logged
   const { recaptchaToken, loginIdentifier, password } = req.body;
   if (!loginIdentifier || !password) {
     return res.status(400).send({ message: "Missing credentials" });
   }
 
-  const recaptchaIsValid = await verifyRecaptchaToken(recaptchaToken, res);
-    if (!recaptchaIsValid) {
-        return;  // End the request-response cycle if reCAPTCHA validation fails
-    }
+  const recaptchaResult = await verifyRecaptchaToken(recaptchaToken);
+  if (!recaptchaResult.isValid) {
+    return res.status(400).send({ message: recaptchaResult.message });
+  }
 
   // Determine if the identifier is an email or username
   const isEmail = loginIdentifier.includes('@');

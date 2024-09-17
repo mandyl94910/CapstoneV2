@@ -23,7 +23,7 @@ app.use(passport.session());
 require("../../../server/passportConfig")(passport);  // Initialize Passport for authentication
 
 // Function to verify reCAPTCHA token
-async function verifyRecaptchaToken(token, res) {
+async function verifyRecaptchaToken(token) {
   const secretKey = '6LfBy0IqAAAAABgteFy0r2tdUCAC2C7bLllmjm0g';  // Use the correct reCAPTCHA secret key
 
   try {
@@ -37,14 +37,12 @@ async function verifyRecaptchaToken(token, res) {
       const { success, score, error_codes } = response.data;
 
       if (!success || score < 0.5) {
-          res.status(400).send({ message: "reCAPTCHA validation failed. You might be a bot." });
-          return false;  // reCAPTCHA failed or score is too low
+          return { isValid: false, message: "reCAPTCHA validation failed. You might be a bot." };
       }
 
-      return true;  // reCAPTCHA passed and score is acceptable
+      return { isValid: true };
   } catch (error) {
-      res.status(500).send({ message: "reCAPTCHA verification failed" });
-      return false;  // Error during reCAPTCHA verification
+      return { isValid: false, message: "reCAPTCHA verification failed" };
   }
 }
 
