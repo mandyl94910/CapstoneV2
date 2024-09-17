@@ -2,12 +2,12 @@ import React from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
-import logo from '../../public/logo.png'; 
+import logo from '../public/logo.png'; 
 
 function Header({ user, onLogout }) {
   return (
-    <header className="bg-white py-4 flex justify-between items-center shadow-md">
-      <nav className="flex space-x-6 pl-16"> {/* Increase space between the links */}
+    <header className="bg-white p-4 flex justify-between items-center shadow-md">
+      <nav className="flex space-x-6 pl-6"> {/* Increase space between the links */}
         <Link href="/admin-dashboard">
           admin dashboard
         </Link>
@@ -22,18 +22,15 @@ function Header({ user, onLogout }) {
         </Link>
       </nav>
       <Link href="/">
-        <div 
-          className="flex items-center space-x-2 px-8 min-h-4"
-          style={{minHeight:'80px', minWidth:'200px'}}
-        > 
+        <div className="flex items-center space-x-2"> {/* Adjust space between logo and text */}
           <Image
             src="/logo.png"
             alt="Logo"
-            width={140}
-            height={60}
+            width={40}
+            height={40}
             className="cursor-pointer"
           />
-          {/* <div className="text-2xl font-bold">TOP Tradings</div> */}
+          <div className="text-2xl font-bold">TOP Tradings</div>
         </div>
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
@@ -59,7 +56,7 @@ function Header({ user, onLogout }) {
             </button>
           </div>
         ) : (
-          <Link href="/login" className="pr-16">
+          <Link href="/login">
             <button className="bg-blue-500 text-white rounded-lg px-4 py-2 font-medium">LOG IN</button>
           </Link>
         )}
