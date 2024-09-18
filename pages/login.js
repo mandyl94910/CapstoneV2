@@ -71,7 +71,7 @@ const login = () => {
       recaptchaToken: recaptchaResponse,
     },
     withCredentials: true,
-    url: "http://localhost:3001/login",
+    url: "http://localhost:3001/api/login",
   })
   .then((res) => {
     setIsLoading(false);
@@ -95,7 +95,7 @@ const login = () => {
     axios({
         method: 'get',
         withCredentials: true,
-        url: 'http://localhost:3001/getUser',
+        url: 'http://localhost:3001/api/getUser',
     })
     .then((res) => {
         console.log("Received user info:", res.data);
