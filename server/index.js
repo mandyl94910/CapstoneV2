@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, registerFunction,getUserInformation } = require('../pages/api/user/AccountController');
-const { getCategories } = require('../pages/api/category/CategoriesController');
+const { getCategories, getParentCategories } = require('../pages/api/category/CategoriesController');
 const { getAllProducts, getProductsByCategory, getProductById } = require('../pages/api/product/ProductsController');
 
 
@@ -42,6 +42,9 @@ app.get('/api/products', getAllProducts);
 
 // Get products by category
 app.get('/api/products/category/:categoryId', getProductsByCategory);
+
+//Get products by parent category(only sub_for 1)
+app.get('/api/categories_sub_for_1', getParentCategories);
 
 // Route to get a single product by ID
 app.get('/api/products/:productId', getProductById);

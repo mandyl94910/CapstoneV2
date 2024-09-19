@@ -45,7 +45,8 @@ function Home({ user, onLogout }) {
     <div>
       <Header user={user} onLogout={onLogout} />
       <Banner/>
-      {/* <div className="container mx-auto mt-8">
+      {/* testing add funtion ///////////////////
+      <div className="container mx-auto mt-8">
         <input
           type="text"
           value={newItem}

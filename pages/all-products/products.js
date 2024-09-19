@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import CateSidebar2 from '../../components/category/CateSidebar2';
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });

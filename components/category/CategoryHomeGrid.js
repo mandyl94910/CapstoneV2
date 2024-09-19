@@ -21,12 +21,11 @@ export default function CategoryHomeGrid(){
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/categories');
-                console.log('Fetched categories',response.data);
-                const filteredCategories = response.data.filter(cat => categories.sub_for === 1);
-                setCategories(filteredCategories);
+                const response = await axios.get('http://localhost:3001/api/categories_sub_for_1');
+                console.log('Fetched Parent Categories',response.data);
+                setCategories(response.data);
             } catch (error) {
-                console.error('Error fetching categories:', error);
+                console.error('Error fetching parent categories:', error);
             }
         };
 
@@ -34,20 +33,20 @@ export default function CategoryHomeGrid(){
     }, []);
 
     return(
-        <div className="container mx-auto mt-8 px-10">
+        <div className="container mx-auto mt-8 px-10 h-auto">
             <div className="flex flex-wrap justify-center gap-6">
                 
-                {/* test block */}
+                {/* test block
                 <div>
                     <p>Test line: if images do not show up because there is not image column for category.</p>
                     <p>After update the image for categories, they would show up.</p>
-                </div>
+                </div> */}
                 
                 {categories.map((category, index) => (
                     <Link href={`/all-products?category=${encodeURIComponent(category.name)}`} key={index}>
                         <div className="text-center cursor-pointer">
                             <img
-                                src={category.image}
+                                src={`/images/${category.image}`}
                                 alt={category.name}
                                 className="w-36 h-36 rounded-full"
                             />

@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0  // Assuming '0' means no parent category
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'category',
