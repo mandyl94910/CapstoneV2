@@ -1,76 +1,143 @@
 import React, { useState } from "react";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
+import Switch from "../Switch";
 
-const OrderManagement = () => {
-  const [orders, setOrders] = useState([
-    {
-      orderNo: "1000A2T34",
-      productName: "Product 1",
-      price: "$126.44",
-      shipTo: "User1",
-      orderPlaced: "June 29, 2024",
-      status: "Prepared",
-    },
-    {
-      orderNo: "1000A2T34",
-      productName: "Product 1",
-      price: "$126.44",
-      shipTo: "User1",
-      orderPlaced: "June 29, 2024",
-      status: "Delivered",
-    },
-  ]);
+// Initial product data
+const initialProductData = [
+  {
+    product_id: 1,
+    product_name: "iPhone 13",
+    price: "$799.00",
+    quantity: 20,
+    category: "Mobile Phones & Accessories / Smartphones",
+    visibility: false,
+  },
+  {
+    product_id: 2,
+    product_name: "Samsung Galaxy S21",
+    price: "$699.00",
+    quantity: 15,
+    category: "Mobile Phones & Accessories / Smartphones",
+    visibility: true,
+  },
+  {
+    product_id: 3,
+    product_name: "LG Smart TV",
+    price: "$1299.00",
+    quantity: 5,
+    category: "TV & Home Entertainment / Televisions",
+    visibility: true,
+  },
+  {
+    product_id: 4,
+    product_name: "HP EliteBook Laptop",
+    price: "$1199.00",
+    quantity: 10,
+    category: "Computers & Accessories / Laptops",
+    visibility: true,
+  },
+  {
+    product_id: 5,
+    product_name: "Sony PlayStation 5",
+    price: "$499.00",
+    quantity: 8,
+    category: "Gaming & Accessories / Consoles",
+    visibility: true,
+  },
+  {
+    product_id: 6,
+    product_name: "Canon EOS R5",
+    price: "$3899.00",
+    quantity: 12,
+    category: "Cameras & Photography Gear / Digital Cameras",
+    visibility: false,
+  },
+];
 
-  const orderColumns = [
-    "Order No",
-    "Product name",
-    "Price",
-    "Ship to",
-    "Order Placed",
-    "Status",
-  ];
+// Product status information
+const productStats = [
+  {
+    title: "Total Products",
+    value: "72",
+    description: "Based on 28 June 2024",
+  },
+  {
+    title: "Total Categories",
+    value: "15",
+    description: "Based on 28 June 2024",
+  },
+  {
+    title: "Total Values",
+    value: "$3.2k",
+    description: "Based on 28 June 2024",
+  },
+];
+
+const ProductManagement = () => {
+  const [products, setProducts] = useState(initialProductData);
+
+  // Toggle visibility state
+  const handleToggleVisibility = (index) => {
+    const updatedProducts = [...products];
+    updatedProducts[index].visibility = !updatedProducts[index].visibility;
+    setProducts(updatedProducts);
+  };
 
   const handleEdit = (index) => {
-    console.log("Edit order:", index);
+    console.log("Edit product:", index);
   };
 
   const handleDelete = (index) => {
-    console.log("Delete order:", index);
+    console.log("Delete product:", index);
   };
 
-  const orderStats = [
-    {
-      title: "Total Sales",
-      value: "$3740.25",
-      description: "Based on 28 June 2024",
-    },
-    {
-      title: "Total Products",
-      value: "79",
-      description: "Based on 28 June 2024",
-    },
-    {
-      title: "Total Orders",
-      value: "22",
-      description: "Based on 28 June 2024",
-    },
-  ];
+  const handleAddProduct = () => {
+    console.log("Add new product");
+  };
 
   return (
-    <div className="flex-1 p-6 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Order Management</h1>
+    <div>
+      {/* Product Data Table */}
       <div className="bg-white p-4 rounded shadow-md">
         <DataTable
-          columns={orderColumns}
-          data={orders}
+          columns={[
+            "Product ID",
+            "Product Name",
+            "Price",
+            "Quantity",
+            "Category",
+            "Visibility",
+          ]}
+          data={products.map((product, index) => {
+            return {
+              ...product,
+              visibility: (
+                <Switch
+                  checked={!product.visibility}
+                  onChange={() => handleToggleVisibility(index)}
+                />
+              ),
+            };
+          })}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
+        {/* Add Product Button at the bottom-right corner */}
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={handleAddProduct}
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
+            Add Product
+          </button>
+        </div>
       </div>
-      <InfoCards stats={orderStats} />
+
+      {/* Product Info Cards */}
+      <InfoCards stats={productStats} />
     </div>
   );
 };
 
-export default OrderManagement;
+export default ProductManagement;

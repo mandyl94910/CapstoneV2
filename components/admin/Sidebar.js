@@ -12,7 +12,7 @@ const Sidebar = () => {
           <Link href="/admin/dashboard">Dashboard</Link>
         </li>
         <li>
-          <Link href="/admin/order">Products *not yet</Link>
+          <Link href="/admin/product">Products</Link>
         </li>
         <li>
           <Link href="/admin/order">Orders</Link>
