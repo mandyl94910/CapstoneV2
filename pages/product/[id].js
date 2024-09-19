@@ -2,7 +2,7 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '../Header';
+import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 
 const ProductPage = () => {

@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import CateSidebar2 from '../../components/category/CateSidebar2';
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
@@ -13,6 +14,8 @@ export default function Products({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);  // Initialize as an empty array
+  const [currentPage, setCurrentPage] = useState(1);  
+  const productsPerPage = 20;  
 
   // Fetch categories and products when the component mounts
   useEffect(() => {
@@ -41,11 +44,13 @@ export default function Products({ user, onLogout }) {
     }
 
     fetchCategoriesAndProducts();
+
   }, []);
 
   // Handle category selection and fetch products for the selected category
   const handleCategorySelect = async (category) => {
     setSelectedCategory(category.name); // Update the selected category
+    setCurrentPage(1); 
     try {
       const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
       setProducts(response.data);  // Update products based on the selected category
@@ -53,6 +58,22 @@ export default function Products({ user, onLogout }) {
       console.error('Error fetching products by category:', error);  // Log any errors
     }
   };
+
+  //calculate the products should be displayed
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  // paginate
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const totalPages = Math.ceil(products.length / productsPerPage);
+  
+  // Generate an array of page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <main>
@@ -68,6 +89,24 @@ export default function Products({ user, onLogout }) {
             <h1 className="text-2xl font-bold">{selectedCategory}</h1>  {/* Display the selected category */}
           </div>
           <ProductGrid products={products} />  {/* ProductGrid is only rendered on the client side */}
+        
+        {/* Pagination */}
+        <div className="flex justify-center items-center mt-4">
+            {pageNumbers.map((pageNumber) => (
+              <button
+                key={pageNumber}
+                onClick={() => paginate(pageNumber)}
+                className={`px-2 py-2 mx-1 ${
+                  currentPage === pageNumber
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-300 text-black'
+                } rounded ${pageNumber === currentPage ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={pageNumber === currentPage}
+              >
+                {pageNumber}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <Footer />  {/* Render the Footer component */}
