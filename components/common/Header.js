@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
 
 function Header({ user, onLogout }) {
+
+
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
       <nav className="flex space-x-6 pl-16"> {/* Increase space between the links */}
@@ -44,7 +46,10 @@ function Header({ user, onLogout }) {
           />
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" /> {/* Adjust icon position */}
         </div>
-        <FaShoppingCart className="text-2xl" /> {/* Increase size of the cart icon */}
+        <Link href='/cart'>
+          <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-500" /> {/* Increase size of the cart icon */}
+        </Link>
+      
         {user ? (
           <div className="flex items-center space-x-4">
             <div className="hover:underline hover:text-blue-600">
