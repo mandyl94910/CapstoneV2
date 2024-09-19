@@ -1,4 +1,4 @@
-// C:\CPRG306\CapstoneV2\pages\api\user\account.js
+// C:\CPRG306\CapstoneV2\pages\api\user\AccountController.js
 const axios = require('axios'); 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +8,8 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 require('../../../server/passportConfig')(passport); // Correctly import passportConfig.js
 const redisClient = require('../../../lib/redis'); // Import Redis client
+const { saveSession, getSession,updateSession,deleteSession,incrementLoginAttempts } = require('../../../lib/redisUtils/listOps');
+const { setCache, getCache} = require('../../../lib/redisUtils/cacheOps');
 const bcrypt = require('bcrypt');
 const db = require('../../../server/db');
 
@@ -42,14 +44,19 @@ async function loginFunction(req, res, next) {
   const searchCriteria = isEmail ? { email: loginIdentifier } : { username: loginIdentifier };
 
   // Use Passport to authenticate the user
-  passport.authenticate('local', searchCriteria, (err, user, info) => {
+  passport.authenticate('local', searchCriteria, async(err, user, info) => {
       if (err) {
           console.error(err);
           return res.status(500).send('Authentication error');
       }
       if (!user) {
-          redisClient.incr(`login_attempts_${loginIdentifier}`);
-          redisClient.expire(`login_attempts_${loginIdentifier}`, 300);
+          // If no user is found or password is incorrect, increment login attempt counter
+          const attemptResult = await incrementLoginAttempts(loginIdentifier);
+          if (attemptResult.tooManyAttempts) {
+              // If login attempt limit is reached, return status code 429 with an error message
+              return res.status(429).send({ success: false, message: attemptResult.message });
+          }
+          // Otherwise, return status code 400 with a failure message
           return res.status(400).send({ success: false, message: info.message || 'Login failed' });
       }
 
@@ -59,11 +66,12 @@ async function loginFunction(req, res, next) {
               return res.status(500).send('Login error');
           }
 
-          // Clear login attempts from Redis and cache the session
-          redisClient.del(`login_attempts_${loginIdentifier}`);
-
+            // After successful login, delete previous login attempt records
+          await deleteSession(`login_attempts_${loginIdentifier}`);
+          // Cache user session data with a 3-hour expiration
           const sessionData = { id: user.customer_id, username: user.customer_name };
-          await redisClient.set(`session_${user.customer_id}`, JSON.stringify(sessionData), 'EX', 10800);  // Cache for 3 hours
+          await saveSession(user.customer_id, sessionData, 10800); 
+          // Return a message indicating successful login
           res.send({ success: true, message: 'User logged in' });
       });
   })(req, res, next);
@@ -76,12 +84,6 @@ async function registerFunction(req, res) {
     const recaptchaResult = await verifyRecaptchaToken(recaptchaToken);
     if (!recaptchaResult.isValid) {
       return res.status(400).send({ message: recaptchaResult.message });
-    }
-
-    const cachedUsername = await redisClient.get(`username_${username}`);
-    const cachedEmail = await redisClient.get(`email_${email}`);
-    if (cachedUsername || cachedEmail) {
-      return res.status(400).send({ message: "Username or email already registered (cached)" });
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -109,11 +111,10 @@ async function getUserInformation(req, res) {
     const sessionKey = `session_${req.user.customer_id}`;
     const cachedSession = await redisClient.get(sessionKey);
     if (cachedSession) {
-      const parsedSession = JSON.parse(cachedSession);
-      return res.send(parsedSession);
+      return res.send(cachedSession);
     } else {
       // Cache the session if not already cached
-      await redisClient.set(sessionKey, JSON.stringify(req.user), 'EX', 10800); // Cache for 3 hours
+      await setCache(sessionKey, req.user, 10800); // Cache for 3 hours
       res.send(req.user);
     }
   } catch (error) {

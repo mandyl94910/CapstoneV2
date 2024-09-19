@@ -25,9 +25,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
-
-
-
 // Registration route
 app.post('/api/register', registerFunction);
 

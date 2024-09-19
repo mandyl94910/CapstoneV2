@@ -24,34 +24,7 @@ const ProductPage = () => {
     }
   }, [id]);  // Re-run the effect whenever the id changes
 
-  // Increase product quantity
-  const handleIncrease = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
-  };
 
-  // Decrease product quantity
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity(prevQuantity => prevQuantity - 1);
-    }
-  };
-
-  // Handle input change for manually setting the quantity
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    if (/^\d+$/.test(value)) {
-      setQuantity(Number(value));  // Ensure input is a number
-    } else if (value === "") {
-      setQuantity("");  // Allow empty input temporarily
-    }
-  };
-
-  // Handle blur event on input to reset invalid values
-  const handleBlur = () => {
-    if (quantity === "" || quantity < 1) {
-      setQuantity(1);  // Reset to 1 if input is empty or less than 1
-    }
-  };
 
   // Display loading message while product data is being fetched
   if (!product) {
@@ -84,7 +57,6 @@ const ProductPage = () => {
             {/* Set quantity */}
             <div className="flex items-center mb-4">
               <button
-                onClick={handleDecrease}
                 className="h-12 bg-gray-300 text-gray-800 px-6 rounded-l-lg text-3xl"
                 disabled={quantity <= 1}  // Disable decrease button if quantity is 1
               >
@@ -93,12 +65,9 @@ const ProductPage = () => {
               <input
                 type="text"
                 value={quantity}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
                 className="w-full h-12 text-center border-2 border-gray-300"
               />
               <button
-                onClick={handleIncrease}
                 className="h-12 bg-gray-300 text-gray-800 px-6 rounded-r-lg text-3xl"
               >
                 +

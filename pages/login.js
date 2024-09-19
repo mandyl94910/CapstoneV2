@@ -99,7 +99,8 @@ const login = () => {
     })
     .then((res) => {
         console.log("Received user info:", res.data);
-        setWelcomeMessage(`Welcome user ${res.data.username}`); // Set welcome message with username
+        console.log("Username:", res.data.customer_name);   // 特别检查username字段是否存在
+        setWelcomeMessage(`Welcome user ${res.data.customer_name}`); // Set welcome message with username
         setError('');
     })
     .catch((err) => {
@@ -107,7 +108,7 @@ const login = () => {
         setError(err.response?.data?.message || "Error retrieving user session");
         setWelcomeMessage('');
     });
-  };
+};
 
   return (
     <div className="flex h-screen">
