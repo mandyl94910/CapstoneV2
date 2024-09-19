@@ -85,7 +85,7 @@ export default function Register() {
         recaptchaToken: recaptchaResponse,  // 提交 reCAPTCHA token
       },
       withCredentials: true,
-      url: 'http://localhost:3001/register',
+      url: 'http://localhost:3001/api/register',
     })
     .then((res) => {
       setIsLoading(false);
