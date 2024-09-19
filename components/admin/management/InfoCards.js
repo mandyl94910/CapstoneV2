@@ -6,6 +6,7 @@ import {
   FaBox,
   FaDollarSign,
   FaTruck,
+  FaTags,
 } from "react-icons/fa";
 
 const InfoCards = ({ stats }) => {
@@ -34,6 +35,12 @@ const InfoCards = ({ stats }) => {
             )}
             {stat.title === "Total Orders" && (
               <FaTruck className="text-4xl text-indigo-500" />
+            )}
+            {stat.title === "Total Categories" && (
+              <FaTags className="text-4xl text-indigo-500" />
+            )}
+            {stat.title === "Total Values" && (
+              <FaDollarSign className="text-4xl text-red-500" />
             )}
           </div>
 

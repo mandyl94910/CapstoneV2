@@ -32,6 +32,34 @@ const UserManagement = () => {
       buy: 2,
       return: 0,
     },
+    {
+      userNo: 5,
+      userName: "User 5",
+      email: "user5@gmail.com",
+      buy: 4,
+      return: 2,
+    },
+    {
+      userNo: 6,
+      userName: "User 6",
+      email: "user6@gmail.com",
+      buy: 1,
+      return: 0,
+    },
+    {
+      userNo: 7,
+      userName: "User 7",
+      email: "user7@gmail.com",
+      buy: 5,
+      return: 1,
+    },
+    {
+      userNo: 8,
+      userName: "User 8",
+      email: "user8@gmail.com",
+      buy: 3,
+      return: 0,
+    },
   ]);
 
   const userColumns = ["User No", "User-name", "E-mail", "Buy", "Return"];
@@ -57,7 +85,6 @@ const UserManagement = () => {
 
   return (
     <div className="flex-1 p-6 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6">User Management</h1>
       <div className="bg-white p-4 rounded shadow-md">
         <DataTable
           columns={userColumns}
