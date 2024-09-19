@@ -2,7 +2,7 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '../Header';
+import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 
 const ProductPage = () => {
@@ -25,6 +25,22 @@ const ProductPage = () => {
   }, [id]);  // Re-run the effect whenever the id changes
 
 
+
+
+  const addToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const productExists = cart.find((item) => item.id === product.id);
+
+    if (productExists) {
+      productExists.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart)); // 将购物车更新到localStorage
+    alert('Product added to cart!');
+    router.push('/cart');
+  };
 
   // Display loading message while product data is being fetched
   if (!product) {
@@ -75,7 +91,9 @@ const ProductPage = () => {
             </div>
 
             {/* Add to cart button */}
-            <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+            <button 
+            onClick={ () => addToCart(product)}
+            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
               Add to cart
             </button>
           </div>

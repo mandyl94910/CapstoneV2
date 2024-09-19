@@ -1,25 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
+  const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
+
+  // Toggle category expansion
+  const toggleCategory = (categoryId) => {
+    setExpandedCategories(prevState => ({
+      ...prevState,
+      [categoryId]: !prevState[categoryId]
+    }));
+  };
 
   // Function to render categories and their subcategories
   const renderCategories = (category, level = 0) => {
     const isParent = category.subcategories && category.subcategories.length > 0; // Check if the category is a parent
+    const isExpanded = expandedCategories[category.id]; // Check if this category is expanded
 
     return (
       <li
         key={category.id}
-        className={`p-2 mb-2 rounded ${selectedCategory === category.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : ''}`} // Only child categories are clickable
+        className={`p-2 mb-2 rounded ${selectedCategory === category.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : 'cursor-pointer'}`}
         onClick={() => {
           if (!isParent) {
-            onCategorySelect(category); // Only child categories trigger the product loading
+            // If it's not a parent category, just select the category
+            onCategorySelect(category);
           }
         }}
       >
-        {category.name}
-        {isParent && (
-          <ul className="ml-4 mt-2"> {/* Always display subcategories below the parent category */}
-            {category.subcategories.map(subcategory => renderCategories(subcategory, level + 1))} {/* Recursively render subcategories */}
+        <div className="flex justify-between items-center" onClick={() => isParent && toggleCategory(category.id)}>
+          <span>{category.name}</span>
+          {isParent && (
+            <span className="ml-2">{isExpanded ? '-' : '+'}</span> // Show + for collapsed and - for expanded categories
+          )}
+        </div>
+
+        {isParent && isExpanded && (
+          <ul className="ml-4 mt-2"> {/* Only display subcategories if the parent is expanded */}
+            {category.subcategories.map(subcategory => renderCategories(subcategory, level + 1))}
           </ul>
         )}
       </li>

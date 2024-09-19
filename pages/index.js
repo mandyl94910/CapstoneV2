@@ -44,8 +44,8 @@ function Home({ user, onLogout }) {
   return (
     <div>
       <Header user={user} onLogout={onLogout} />
-      <Banner />
-      <div className="container mx-auto mt-8">
+      <Banner/>
+      {/* <div className="container mx-auto mt-8">
         <input
           type="text"
           value={newItem}
@@ -61,7 +61,7 @@ function Home({ user, onLogout }) {
             items.map(item => (
               <li key={item.product_id} className="flex justify-between items-center border-b py-2">
                 {item.product_name} {/* Use the new field names to display product names */}
-                <button
+                {/* <button
                   onClick={() => deleteItem(item.product_id)} // Use the new field name to delete products
                   className="bg-red-600 text-white px-2 py-1 rounded"
                 >
@@ -73,7 +73,7 @@ function Home({ user, onLogout }) {
             <li>No items found</li>
           )}
         </ul>
-      </div>
+      </div> */} 
       <CategoryHomeGrid />
       <Footer />
     </div>
