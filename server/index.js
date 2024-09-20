@@ -8,10 +8,9 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 
 require('./passportConfig')(passport); // Correctly import passportConfig.js
-const { loginFunction, registerFunction,getUserInformation } = require('../pages/api/user/AccountController');
-const { getCategories } = require('../pages/api/category/CategoriesController');
-const { getAllProducts, getProductsByCategory, getProductById } = require('../pages/api/product/ProductsController');
-
+const { loginFunction, registerFunction,getUserInformation } = require('../pages/functions/user/AccountController');
+const { getCategories } = require('../pages/functions/category/CategoriesController');
+const { getAllProducts, getProductsByCategory, getProductById } = require('../pages/functions/product/ProductsController');
 
 const app = express();
 

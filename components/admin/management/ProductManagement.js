@@ -1,84 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios'; // 确保已导入axios
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 
-// Initial product data
-const initialProductData = [
-  {
-    product_id: 1,
-    product_name: "iPhone 13",
-    price: "$799.00",
-    quantity: 20,
-    category: "Mobile Phones & Accessories / Smartphones",
-    visibility: false,
-  },
-  {
-    product_id: 2,
-    product_name: "Samsung Galaxy S21",
-    price: "$699.00",
-    quantity: 15,
-    category: "Mobile Phones & Accessories / Smartphones",
-    visibility: true,
-  },
-  {
-    product_id: 3,
-    product_name: "LG Smart TV",
-    price: "$1299.00",
-    quantity: 5,
-    category: "TV & Home Entertainment / Televisions",
-    visibility: true,
-  },
-  {
-    product_id: 4,
-    product_name: "HP EliteBook Laptop",
-    price: "$1199.00",
-    quantity: 10,
-    category: "Computers & Accessories / Laptops",
-    visibility: true,
-  },
-  {
-    product_id: 5,
-    product_name: "Sony PlayStation 5",
-    price: "$499.00",
-    quantity: 8,
-    category: "Gaming & Accessories / Consoles",
-    visibility: true,
-  },
-  {
-    product_id: 6,
-    product_name: "Canon EOS R5",
-    price: "$3899.00",
-    quantity: 12,
-    category: "Cameras & Photography Gear / Digital Cameras",
-    visibility: false,
-  },
-];
+const ProductManagement = () => {
+  const [products, setProducts] = useState([]);  // 初始化为空数组，等待从API填充数据
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await axios.get('http://localhost:3001/api/products');
+        setProducts(response.data); // 使用从API获取的数据更新状态
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
 
 // Product status information
 const productStats = [
   {
     title: "Total Products",
-    value: "72",
-    description: "Based on 28 June 2024",
+    value: products.length.toString(),  // 动态显示总产品数
+    description: "Based on current inventory",
   },
   {
     title: "Total Categories",
-    value: "15",
-    description: "Based on 28 June 2024",
+    value: "15",  // 需要动态计算或更新
+    description: "Categories available",
   },
   {
     title: "Total Values",
-    value: "$3.2k",
-    description: "Based on 28 June 2024",
+    value: "$3.2k",  // 需要动态计算或更新
+    description: "Estimated total value",
   },
 ];
 
-const ProductManagement = () => {
-  const [products, setProducts] = useState(initialProductData);
+
 
   // Toggle visibility state
-  const handleToggleVisibility = (index) => {
+    const handleToggleVisibility = (index) => {
     const updatedProducts = [...products];
     updatedProducts[index].visibility = !updatedProducts[index].visibility;
     setProducts(updatedProducts);
@@ -95,6 +60,7 @@ const ProductManagement = () => {
   const handleAddProduct = () => {
     console.log("Add new product");
   };
+
 
   return (
     <div>
