@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Slider from 'react-slick'; // Importing React Slick
 import Link from 'next/link';
 
+
 function Banner() {
   const banners = [
     { src: '/banner1.jpg', alt: 'Banner 1', title: '20% off headset', 
@@ -37,9 +38,10 @@ function Banner() {
     slidesToScroll: 1,
     autoplay: true, // Enables autoplay
     autoplaySpeed: 3000, // Slide interval (ms)
-    arrows: true, // Show next/previous arrows
-};
+    arrows: true, // Show next/previous arrows};
+  }
 
+  
   return (
     <div className="relative h-[550px] px-16 py-6">
       <Slider {...settings}>
@@ -50,7 +52,7 @@ function Banner() {
               alt={banner.alt}
               layout="fill"
               objectFit="cover"
-              className="w-full h-auto"
+              // className="w-full h-auto"
             />
             <div className={`${banner.textposition}`}>
               <h1 className="text-6xl font-extrabold mb-4">{banner.title}</h1>

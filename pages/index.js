@@ -5,6 +5,7 @@ import Banner from './Banner';
 import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
 import CategoryHomeGrid from '../components/category/CategoryHomeGrid';
+import OnSale from '../components/category/OnSale';
 
 function Home({ user, onLogout }) {
   const [items, setItems] = useState([]);
@@ -76,6 +77,7 @@ function Home({ user, onLogout }) {
         </ul>
       </div> */} 
       <CategoryHomeGrid />
+      <OnSale />
       <Footer />
     </div>
   );

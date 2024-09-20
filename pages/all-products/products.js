@@ -14,7 +14,7 @@ export default function Products({ user, onLogout }) {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);  // Initialize as an empty array
   const [currentPage, setCurrentPage] = useState(1);  
-  const productsPerPage = 20;  
+  const productsPerPage = 16;  
 
   // Fetch categories and products when the component mounts
   useEffect(() => {
