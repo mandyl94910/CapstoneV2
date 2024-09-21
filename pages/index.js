@@ -4,13 +4,12 @@ import Header from '../components/common/Header';
 import Banner from '../components/homepage/Banner';
 import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
-import CategoryHomeGrid from '../components/category/CategoryHomeGrid';
+import CategoryHomeGrid from '../components/homepage/CategoryHomeGrid';
 import OnSale from '../components/homepage/OnSale';
 
 function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
-  const [user, setUser] = useState(null);
 
   // useEffect to fetch products
   useEffect(() => {
@@ -21,20 +20,6 @@ function Home() {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, []);
-
-  // useEffect to load user info from local storage
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  // method to log out
-  const onLogout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-  }
   
   // Add a new product
   const addItem = () => {
@@ -60,7 +45,7 @@ function Home() {
 
   return (
     <div>
-      <Header user={user} onLogout={onLogout} />
+      <Header/>
       <Banner/>
       {/* testing add funtion ///////////////////
       <div className="container mx-auto mt-8">

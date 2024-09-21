@@ -2,19 +2,21 @@ import React, { useEffect, useState } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
-import { useRouter } from "next/router";
+import { useAuth } from "../../hooks/useAuth";
 
 
-function Header({ user, onLogout }) {
+function Header() {
+
+  const { user, onLogout } = useAuth();
 
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
-      <nav className="flex space-x-6 pl-16"> {/* Increase space between the links */}
-        <Link href="/admin-dashboard">
+      <nav className="flex space-x-6 pl-16 "> {/* Increase space between the links */}
+        <Link href="/admin-dashboard" className="hover:text-blue-500">
           admin dashboard
         </Link>
-        <Link href="/all-products">
+        <Link href="/all-products"  className="hover:text-blue-500">
           All Products
         </Link>
         <Link href="#">
@@ -32,8 +34,8 @@ function Header({ user, onLogout }) {
           <Image
             src="/logo.png"
             alt="Logo"
-            width={140}
-            height={60}
+            width={200}
+            height={80}
             className="cursor-pointer"
           />
           {/* <div className="text-2xl font-bold">TOP Tradings</div> */}
@@ -63,7 +65,7 @@ function Header({ user, onLogout }) {
             {/* User Profile */}
             <Link href='/user-profile'>
               <img
-                className="w-10 h-10 rounded-full"
+                className="min-w-10 h-10 rounded-full hover:opacity-80 transition-opacity duration-300"
                 src="/user.webp" //hardcode path for testing
                 // src={`/images/${user.image}`}      //retrieve from database
                 alt="User Profile"

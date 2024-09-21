@@ -1,5 +1,6 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
 const Product = require('../../../server/models/Product');
+const { Op } = require('sequelize');
 
 // Function to get all products
 const getAllProducts = async (req, res) => {
@@ -50,5 +51,27 @@ const getProductById = async (req, res) => {
   }
 };
 
+// Function to get recommended products list according to the range of price-- temporary
+const getRecommendedProducts = async (req, res) => {
+  try {
+    const { minPrice, maxPrice, limit } = req.query;
+
+    const products = await Product.findAll({
+      where: {
+        price: {
+          [Op.between]: [minPrice, maxPrice],
+        },
+        visibility: true,
+      },
+      limit: parseInt(limit) || 6,
+    }) 
+
+    res.json(products);
+    
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving product: " + error.message });  // Return an error message if retrieval fails
+  }
+}
+
 // Export the functions
-module.exports = { getAllProducts, getProductsByCategory, getProductById };
+module.exports = { getAllProducts, getProductsByCategory, getProductById, getRecommendedProducts };

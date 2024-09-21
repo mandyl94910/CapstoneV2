@@ -123,6 +123,7 @@ const login = () => {
     });
 };
 
+
   return (
     <main>
       <Header/>
@@ -132,7 +133,7 @@ const login = () => {
           <img src="/login-bg.png" alt="Login Background" className="w-full h-full object-cover rounded-l-2xl"></img>
         </div>
         <div className="w-1/3 min-w-[410px] h-full flex flex-col justify-center items-center bg-white p-8 rounded-r-2xl">
-          <img src="/logo.png" alt="Logo" className="h-[60px] mb-8 cursor-pointer"></img>
+          <img src="/logo.png" alt="Logo" className="h-[55px] my-5 cursor-pointer" onClick={()=> router.push('/')}></img>
           <h1 className="text-3xl font-bold mb-6 text-blue-600">Welcome back!</h1>
           <form className="w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); login(); }}>
             <div className="mb-4">
@@ -175,12 +176,12 @@ const login = () => {
             </button>
 
             {(error || welcomeMessage) && (
-              <p className={`text-center mt-4 ${error ? 'text-red-500' : 'text-green-500'}`}>
+              <p className={`text-center mt-2 ${error ? 'text-red-500' : 'text-green-500'}`}>
                 {error || welcomeMessage}
               </p>
             )}
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-2">
               <Link href="/register" legacyBehavior>
                 <a className="text-blue-600 hover:underline">Create Account</a>
               </Link>

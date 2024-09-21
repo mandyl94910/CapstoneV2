@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, registerFunction,getUserInformation } = require('../pages/api/user/AccountController');
 const { getCategories, getParentCategories } = require('../pages/api/category/CategoriesController');
-const { getAllProducts, getProductsByCategory, getProductById } = require('../pages/api/product/ProductsController');
+const { getAllProducts, getProductsByCategory, getProductById, getRecommendedProducts } = require('../pages/api/product/ProductsController');
 
 
 const app = express();
@@ -46,8 +46,12 @@ app.get('/api/products/category/:categoryId', getProductsByCategory);
 //Get products by parent category(only sub_for 1)
 app.get('/api/categories_sub_for_1', getParentCategories);
 
+// Route to get some recommended products
+app.get('/api/products/recommended_products', getRecommendedProducts);
+
 // Route to get a single product by ID
 app.get('/api/products/:productId', getProductById);
+
 
 // Start the server
 app.listen(3001, () => {

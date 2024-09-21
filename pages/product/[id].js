@@ -5,6 +5,7 @@ import axios from 'axios';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 
+
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data
   const [quantity, setQuantity] = useState(1);  // Store the selected quantity
@@ -49,7 +50,7 @@ const ProductPage = () => {
 
   return (
     <main>
-      <Header />
+      <Header/>
       <div className="container mx-auto p-6">
         {/* productInfo - images and product data */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
