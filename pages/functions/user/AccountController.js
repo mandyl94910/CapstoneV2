@@ -8,7 +8,7 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 require('../../../server/passportConfig')(passport); // Correctly import passportConfig.js
 const redisClient = require('../../../lib/redis'); // Import Redis client
-const { saveSession, getSession,updateSession,deleteSession,incrementLoginAttempts } = require('../../../lib/redisUtils/listOps');
+const { saveSession, getSession,updateSession,deleteSession,incrementLoginAttempts } = require('../../../lib/redisUtils/userOps');
 const { setCache, getCache} = require('../../../lib/redisUtils/cacheOps');
 const bcrypt = require('bcrypt');
 const db = require('../../../server/db');
@@ -28,6 +28,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("../../../server/passportConfig")(passport);  // Initialize Passport for authentication
 
+// Function name: loginFunction
+// Description: Authenticates a user using their login credentials and manages login attempts.
+// Parameters:
+//   req (object): The HTTP request object containing login details (recaptcha token, login identifier, password).
+//   res (object): The HTTP response object used for sending back the authentication result.
+//   next (function): Middleware next function for passing control to the next middleware function.
+// Functionality:
+//   This function validates the provided credentials, checks recaptcha validation, and uses Passport.js
+//   to authenticate the user based on email or username. It handles login attempts and locks out users
+//   after too many failed attempts. It logs in the user on successful authentication and manages session data.
 async function loginFunction(req, res, next) {
   const { recaptchaToken, loginIdentifier, password } = req.body;
   if (!loginIdentifier || !password) {
@@ -77,6 +87,15 @@ async function loginFunction(req, res, next) {
   })(req, res, next);
 }
 
+// Function name: registerFunction
+// Description: Registers a new user in the database after validating the recaptcha token and checking for existing users.
+// Parameters:
+//   req (object): The HTTP request object containing user details for registration.
+//   res (object): The HTTP response object used to send back the registration result.
+// Functionality:
+//   This function validates a recaptcha token, checks if the username or email already exists in the database,
+//   hashes the user's password for security, and inserts the new user record into the database. It sends a response
+//   indicating whether the registration was successful or failed.
 async function registerFunction(req, res) {
   const { username, password, email, phone, recaptchaToken } = req.body;
 
@@ -102,6 +121,15 @@ async function registerFunction(req, res) {
   }
 }
 
+// Function name: getUserInformation
+// Description: Retrieves user information from the cache or the database if the user is authenticated.
+// Parameters:
+//   req (object): The HTTP request object, which contains user session data.
+//   res (object): The HTTP response object used to send back the user's data or an error message.
+// Functionality:
+//   This function checks if a user is authenticated. If so, it attempts to retrieve user session data from the cache.
+//   If the data is not cached, it caches the current session data and returns the user's information. It handles errors
+//   that may occur during data retrieval.
 async function getUserInformation(req, res) {
   if (!req.user) {
     return res.status(401).send('Not authenticated');

@@ -36,11 +36,14 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
           <tbody>
             {currentData.map((row, index) => (
               <tr key={index} className="bg-white even:bg-gray-100">
-                {Object.values(row).map((value, idx) => (
-                  <td key={idx} className="p-3 border border-gray-300">
-                    {value}
-                  </td>
-                ))}
+                {Object.values(row).map((value, idx) => {
+                    // 检查值是否是对象，并且包含 'name' 属性
+                    if (value && typeof value === 'object' && value.name) {
+                        return <td key={idx} className="p-3 border border-gray-300">{value.name}</td>;
+                    } else {
+                        return <td key={idx} className="p-3 border border-gray-300">{value}</td>;
+                    }
+                })}
                 <td className="p-2 border border-gray-300 w-24">
                   <button
                     onClick={() => onEdit(index)}

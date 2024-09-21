@@ -10,7 +10,7 @@ const ProductManagement = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:3001/api/products');
+        const response = await axios.get('http://localhost:3001/api/products-admin/datatable')
         setProducts(response.data); // 使用从API获取的数据更新状态
       } catch (error) {
         console.error('Error fetching products:', error);
