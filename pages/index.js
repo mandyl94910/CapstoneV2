@@ -1,16 +1,18 @@
 // C:\CPRG306\CapstoneV2\pages\index.js
 import React, { useEffect, useState } from 'react';
 import Header from '../components/common/Header';
-import Banner from './Banner';
+import Banner from '../components/homepage/Banner';
 import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
 import CategoryHomeGrid from '../components/category/CategoryHomeGrid';
-import OnSale from '../components/category/OnSale';
+import OnSale from '../components/homepage/OnSale';
 
-function Home({ user, onLogout }) {
+function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
+  const [user, setUser] = useState(null);
 
+  // useEffect to fetch products
   useEffect(() => {
     axios.get('http://localhost:3001/products')
       .then(response => {
@@ -19,6 +21,20 @@ function Home({ user, onLogout }) {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, []);
+
+  // useEffect to load user info from local storage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // method to log out
+  const onLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+  }
   
   // Add a new product
   const addItem = () => {

@@ -11,14 +11,15 @@ export default function OnSale(){
     ]
 
     return(
-        <div className='mt-8 px-16'>
-            <hr className='text-gray-300 border-2 mb-4'/>
-            <h2 className='text-3xl text-center mb-4 text-gray py-2'>
-                On Sales
+        <div className='mt-16 px-16'>
+            <hr className='text-gray-300 mb-4'/>
+            <h2 className='text-3xl text-center mb-4 mt-10 text-gray py-2'>
+                On Sale
             </h2>
         
-            <div className='h-[750px]'>
+            <div className='h-[730px]'>
                 <div className='grid grid-cols-2 gap-x-6'>
+                    {/* first column - 1 pic */}
                     <div className="relative h-[605px]">
                         <div className='h-[605px]'>
                             <Image
@@ -43,7 +44,7 @@ export default function OnSale(){
                         </div>
                     </div>
 
-
+                    {/* secon column - 2 pics */}
                     <div className="grid h-[750px]">
                         <div className="relative h-[230px]">
                             <div className='h-[230px]'>

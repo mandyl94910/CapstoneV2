@@ -7,7 +7,7 @@ export default function Footer(){
 
     return(
         <div>
-            <hr className="border-gray-300 mt-6" />
+            <hr className="border-gray-300" />
             <div className="flex flex-wrap justify-between h-auto pt-8 px-16">
                 {/* about company */}
                 <div className="mb-6">
@@ -31,7 +31,7 @@ export default function Footer(){
                         <p className="mb-1">Email: toptradings@gmail.com</p>
                         <p className="mb-1">Phone: +1 587-123-4567</p>
                         <p className="mb-1">768 street NW City Prov</p>
-                        <button className=" bg-blue-500 text-white text-base mt-2 px-5 py-1 rounded-lg hover:bg-blue-600">Contact Us</button>
+                        <button className=" bg-blue-600 text-white text-base mt-2 px-5 py-1 rounded-lg hover:bg-blue-600">Contact Us</button>
                     </div>
                     <div className="text-sm">
                         <h2 className="text-base font-bold mb-3">Customer Support</h2>
