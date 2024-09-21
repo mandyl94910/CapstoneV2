@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { FaEye, FaBox, FaUsers, FaDollarSign } from "react-icons/fa";
+import { FaTruck, FaBox, FaUsers, FaDollarSign } from "react-icons/fa";
 
 const Stats = () => {
   const [statsData, setStatsData] = useState([
     {
       id: 1,
-      icon: <FaEye />,
-      title: "Total Views",
-      value: 154,
+      icon: <FaTruck />,
+      title: "Total Order",
+      value: 40,
       date: "28 June 2024",
     },
     {

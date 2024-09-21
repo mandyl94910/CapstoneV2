@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router"; // Import useRouter for navigation
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
@@ -76,6 +77,7 @@ const productStats = [
 
 const ProductManagement = () => {
   const [products, setProducts] = useState(initialProductData);
+  const router = useRouter(); // Initialize the router
 
   // Toggle visibility state
   const handleToggleVisibility = (index) => {
@@ -92,8 +94,9 @@ const ProductManagement = () => {
     console.log("Delete product:", index);
   };
 
+  // Navigate to the Add Product page
   const handleAddProduct = () => {
-    console.log("Add new product");
+    router.push("/admin/addProduct"); // Redirect to the Add Product page
   };
 
   return (
@@ -114,7 +117,7 @@ const ProductManagement = () => {
               ...product,
               visibility: (
                 <Switch
-                  checked={!product.visibility}
+                  checked={product.visibility} // Ensure checked state reflects visibility
                   onChange={() => handleToggleVisibility(index)}
                 />
               ),
@@ -126,7 +129,7 @@ const ProductManagement = () => {
         {/* Add Product Button at the bottom-right corner */}
         <div className="flex justify-end mt-4">
           <button
-            onClick={handleAddProduct}
+            onClick={handleAddProduct} // Navigate to Add Product page on click
             className="bg-blue-500 text-white py-2 px-4 rounded"
           >
             Add Product
