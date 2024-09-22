@@ -89,9 +89,9 @@ const getProductsByCategory = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
-    console.log('Product ID:', productId);
+    // console.log('Product ID:', productId);
     let product = await getCachedProductInfo(productId);
-    console.log('Cached Product:', product);
+    // console.log('Cached Product:', product);
     if (!product) {
       const dbProduct = await Product.findOne({
         where: {

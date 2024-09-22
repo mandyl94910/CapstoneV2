@@ -6,11 +6,14 @@ const cors = require('cors');
 const passport = require('passport');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
+const events = require('events');
+events.EventEmitter.defaultMaxListeners = 20; // 或者设置为一个更高的值
 
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, registerFunction,getUserInformation } = require('../pages/functions/user/AccountController');
 const { getCategories } = require('../pages/functions/category/CategoriesController');
 const { getAllProducts,getAllProductsForDataTable, getProductsByCategory, getProductById } = require('../pages/functions/product/ProductsController');
+const searchProductsByName = require('../pages/functions/product/search');
 
 const app = express();
 
@@ -47,6 +50,9 @@ app.get('/api/products/category/:categoryId', getProductsByCategory);
 
 // Route to get a single product by ID
 app.get('/api/products/:productId', getProductById);
+
+// 定义路由，处理 /api/products 搜索请求
+app.get('/api/productsName', searchProductsByName);
 
 // Start the server
 app.listen(3001, () => {

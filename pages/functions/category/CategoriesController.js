@@ -16,7 +16,7 @@ const getCategories = async (req, res) => {
     const categories = await Category.findAll({
       attributes: ['id', 'name', 'sub_for'],  // Ensure that only relevant fields are retrieved
     });
-    console.log("Categories:", categories);  // Log the retrieved category data
+    // console.log("Categories:", categories);  // Log the retrieved category data
     res.json(categories);  // Send the category data as a JSON response
   } catch (error) {
     console.error('Failed to retrieve categories', error);  // Log the error if categories retrieval fails
