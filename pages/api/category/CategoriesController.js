@@ -21,7 +21,7 @@ const getCategories = async (req, res) => {
 /* helped by chatGPT, 
 *  prompt: can i retrieve categories that only sub_for 1 and category name is not "All Products"
 */ 
-const getParentCategories = async (req, res) => {
+const getPrimaryCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
       attributes:['id', 'name', 'sub_for', 'image'],
@@ -41,4 +41,4 @@ const getParentCategories = async (req, res) => {
 }
 
 // Export the getCategories function
-module.exports = { getCategories, getParentCategories };
+module.exports = { getCategories, getPrimaryCategories };

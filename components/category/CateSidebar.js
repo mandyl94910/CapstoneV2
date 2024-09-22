@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
@@ -30,7 +31,7 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
         <div className="flex justify-between items-center" onClick={() => isParent && toggleCategory(category.id)}>
           <span>{category.name}</span>
           {isParent && (
-            <span className="ml-2">{isExpanded ? '-' : '+'}</span> // Show + for collapsed and - for expanded categories
+            <span className="ml-2">{isExpanded ? <FaAngleUp/> : <FaAngleDown/>}</span> // Show + for collapsed and - for expanded categories
           )}
         </div>
 

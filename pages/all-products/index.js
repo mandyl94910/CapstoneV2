@@ -15,10 +15,12 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);  // Initialize as an empty array
   const [currentPage, setCurrentPage] = useState(1);  
+  const [sortOption, setSortOption] = useState('default');
   const productsPerPage = 16; 
   const { user, onLogout } = useAuth();
 
   // Fetch categories and products when the component mounts
+  // Fetch all products when open this page
   useEffect(() => {
     async function fetchCategoriesAndProducts() {
       try {
@@ -60,6 +62,35 @@ export default function Products() {
     }
   };
 
+  const handleSortChange = (e) => {
+    //get new option when user change it
+    const option = e.target.value;
+    setSortOption(option);
+
+    const sortedProducts = [...products];
+    // sort products based on option chose
+    switch (option) {
+      case 'priceLowToHigh':
+        sortedProducts.sort((a,b) => a.price - b.price);
+        break;
+      case 'priceHighToLow':
+        sortedProducts.sort((a,b) => b.price - a.price);
+        break;
+      case 'newest':
+        sortedProducts.sort((a,b) => b.register_date - a.register_date);
+        break;
+      case 'topRated':
+        sortedProducts.sort((a,b) => a.price - b.price);
+        break;
+      // case 'Sales':
+      //   sortedProducts.sort((a,b) => a.price - b.price);
+      //   break;
+      default:
+        break;
+    }
+    setProducts(sortedProducts);
+  }
+
   //calculate the products should be displayed
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -86,13 +117,24 @@ export default function Products() {
           onCategorySelect={handleCategorySelect}  // Handle category selection
         />
         <div className="flex-1 p-6">
-          <div className="flex justify-between mb-6">
-            <h1 className="text-2xl font-bold">{selectedCategory}</h1>  {/* Display the selected category */}
+          <div className='flex items-center justify-between'>
+            <div className="flex justify-between mb-6">
+              <h1 className="text-2xl font-bold">{selectedCategory}</h1>  {/* Display the selected category */}
+            </div>
+            <select value={sortOption} onChange={handleSortChange} className="border border-gray-300 px-4 py-2 rounded-lg">
+              <option value='default'>Sort By</option>
+              <option value='priceLowToHigh'>Price Low to High</option>
+              <option value='priceHighToLow'>Price High to Low</option>
+              <option value='newest'>Newest</option>
+              <option value='topRated'>Top Rated</option>
+              {/* <option>Sales</option> */}
+            </select>
           </div>
+
           <ProductGrid products={products} />  {/* ProductGrid is only rendered on the client side */}
         
-        {/* Pagination */}
-        <div className="flex justify-center items-center mt-4">
+          {/* Pagination */}
+          <div className="flex justify-center items-center mt-4">
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}
