@@ -7,6 +7,7 @@ import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 
+
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
 
