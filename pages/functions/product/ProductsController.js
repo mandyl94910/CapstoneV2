@@ -104,9 +104,9 @@ const getProductById = async (req, res) => {
       }
       product = dbProduct.toJSON();
       try {
-        await cacheProductInfo(productId, product); // 尝试缓存产品信息
+        await cacheProductInfo(productId, product); // Trying to cache product information
       } catch (cacheError) {
-        console.error("Error caching product:", cacheError); // 记录缓存错误
+        console.error("Error caching product:", cacheError); // Logging cache errors
       }
     }
 

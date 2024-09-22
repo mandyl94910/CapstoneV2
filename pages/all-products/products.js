@@ -14,17 +14,17 @@ export default function Products({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);  // Initialize as an empty array
-  const [productDisplayed, setProductDisplayed] = useState([]); // 创建 productDisplayed 状态，默认为传递过来的数据或空数组
+  const [productDisplayed, setProductDisplayed] = useState([]); // Creates the productDisplayed state, which defaults to the passed data or an empty array.
   const [currentPage, setCurrentPage] = useState(1);  
-  const [searchQuery, setSearchQuery] = useState('');  // 新增状态，用于保存用户的搜索输入
+  const [searchQuery, setSearchQuery] = useState('');  // Used to save the user's search input
   const productsPerPage = 20;  
-  const router = useRouter();  // 获取路由对象
-  const { searchQuery: routerSearchQuery } = router.query;  // 安全地从 router.query 解构出 searchQuery
+  const router = useRouter();  // Getting Route Objects
+  const { searchQuery: routerSearchQuery } = router.query;  // Securely deconstruct searchQuery from router.query
 
-  // 更新搜索输入
+  // Updated search input
   const handleSearchQueryChange = (query,searchResults) => {
     setSearchQuery(query);
-    setProductDisplayed(searchResults);  // 更新显示的产品为搜索结果
+    setProductDisplayed(searchResults);  // Updated to show products as search results
   };
 
   // Fetch categories and products when the component mounts
@@ -45,19 +45,19 @@ export default function Products({ user, onLogout }) {
 
         setCategories(categoryTree);
 
-        // 如果 productDisplayed 为空，获取所有产品
+        //  If productDisplayed is null, get all products.
         if (routerSearchQuery) {
           const searchResponse = await axios.get(`http://localhost:3001/api/productsName?query=${routerSearchQuery}`);
-          setProducts(searchResponse.data);  // 更新搜索结果
-          setProductDisplayed(searchResponse.data);  // 更新当前显示的产品为搜索结果
-          setSearchQuery(routerSearchQuery);  // 更新搜索查询  
+          setProducts(searchResponse.data);  // Update Search Results
+          setProductDisplayed(searchResponse.data);  // Update the currently displayed products as search results
+          setSearchQuery(routerSearchQuery);  // Update Search Queries 
         } else if (productDisplayed.length === 0) {
           const productsResponse = await axios.get('http://localhost:3001/api/products'); 
           setProducts(productsResponse.data);
           setProductDisplayed(productsResponse.data);
         }
       } catch (error) {
-        console.error('Error fetching categories or products:', error); // 捕获并打印错误
+        console.error('Error fetching categories or products:', error);
       }
     }
 
@@ -75,10 +75,10 @@ export default function Products({ user, onLogout }) {
     try {
       const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
       if (response.data.length > 0) {
-        setProductDisplayed(response.data); // 更新当前显示的产品为选中的类别产品
+        setProductDisplayed(response.data); // Update the currently displayed products to the selected category products
       } else {
         console.warn('No products found for this category.');
-        setProductDisplayed([]);  // 清空显示的产品
+        setProductDisplayed([]);  // Clear displayed products
       }
     } catch (error) {
       console.error('Error fetching products by category:', error);  // Log any errors
@@ -116,7 +116,7 @@ export default function Products({ user, onLogout }) {
         />
         <div className="flex-1 p-6">
           <div className="flex justify-between mb-6">
-            {/* 根据不同的情况显示相应的标题 */}
+            {/* Display the appropriate title according to the different situations */}
           {searchQuery ? (
               <h1 className="text-2xl font-bold">Products including "{searchQuery}"</h1>
             ) : (

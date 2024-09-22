@@ -11,9 +11,12 @@ function Header({ user, onLogout, onSearchQueryChange  }) {
   const handleSearch = async (query) => {
     try {
       const response = await fetch(`http://localhost:3001/api/productsName?query=${query}`);
+      //response.json() is a method that returns a Promise that will parse the stream of the response body and convert it to a JSON object. 
+      //This is because the server usually sends JSON data in the form of a string, 
+      //and the front-end needs to convert this JSON string into a JavaScript object so that it can be used by other functions or operations in the program.
       const data = await response.json();
       setSearchResults(data);
-      onSearchQueryChange(query,data);  // 更新父组件中的搜索状态
+      onSearchQueryChange(query,data);  // Update the search status in the parent component
     } catch (error) {
       console.error('Error fetching products:', error);
     }
@@ -52,28 +55,11 @@ function Header({ user, onLogout, onSearchQueryChange  }) {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-        <SearchBar onSearch={handleSearch} />  {/* 传递 handleSearch 到 SearchBar */}
+        <SearchBar onSearch={handleSearch} />  {/* pass handleSearch to SearchBar */}
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-500" /> {/* Increase size of the cart icon */}
         </Link>
-      
-        {/* 显示搜索结果 */}
-        {/* <div> */}
-          {/* {searchResults.length > 0 ? ( */}
-            {/* <ul> */}
-              {/* {searchResults.map((result, index) => ( */}
-                {/* <li key={index}> */}
-                  {/* 访问 result 对象的各个属性进行渲染 */}
-                  {/* <h3>{result.product_name}</h3> */}
-                  {/* 其他你想要展示的属性 */}
-                {/* </li> */}
-              {/* ))} */}
-            {/* </ul> */}
-          {/* ) : ( */}
-            {/* <p>No products found.</p> */}
-          {/* )} */}
-        {/* </div> */}
         {user ? (
           <div className="flex items-center space-x-4">
             <div className="hover:underline hover:text-blue-600">

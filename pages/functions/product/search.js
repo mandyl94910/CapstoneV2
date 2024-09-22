@@ -1,21 +1,22 @@
 //C:\CPRG306\CapstoneV2\pages\functions\product\search.js
 const { Op } = require('sequelize');
-const { Product } = require('../../../server/models'); // 根据项目结构调整导入路径
+const { Product } = require('../../../server/models'); 
 
 const searchProductsByName = async (req, res) => {
     const { query } = req.query;
   
     try {
-      // 使用 Sequelize ORM 根据产品名称进行模糊搜索
+      // Fuzzy search by product name using Sequelize ORM
       const products = await Product.findAll({
         where: {
           product_name: {
-            [Op.iLike]: `%${query}%`, // 使用模糊搜索，查找匹配名称的产品
+            [Op.iLike]: `%${query}%`, // Use fuzzy search, ignoring case, to find products with matching names
           },
         },
       });
   
-      // 返回搜索到的产品列表
+      // Return to the list of searched products
+      //In order to return the queried product data to the front-end via an API and deliver it in a standard, easy-to-handle format.
       res.status(200).json(products);
     } catch (error) {
       console.error('Error searching products:', error);
