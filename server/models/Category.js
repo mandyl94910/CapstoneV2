@@ -1,3 +1,5 @@
+const Product = require("./Product");
+
 module.exports = (sequelize, DataTypes) => {
   const Category = sequelize.define('Category', {
     id: {
@@ -22,6 +24,18 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'category',
     timestamps: false
   });
+
+  // helped by chatGPT
+  // prompt: the product itself has not attribute called sub_for
+  //         but it is connected to category table which has sub_for
+  //         how can i use that attribute to retrieve data
+
+  Category.associate = function(models) {
+    Category.hasMany(models.Product, {
+      foreignKey: 'category_id',       // Foreign key that connects the Product table to Category
+      as: 'products'                   // Alias for the association
+    });
+  };
 
   return Category;
 };

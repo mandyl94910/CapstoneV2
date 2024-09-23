@@ -4,18 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 export default function CategoryHomeGrid(){
 
-    // const categories = [
-    //     { name: 'Mobile Phones & Accessories', image: '/products/laptop.jpg' },
-    //     { name: 'Computers & Accessories', image: '/products/laptop.jpg' },
-    //     { name: 'Smart Home Devices', image: '/products/laptop.jpg' },
-    //     { name: 'TVs & Home Entertainment', image: '/products/laptop.jpg' },
-    //     { name: 'Gaming & Accessories', image: '/products/laptop.jpg' },
-    //     { name: 'Cameras & Photography Gear', image: '/products/laptop.jpg' },
-    //     { name: 'Wearable Devices', image: '/products/laptop.jpg' },
-    //     { name: 'Networking Equipment', image: '/products/laptop.jpg' },
-    //     { name: 'Office Electronics', image: '/products/laptop.jpg' },
-    //   ];
-
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -35,12 +23,6 @@ export default function CategoryHomeGrid(){
     return(
         <div className="container mx-auto mt-8 px-10 h-auto">
             <div className="flex flex-wrap justify-center gap-6">
-                
-                {/* test block
-                <div>
-                    <p>Test line: if images do not show up because there is not image column for category.</p>
-                    <p>After update the image for categories, they would show up.</p>
-                </div> */}
                 
                 {categories.map((category, index) => (
                     <Link href={`/all-products?category=${encodeURIComponent(category.name)}`} key={index}>

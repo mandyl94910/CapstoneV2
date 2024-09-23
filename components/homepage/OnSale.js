@@ -19,14 +19,15 @@ export default function OnSale(){
         
             <div className='h-[730px]'>
                 <div className='grid grid-cols-2 gap-x-6'>
-                    {/* first column - 1 pic */}
-                    <div className="relative h-[605px]">
-                        <div className='h-[605px]'>
+                    {/* first column - Large pic */}
+                    {/* require fixed height and width here because there is 'fill' for image */}
+                    <div className="relative h-[605px]"> 
+                        <div className='h-[605px]  w-full'>
                             <Image
                                 src={products[0].image}
                                 alt={products[0].name}
-                                layout="fill"
-                                objectFit="cover"
+                                fill
+                                style={{ objectFit: 'cover' }}
                                 />
                         </div>
                         {/* <div className="absolute top-5 left-5">
@@ -51,8 +52,8 @@ export default function OnSale(){
                                 <Image
                                 src={products[1].image} 
                                 alt={products[1].name}
-                                layout="fill"
-                                objectFit="cover"
+                                fill
+                                style={{ objectFit: 'cover' }}
                                 />
                             </div>
                            
@@ -67,8 +68,8 @@ export default function OnSale(){
                                 <Image
                                 src={products[2].image} 
                                 alt={products[2].name}
-                                layout="fill"
-                                objectFit="cover"
+                                fill
+                                style={{ objectFit: 'cover' }}
                                 />
                             </div>
                             <div className="pt-4">

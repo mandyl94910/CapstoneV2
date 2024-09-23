@@ -29,14 +29,16 @@ function Header() {
       <Link href="/">
         <div 
           className="flex items-center space-x-2 px-8 min-h-4"
-          style={{minHeight:'80px', minWidth:'200px'}}
+          style={{height:'80px', width:'200px'}}
         > 
           <Image
             src="/logo.png"
             alt="Logo"
-            width={200}
-            height={80}
+            width={160}
+            height={50}
+            style={{ width: 'auto', height: 'auto'}}
             className="cursor-pointer"
+            priority
           />
           {/* <div className="text-2xl font-bold">TOP Tradings</div> */}
         </div>
@@ -72,7 +74,7 @@ function Header() {
               />
             </Link>
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-red-600 text-sm w-24"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm w-24"
               onClick={onLogout}
             >
               Log Out

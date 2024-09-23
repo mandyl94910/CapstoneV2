@@ -19,48 +19,118 @@ export default function Products() {
   const productsPerPage = 16; 
   const { user, onLogout } = useAuth();
 
-  // Fetch categories and products when the component mounts
+  // helped by chatGPT
+  /* prompt: the top level category 'All Products' and all second level categories all 
+  have attribute sub_for === 1, how can i retrieve the top level category without changing
+  the database structure
+  */
+  // hardcode the top level all products
+  const allProductsCategory = {
+    id: 1,  // same as the `sub_for = 1` for second level categories at database
+    name: 'All Products',
+    sub_for: null,
+    subcategories: []
+  };
+  // Fetch category name for sidebar when open this page
+  useEffect(() => {
+      async function fetchAllCategories(){
+        try {
+          //fetch categories
+          const response = await axios.get('http://localhost:3001/api/categories')
+          const categories = response.data;
+          // Build a tree structure for the categories
+          const categoryTree = [allProductsCategory, ...categories
+            .filter(cat => cat.sub_for === 1) // Filter top-level categories
+            .map(parent => ({
+              ...parent,
+              subcategories: categories.filter(sub => sub.sub_for === parent.id), // Find all subcategories
+            }))
+          ];
+
+          setCategories(categoryTree);
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      }
+
+      fetchAllCategories();
+
+  },[]);
+
+
   // Fetch all products when open this page
   useEffect(() => {
-    async function fetchCategoriesAndProducts() {
+    async function fetchAllProducts(){
       try {
-        // Fetch category data from the API
-        const response = await axios.get('http://localhost:3001/api/categories');
-        const categoriesData = response.data;
-
-        // Build a tree structure for the categories
-        const categoryTree = categoriesData
-          .filter(cat => cat.sub_for === 1) // Filter top-level categories
-          .map(parent => ({
-            ...parent,
-            subcategories: categoriesData.filter(sub => sub.sub_for === parent.id), // Find all subcategories
-          }));
-
-        setCategories(categoryTree);
-
-        // Fetch all products, no longer filtering by category
         const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
+        console.log('Fetched products:', productsResponse.data);
         setProducts(productsResponse.data);
       } catch (error) {
-        console.error('Error fetching categories or products:', error);  // Log any errors
+        console.error('Error fetching products:', error);
       }
     }
 
-    fetchCategoriesAndProducts();
+    fetchAllProducts();
 
-  }, []);
+  },[])
+        
+
+  // Fetch categories and products when the component mounts
+  // useEffect(() => {
+  //   async function fetchCategoriesAndProducts() {
+  //     try {
+  //       // Fetch category data from the API
+  //       const response = await axios.get('http://localhost:3001/api/categories');
+  //       const categoriesData = response.data;
+
+  //       // Build a tree structure for the categories
+  //       const categoryTree = categoriesData
+  //         .filter(cat => cat.sub_for === 1) // Filter top-level categories
+  //         .map(parent => ({
+  //           ...parent,
+  //           subcategories: categoriesData.filter(sub => sub.sub_for === parent.id), // Find all subcategories
+  //         }));
+
+  //       setCategories(categoryTree);
+
+  //       // Fetch all products, no longer filtering by category
+  //       const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
+  //       setProducts(productsResponse.data);
+  //     } catch (error) {
+  //       console.error('Error fetching categories or products:', error);  // Log any errors
+  //     }
+  //   }
+
+  //   fetchCategoriesAndProducts();
+
+  // }, []);
 
   // Handle category selection and fetch products for the selected category
+  
   const handleCategorySelect = async (category) => {
     setSelectedCategory(category.name); // Update the selected category
+    // console.log(category.name); // works here
     setCurrentPage(1); 
     try {
-      const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
-      setProducts(response.data);  // Update products based on the selected category
+      if (category.id === 1) {
+        // when select 'All Products', get all products
+        const response = await axios.get('http://localhost:3001/api/products');
+        console.log('All Products',response.data);
+        setProducts(response.data);
+      } else{
+        //fetch products that belong to category and its subCategory
+        const response = await axios.get(`http://localhost:3001/api/products/categories/${category.id}`);
+        // const response = await axios.get(`http://localhost:3001/api/products/association`);
+        console.log('Products for selected category',response.data);
+        setProducts(response.data);  // Update products based on the selected category
+      }
+          
     } catch (error) {
       console.error('Error fetching products by category:', error);  // Log any errors
     }
   };
+
+  
 
   const handleSortChange = (e) => {
     //get new option when user change it
@@ -94,7 +164,8 @@ export default function Products() {
   //calculate the products should be displayed
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  // if 
+  const currentProducts = Array.isArray(products) ? products.slice(indexOfFirstProduct, indexOfLastProduct) : [];
 
   // paginate
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -131,7 +202,7 @@ export default function Products() {
             </select>
           </div>
 
-          <ProductGrid products={products} />  {/* ProductGrid is only rendered on the client side */}
+          <ProductGrid products={currentProducts} />  {/* ProductGrid is only rendered on the client side */}
         
           {/* Pagination */}
           <div className="flex justify-center items-center mt-4">

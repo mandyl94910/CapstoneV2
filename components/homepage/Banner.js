@@ -50,9 +50,9 @@ function Banner() {
             <Image
               src={banner.src}
               alt={banner.alt}
-              layout="fill"
-              objectFit="cover"
-              // className="w-full h-auto"
+              fill
+              style={{ objectFit: 'cover' }}
+              priority={index === 0} //only set priority for the first image
             />
             <div className={`${banner.textposition}`}>
               <h1 className="text-6xl font-extrabold mb-4">{banner.title}</h1>

@@ -17,7 +17,7 @@ const getCategories = async (req, res) => {
   }
 };
 
-// Define the getParentCategories for Homepage
+// Define the getPrimaryCategories for Homepage
 /* helped by chatGPT, 
 *  prompt: can i retrieve categories that only sub_for 1 and category name is not "All Products"
 */ 
