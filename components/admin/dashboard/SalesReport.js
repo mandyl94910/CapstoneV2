@@ -11,6 +11,13 @@ import {
   Legend,
 } from "chart.js";
 
+/*
+  Sales Report Line Chart using react-chartjs-2 with Chart.js.
+  - Reference for integration with Chart.js: 
+    ReplayBird (https://replaybird.com/blog/react-chartjs-2-graphs)
+  The data is hardcoded, but this can be replaced with dynamic data fetched from Database.
+*/
+
 // Register chart.js components
 ChartJS.register(
   CategoryScale,

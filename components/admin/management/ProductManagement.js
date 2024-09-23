@@ -100,7 +100,7 @@ const ProductManagement = () => {
   };
 
   return (
-    <div>
+    <div className="border-t-2">
       {/* Product Data Table */}
       <div className="bg-white p-4 rounded shadow-md">
         <DataTable

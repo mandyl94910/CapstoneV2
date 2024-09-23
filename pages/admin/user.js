@@ -9,7 +9,7 @@ const UserPage = () => {
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
         <Header title="User Management" />
-        <UserManagement />
+        <UserManagement /> {/* Data is managed inside this component */}
       </div>
     </div>
   );
