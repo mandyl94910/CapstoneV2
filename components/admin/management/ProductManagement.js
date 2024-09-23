@@ -77,7 +77,11 @@ const productStats = [
           ]}
           data={products.map((product, index) => {
             return {
-              ...product,
+              product_id: product.product_id,
+              product_name: product.product_name,
+              price: product.price,
+              quantity: product.quantity,
+              category: product.Category && product.Category.name ? product.Category.name : 'N/A',  // 访问 Category.name
               visibility: (
                 <Switch
                   checked={!product.visibility}
