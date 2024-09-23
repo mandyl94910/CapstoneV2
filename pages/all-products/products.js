@@ -62,7 +62,7 @@ export default function Products({ user, onLogout }) {
       }
     }
 
-    // 只有当 router.query 准备好时才执行 fetchCategoriesAndProducts
+    // Execute fetchCategoriesAndProducts only when the router.query is ready.
     if (router.isReady) {
       fetchCategoriesAndProducts();
     }
