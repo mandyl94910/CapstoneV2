@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
 import { useAuth } from "../../hooks/useAuth";
+import { useRouter } from "next/router";
 
 
 function Header() {
 
   const { user, onLogout } = useAuth();
-
+  const router = useRouter();
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
       <nav className="flex space-x-6 pl-16 "> {/* Increase space between the links */}
-        <Link href="/admin-dashboard" className="hover:text-blue-500">
+        <Link href="/admin-dashboard" 
+          className="hover:text-blue-600">
           admin dashboard
         </Link>
-        <Link href="/all-products"  className="hover:text-blue-500">
+        <Link href="/all-products?category=1"  
+          className="hover:text-blue-600"
+          // onClick= {()=>{router.push(`/all-products?category=1`)}}
+          >
           All Products
         </Link>
         <Link href="#">
@@ -29,18 +34,19 @@ function Header() {
       <Link href="/">
         <div 
           className="flex items-center space-x-2 px-8 min-h-4"
+          // set the container size
           style={{height:'80px', width:'200px'}}
         > 
           <Image
             src="/logo.png"
             alt="Logo"
+            // image size
             width={160}
             height={50}
             style={{ width: 'auto', height: 'auto'}}
             className="cursor-pointer"
             priority
           />
-          {/* <div className="text-2xl font-bold">TOP Tradings</div> */}
         </div>
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}

@@ -79,7 +79,6 @@ import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
   const [selectedParent, setSelectedParent] = useState(null); // Track selected parent category
-  const router = useRouter(); // hook for routing
 
 
   // Toggle category expansion for parent categories
@@ -90,13 +89,6 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
     }));
   };
 
-  ////////////
-  const handleCategoryClick = (category) => {
-    if (!category.subcategories || category.subcategories.length === 0) {
-      onCategorySelect(category); // Trigger product fetch
-      router.push(`/all-products?category=${category.id}`); // Update the URL with selected category
-    }
-  };
 
   // Function to render categories and their subcategories
   const renderCategories = (category, level = 0) => {
@@ -118,7 +110,8 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
       >
         <div className="flex justify-between items-center">
           <span 
-            className={`${isSelected || isParentSelected ? 'text-white' : ''}`}
+            className={`${isSelected ? 'text-white' : ''}`}
+            // className={`${isSelected || isParentSelected ? 'text-white' : ''}`}
             onClick={() => {
               if (isParent) {
                 // Click the parent to expand/collapse, but only select the parent when not expanding

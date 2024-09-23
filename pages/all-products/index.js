@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-import { useAuth } from '../../hooks/useAuth';
+import { useRouter } from 'next/router';
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
@@ -17,7 +17,7 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);  
   const [sortOption, setSortOption] = useState('default');
   const productsPerPage = 16; 
-  const { user, onLogout } = useAuth();
+  const router = useRouter();
 
   // helped by chatGPT
   /* prompt: the top level category 'All Products' and all second level categories all 
@@ -46,33 +46,49 @@ export default function Products() {
               subcategories: categories.filter(sub => sub.sub_for === parent.id), // Find all subcategories
             }))
           ];
-
           setCategories(categoryTree);
         } catch (error) {
           console.error('Error fetching categories:', error);
         }
       }
-
       fetchAllCategories();
-
   },[]);
 
 
-  // Fetch all products when open this page
+  // Fetch products based on the selected category or URL parameter
   useEffect(() => {
-    async function fetchAllProducts(){
+    const { category } = router.query;
+    // define the method
+    async function fetchProducts(categoryId){
       try {
-        const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
-        console.log('Fetched products:', productsResponse.data);
-        setProducts(productsResponse.data);
+        if (categoryId ===1 || !categoryId){
+          //this make the link to 'All Products' on header work  
+          setSelectedCategory('All Products');
+          const productsResponse = await axios.get('http://localhost:3001/api/products');
+          console.log('Fetched all products:', productsResponse.data);
+          setProducts(productsResponse.data);
+        } else {
+          // based on category selected
+          const productsResponse = await axios.get(`http://localhost:3001/api/products/categories/${categoryId}`);
+          console.log('Fetched products for category:', productsResponse.data);
+          setProducts(productsResponse.data);
+        }
+        // const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
+        // console.log('Fetched products:', productsResponse.data);
+        // setProducts(productsResponse.data);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     }
 
-    fetchAllProducts();
+    // call the method
+    if (category) {
+      fetchProducts(parseInt(category, 10)); 
+    } else {
+      fetchProducts(1);
+    }
 
-  },[])
+  },[router.query]);
         
 
   // Fetch categories and products when the component mounts
@@ -111,6 +127,9 @@ export default function Products() {
     setSelectedCategory(category.name); // Update the selected category
     // console.log(category.name); // works here
     setCurrentPage(1); 
+
+    router.push(`/all-products?category=${category.id}`);
+
     try {
       if (category.id === 1) {
         // when select 'All Products', get all products
@@ -180,7 +199,7 @@ export default function Products() {
 
   return (
     <main>
-      <Header user={user} onLogout={onLogout} />  {/* Pass user and logout functionality to the Header */}
+      <Header /> 
       <div className="flex ml-6 mt-6">
         <CateSidebar
           categories={categories}  // Pass categories data to CateSidebar
@@ -202,7 +221,9 @@ export default function Products() {
             </select>
           </div>
 
-          <ProductGrid products={currentProducts} />  {/* ProductGrid is only rendered on the client side */}
+          {/* ProductGrid is only rendered on the client side */}
+          {currentProducts ? <ProductGrid products={currentProducts} /> : <p>Loading...</p>}
+      
         
           {/* Pagination */}
           <div className="flex justify-center items-center mt-4">
