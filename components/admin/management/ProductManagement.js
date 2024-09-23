@@ -5,13 +5,13 @@ import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState([]);  // 初始化为空数组，等待从API填充数据
+  const [products, setProducts] = useState([]);  // Initialized as an empty array, waiting to be populated with data from the API
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         const response = await axios.get('http://localhost:3001/api/products-admin/datatable')
-        setProducts(response.data); // 使用从API获取的数据更新状态
+        setProducts(response.data); // Update the status using the data retrieved from the API
       } catch (error) {
         console.error('Error fetching products:', error);
       }
@@ -25,17 +25,17 @@ const ProductManagement = () => {
 const productStats = [
   {
     title: "Total Products",
-    value: products.length.toString(),  // 动态显示总产品数
+    value: products.length.toString(), 
     description: "Based on current inventory",
   },
   {
     title: "Total Categories",
-    value: "15",  // 需要动态计算或更新
+    value: "15", 
     description: "Categories available",
   },
   {
     title: "Total Values",
-    value: "$3.2k",  // 需要动态计算或更新
+    value: "$3.2k", 
     description: "Estimated total value",
   },
 ];
