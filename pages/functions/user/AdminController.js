@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 //Set the adminid to variable first, since there may be different admins later.
+//And we may design login and register logic for admin later.
 const adminId = 1;
 
 // Function name: getAdminInformation
@@ -130,7 +131,53 @@ function saveAdminDetailsToDatabase(name, title, imagePath,adminId) {
     });
 }
 
+// Function name: changeCredentials
+// Description: Updates the admin's credentials (PIN or password) after validating the current credentials provided by the user.
+// Parameters:
+//   currentValue (string): The current PIN or password entered by the user.
+//   newValue (string): The new PIN or password that the user wishes to set.
+//   type (string): Specifies whether the user is updating the "PIN" or "Password".
+// Functionality:
+//   This function retrieves the admin's current PIN or password from the database based on the `adminId` (assumed to be 1).
+//   It then compares the provided `currentValue` with the value stored in the database.
+//   If the values match, the function updates the corresponding column (PIN or password) in the database with the new value.
+//   If there are discrepancies or errors (e.g., mismatched credentials, database issues), the function returns the appropriate status and error message.
+//   If successful, the function returns a success message indicating that the PIN or password has been updated.
+// Example:
+//   When the function receives { currentValue: "1234", newValue: "5678", type: "PIN" }, it first checks if "1234" matches the current PIN stored in the admin table for adminId = 1.
+//   If matched, the function updates the PIN to "5678" in the admin's record.
+const changeCredentials = async (req, res) => {
+    const { currentValue, newValue, type } = req.body;
+    
+    try {
+      // Get the current administrator's information from the database
+      const query = `SELECT ${type.toLowerCase()} FROM admin WHERE id = $1`; 
+      const result = await db.query(query, [adminId]);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+  
+      const currentDatabaseValue = result.rows[0][type.toLowerCase()]; 
+  
+      // Check that the currently entered value matches the value in the database
+      if (currentValue !== currentDatabaseValue) {
+        return res.status(400).json({ message: `The Current ${type} you input is not correct` });
+      }
+  
+      // Update the corresponding values in the database
+      const updateQuery = `UPDATE admin SET ${type.toLowerCase()} = $1 WHERE id = $2`;
+      await db.query(updateQuery, [newValue, adminId]);
+  
+      return res.json({ message: `${type} changed successfully!` });
+    } catch (error) {
+      console.error('Error updating credentials:', error);
+      return res.status(500).json({ message: 'Error updating credentials', error });
+    }
+  };
+
 module.exports = {
     getAdminInformation,
-    updateAdminDetails
+    updateAdminDetails,
+    changeCredentials
   };

@@ -13,7 +13,7 @@ events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for liste
 
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, registerFunction,getUserInformation } = require('../pages/functions/user/AccountController');
-const { getAdminInformation,updateAdminDetails  } = require('../pages/functions/user/AdminController');
+const { getAdminInformation,updateAdminDetails,changeCredentials  } = require('../pages/functions/user/AdminController');
 const { getCategories } = require('../pages/functions/category/CategoriesController');
 const { getAllProducts,getAllProductsForDataTable, getProductsByCategory, getProductById } = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
@@ -103,6 +103,9 @@ app.get('/api/profile-admin', getAdminInformation);
 // 路由配置
 app.post('/api/update-admin', upload.single('profilePicture'), updateAdminDetails);
 
+
+// 路由配置
+app.post('/api/changeCredentials', changeCredentials);
 
 // Start the server
 app.listen(3001, () => {
