@@ -36,14 +36,11 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
           <tbody>
             {currentData.map((row, index) => (
               <tr key={index} className="bg-white even:bg-gray-100">
-                <td className="p-3 border border-gray-300">{row.product_id}</td>
-                <td className="p-3 border border-gray-300">{row.product_name}</td>
-                <td className="p-3 border border-gray-300">{row.price}</td>
-                <td className="p-3 border border-gray-300">{row.quantity}</td>
-                <td className="p-3 border border-gray-300">
-                  {row.category ? row.category : "N/A"}
-                </td>
-                <td className="p-3 border border-gray-300">{row.visibility}</td>
+                {Object.values(row).map((value, idx) => (
+                  <td key={idx} className="p-3 border border-gray-300">
+                    {value}
+                  </td>
+                ))}
                 <td className="p-2 border border-gray-300 w-24">
                   <button
                     onClick={() => onEdit(index)}

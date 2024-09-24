@@ -1,3 +1,4 @@
+//C:\CPRG306\CapstoneV2\components\admin\management\ProductManagement.js
 import React, { useState, useEffect } from "react";
 import axios from 'axios'; // 确保已导入axios
 import DataTable from "./DataTable";
