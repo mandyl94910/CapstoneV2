@@ -1,6 +1,8 @@
-//C:\CPRG306\CapstoneV2\components\admin\management\ProductManagement.js
+
 import React, { useState, useEffect } from "react";
-import axios from 'axios'; // 确保已导入axios
+import { useRouter } from "next/router";
+import axios from 'axios'; 
+
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
@@ -42,6 +44,9 @@ const productStats = [
 ];
 
 
+const ProductManagement = () => {
+  const [products, setProducts] = useState(initialProductData);
+  const router = useRouter(); // Initialize the router
 
   // Toggle visibility state
     const handleToggleVisibility = (index) => {
@@ -58,13 +63,14 @@ const productStats = [
     console.log("Delete product:", index);
   };
 
+  // Navigate to the Add Product page
   const handleAddProduct = () => {
-    console.log("Add new product");
+    router.push("/admin/addProduct"); // Redirect to the Add Product page
   };
 
 
   return (
-    <div>
+    <div className="border-t-2">
       {/* Product Data Table */}
       <div className="bg-white p-4 rounded shadow-md">
         <DataTable
@@ -85,7 +91,7 @@ const productStats = [
               category: product.Category && product.Category.name ? product.Category.name : 'N/A',  // 访问 Category.name
               visibility: (
                 <Switch
-                  checked={!product.visibility}
+                  checked={product.visibility} // Ensure checked state reflects visibility
                   onChange={() => handleToggleVisibility(index)}
                 />
               ),
@@ -97,7 +103,7 @@ const productStats = [
         {/* Add Product Button at the bottom-right corner */}
         <div className="flex justify-end mt-4">
           <button
-            onClick={handleAddProduct}
+            onClick={handleAddProduct} // Navigate to Add Product page on click
             className="bg-blue-500 text-white py-2 px-4 rounded"
           >
             Add Product
