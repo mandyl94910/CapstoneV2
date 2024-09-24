@@ -7,11 +7,83 @@ const EditCredentials = ({ type }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+     // Validate the format first
+    if (!validationForm()) {
+      return;
+    }
+    // Check that the new password matches the confirmation password
     if (newValue !== confirmValue) {
       alert(`New ${type} and confirmation ${type} do not match!`);
       return;
     }
-    alert(`${type} changed successfully!`);
+    // Check if the new password is the same as the old one
+  if (newValue === currentValue) {
+    alert(`New ${type} cannot be the same as the current ${type}!`);
+    return;
+  }
+    // Send data to the backend
+  fetch('http://localhost:3001/api/changeCredentials', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      currentValue,
+      newValue,
+      type,  
+    }),
+  })
+  .then(async (res) => {
+    // Check the response status code, if it's not 200, there's an error
+    if (!res.ok) {
+      const errorData = await res.json(); // Get the error message returned by the backend
+      alert(errorData.message || 'An error occurred');
+      return;
+    }
+
+    // Successful processing
+    return res.json();
+  })
+  .then((data) => {
+    if (data) {
+      alert(data.message); 
+    }
+  })
+  .catch((err) => {
+    console.error('Error:', err);
+    alert('Failed to change credentials due to a network error');
+  });
+  };
+
+  // Format of the validation input
+  //using Regular Expressions:
+  //It can be used to search, match, and replace specific patterns in strings, 
+  //and is very powerful and widely used for processing text.
+
+ // Basic components of a Regular Expressions:
+// Characters: Ordinary characters or special characters (metacharacters), such as a-z, A-Z, 0-9, *, +, etc.
+// Metacharacters: Special characters that define patterns, such as . (matches any character), ^ (matches the start), $ (matches the end), etc.
+// Character set: Use square brackets [] to represent a group of characters to match, for example, [a-z] matches lowercase letters.
+// Quantifiers: Specifies the number of times a character is repeated, for example, {3} matches exactly three times, {6,15} matches between 6 and 15 times.
+
+  const validationForm = () => {
+    const pinRegex = /^[a-zA-Z0-9]{4}$/; // 4 digits or letters
+    const passwordRegex = /^[a-zA-Z0-9]{6,15}$/; //6-15 digits or letters
+
+    if (type === 'PIN') {
+      // Verify that the PIN is a 4-digit number or letter
+      if (!pinRegex.test(newValue)) {
+        alert('PIN must be exactly 4 alphanumeric characters!');
+        return false;
+      }
+    } else if (type === 'Password') {
+      // Verify that the password is 6-15 digits or letters
+      if (!passwordRegex.test(newValue)) {
+        alert('Password must be 6-15 alphanumeric characters!');
+        return false;
+      }
+    }
+    return true;
   };
 
   return (
