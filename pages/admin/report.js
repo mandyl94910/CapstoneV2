@@ -23,9 +23,6 @@ const Report = () => {
 
         {/* ReportManagement for Sales Report */}
         <ReportManagement />
-
-        {/* InfoCards for Product Data */}
-        <InfoCards stats={productStats} />
       </div>
     </div>
   );

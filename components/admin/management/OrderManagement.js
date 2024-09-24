@@ -80,15 +80,6 @@ const OrderManagement = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-        {/* Add Order Button at the bottom-right corner */}
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={handleAddOrder} // Navigate to Add Order page on click
-            className="bg-blue-500 text-white py-2 px-4 rounded"
-          >
-            Add Order
-          </button>
-        </div>
       </div>
 
       {/* Order Info Cards */}

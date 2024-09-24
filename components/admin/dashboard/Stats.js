@@ -5,28 +5,28 @@ const Stats = () => {
   const [statsData, setStatsData] = useState([
     {
       id: 1,
-      icon: <FaTruck />,
+      icon: <FaTruck className="text-slate-500" />,
       title: "Total Order",
       value: 40,
       date: "28 June 2024",
     },
     {
       id: 2,
-      icon: <FaBox />,
+      icon: <FaBox className="text-green-500" />,
       title: "Total Products",
       value: 59,
       date: "28 June 2024",
     },
     {
       id: 3,
-      icon: <FaUsers />,
+      icon: <FaUsers className="text-indigo-500" />,
       title: "Total Users",
       value: 25,
       date: "28 June 2024",
     },
     {
       id: 4,
-      icon: <FaDollarSign />,
+      icon: <FaDollarSign className="text-red-500" />,
       title: "Total Sales",
       value: "$740.25",
       date: "28 June 2024",
@@ -40,7 +40,7 @@ const Stats = () => {
           key={statsData.id}
           className="p-4 flex flex-col items-left rounded shadow-md border border-indigo-500"
         >
-          <div className="text-3xl text-indigo-500 ">{statsData.icon}</div>
+          <div className="text-3xl">{statsData.icon}</div>
           <p className="text-md font-semibold mt-2">{statsData.title}</p>
           <p className="text-3xl pb-4">{statsData.value}</p>
           <span className="text-sm text-gray-500 border-t-2 border-gray-400 pt-2">

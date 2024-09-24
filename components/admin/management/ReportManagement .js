@@ -11,6 +11,15 @@ import {
   Legend,
 } from "chart.js";
 
+/*
+  Sales Report Line Chart using react-chartjs-2 with Chart.js.
+  - Reference for integration with Chart.js: 
+  knoldus https://blog.knoldus.com/how-to-render-charts-in-react-using-react-chartjs-2-and-chart-js/ 
+  ReplayBird (https://replaybird.com/blog /react-chartjs-2-graphs)
+  ** this blog was main reference to make the code but unfortunately the post was deleted 
+  ** The data is hardcoded, but this can be replaced with dynamic data fetched from Database.
+*/
+
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -29,7 +38,7 @@ const ReportManagement = () => {
   const getChartData = () => {
     const labels =
       period === "weekly"
-        ? ["Week 1", "Week 2", "Week 3", "Week 4"]
+        ? ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"]
         : period === "yearly"
         ? ["2020", "2021", "2022", "2023"]
         : [
@@ -63,7 +72,7 @@ const ReportManagement = () => {
                   3000, 2500, 3200, 2900, 3600, 4000, 4500, 4200, 4700, 5000,
                   5500, 6000,
                 ],
-          borderColor: "rgba(72, 187, 120, 1)", // Green border
+          borderColor: "rgba(72, 187, 120, 1)", // Green
           backgroundColor: "rgba(156, 163, 175, 0.5)", // Gray background
           fill: true,
           tension: 0.4,

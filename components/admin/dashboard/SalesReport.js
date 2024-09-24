@@ -53,7 +53,7 @@ const SalesReport = () => {
           3000, 2500, 3200, 2900, 3600, 4000, 4500, 4200, 4700, 5000, 5500,
           6000,
         ],
-        borderColor: "rgba(0, 0, 0, 0.8)",
+        borderColor: "rgba(59, 130, 246, 1)", // Blue
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
         tension: 0.4, // Curve of the line
@@ -72,7 +72,6 @@ const SalesReport = () => {
 
   return (
     <div className="p-4 bg-white shadow-md rounded border border-indigo-500">
-      <h3 className="text-lg font-semibold mb-4">Monthly Sale Report</h3>
       <div className="grid grid-cols-4 gap-4">
         {/* Line Chart for Monthly Sales */}
         <Line data={data} options={options} />

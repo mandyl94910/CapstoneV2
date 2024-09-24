@@ -84,15 +84,6 @@ const UserManagement = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-        {/* Add User Button at the bottom-right corner */}
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={handleAddUser} // Navigate to Add User page on click
-            className="bg-blue-500 text-white py-2 px-4 rounded"
-          >
-            Add User
-          </button>
-        </div>
       </div>
 
       {/* User Info Cards */}
