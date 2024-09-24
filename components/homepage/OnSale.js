@@ -5,9 +5,9 @@ import Image from "next/image";
 export default function OnSale(){
 
     const products = [
-        { id: 1, name: 'phone', image: '/images/onsale/headphones1.jpg'},
-        { id: 2, name: 'phone', image: '/images/onsale/headphones.jpg'},
-        { id: 3, name: 'phone', image: '/images/onsale/smartwatch.jpg'}
+        { id: 1, name: 'headphones', image: '/images/onsale/headphones1.jpg'},
+        { id: 2, name: 'headphones', image: '/images/onsale/headphones.jpg'},
+        { id: 3, name: 'smartwatch', image: '/images/onsale/smartwatch.jpg'}
     ]
 
     return(
@@ -22,12 +22,14 @@ export default function OnSale(){
                     {/* first column - Large pic */}
                     {/* require fixed height and width here because there is 'fill' for image */}
                     <div className="relative h-[605px]"> 
-                        <div className='h-[605px]  w-full'>
+                        <div className='relative h-[605px]  w-full'>
                             <Image
                                 src={products[0].image}
                                 alt={products[0].name}
                                 fill
                                 style={{ objectFit: 'cover' }}
+                                priority
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                                 />
                         </div>
                         {/* <div className="absolute top-5 left-5">
@@ -48,12 +50,13 @@ export default function OnSale(){
                     {/* secon column - 2 pics */}
                     <div className="grid h-[750px]">
                         <div className="relative h-[230px]">
-                            <div className='h-[230px]'>
+                            <div className='relative h-[230px] w-full'>
                                 <Image
                                 src={products[1].image} 
                                 alt={products[1].name}
                                 fill
                                 style={{ objectFit: 'cover' }}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                                 />
                             </div>
                            
@@ -64,12 +67,13 @@ export default function OnSale(){
                             </div>
                         </div>
                         <div className="relative h-[230px]">
-                            <div className='h-[230px]'>
+                            <div className='relative h-[230px] w-full'>
                                 <Image
                                 src={products[2].image} 
                                 alt={products[2].name}
                                 fill
                                 style={{ objectFit: 'cover' }}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                                 />
                             </div>
                             <div className="pt-4">

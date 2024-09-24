@@ -24,7 +24,7 @@ export default function Products() {
   have attribute sub_for === 1, how can i retrieve the top level category without changing
   the database structure
   */
-  // hardcode the top level all products
+  // hardcode the top level 'all products'
   const allProductsCategory = {
     id: 1,  // same as the `sub_for = 1` for second level categories at database
     name: 'All Products',
@@ -53,6 +53,13 @@ export default function Products() {
       }
       fetchAllCategories();
   },[]);
+
+  // useEffect(() => {
+  //   const { category: categoryId } = router.query;
+  //   if (categoryId) {
+  //     handleCategorySelect({ id: Number(categoryId)});
+  //   }
+  // }, [router.query]);
 
 
   // Fetch products based on the selected category or URL parameter

@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 function Header() {
 
   const { user, onLogout } = useAuth();
-  const router = useRouter();
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
@@ -33,18 +32,17 @@ function Header() {
       </nav>
       <Link href="/">
         <div 
-          className="flex items-center space-x-2 px-8 min-h-4"
+          className=" relative mx-8 cursor-pointer"
           // set the container size
-          style={{height:'80px', width:'200px'}}
+          style={{height:'52px', width:'165px'}}
         > 
           <Image
             src="/logo.png"
             alt="Logo"
             // image size
-            width={160}
-            height={50}
-            style={{ width: 'auto', height: 'auto'}}
-            className="cursor-pointer"
+            width={165}
+            height={52}
+            style={{ objectFit:"cover" }}
             priority
           />
         </div>
