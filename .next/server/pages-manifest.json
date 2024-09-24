@@ -1,0 +1,10 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/all-products": "pages/all-products.js",
+  "/admin/settings/settings": "pages/admin/settings/settings.js",
+  "/admin/settings/editAccount": "pages/admin/settings/editAccount.js",
+  "/admin/dashboard": "pages/admin/dashboard.js",
+  "/admin/protection": "pages/admin/protection.js"
+}
