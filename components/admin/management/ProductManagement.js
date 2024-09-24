@@ -1,55 +1,49 @@
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from 'axios'; 
-
+import axios from "axios"; // 确保已导入axios
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState([]);  // Initialized as an empty array, waiting to be populated with data from the API
-
+  const [products, setProducts] = useState([]); // Initialized as an empty array, waiting to be populated with data from the API
+  const router = useRouter(); // Initialize the router
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:3001/api/products-admin/datatable')
+        const response = await axios.get(
+          "http://localhost:3001/api/products-admin/datatable"
+        );
         setProducts(response.data); // Update the status using the data retrieved from the API
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       }
     }
 
     fetchProducts();
   }, []);
 
-
-// Product status information
-const productStats = [
-  {
-    title: "Total Products",
-    value: products.length.toString(), 
-    description: "Based on current inventory",
-  },
-  {
-    title: "Total Categories",
-    value: "15", 
-    description: "Categories available",
-  },
-  {
-    title: "Total Values",
-    value: "$3.2k", 
-    description: "Estimated total value",
-  },
-];
-
-
-const ProductManagement = () => {
-  const [products, setProducts] = useState(initialProductData);
-  const router = useRouter(); // Initialize the router
+  // Product status information
+  const productStats = [
+    {
+      title: "Total Products",
+      value: products.length.toString(),
+      description: "Based on current inventory",
+    },
+    {
+      title: "Total Categories",
+      value: "15",
+      description: "Categories available",
+    },
+    {
+      title: "Total Values",
+      value: "$3.2k",
+      description: "Estimated total value",
+    },
+  ];
 
   // Toggle visibility state
-    const handleToggleVisibility = (index) => {
+  const handleToggleVisibility = (index) => {
     const updatedProducts = [...products];
     updatedProducts[index].visibility = !updatedProducts[index].visibility;
     setProducts(updatedProducts);
@@ -63,11 +57,9 @@ const ProductManagement = () => {
     console.log("Delete product:", index);
   };
 
-  // Navigate to the Add Product page
   const handleAddProduct = () => {
     router.push("/admin/addProduct"); // Redirect to the Add Product page
   };
-}
 
   return (
     <div className="border-t-2">
@@ -88,10 +80,13 @@ const ProductManagement = () => {
               product_name: product.product_name,
               price: product.price,
               quantity: product.quantity,
-              category: product.Category && product.Category.name ? product.Category.name : 'N/A',  // 访问 Category.name
+              category:
+                product.Category && product.Category.name
+                  ? product.Category.name
+                  : "N/A", // 访问 Category.name
               visibility: (
                 <Switch
-                  checked={product.visibility} // Ensure checked state reflects visibility
+                  checked={!product.visibility}
                   onChange={() => handleToggleVisibility(index)}
                 />
               ),
