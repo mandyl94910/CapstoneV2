@@ -67,7 +67,7 @@ const ProductManagement = () => {
   const handleAddProduct = () => {
     router.push("/admin/addProduct"); // Redirect to the Add Product page
   };
-
+}
 
   return (
     <div className="border-t-2">
