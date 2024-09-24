@@ -1,10 +1,13 @@
 //C:\CPRG306\CapstoneV2\pages\all-products\products.js
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import dynamic from "next/dynamic"; // Import dynamic to enable dynamic loading
-import CateSidebar from "../../components/category/CateSidebar";
-import Header from "../../components/common/Header";
-import Footer from "../../components/common/Footer";
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
+import { useRouter } from 'next/router'; 
+import CateSidebar from '../../components/category/CateSidebar';
+import Header from '../../components/common/Header';
+import Footer from '../../components/common/Footer';
+
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(
@@ -15,9 +18,19 @@ const ProductGrid = dynamic(
 export default function Products({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState("All Products");
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]); // Initialize as an empty array
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 20;
+  const [products, setProducts] = useState([]);  // Initialize as an empty array
+  const [productDisplayed, setProductDisplayed] = useState([]); // Creates the productDisplayed state, which defaults to the passed data or an empty array.
+  const [currentPage, setCurrentPage] = useState(1);  
+  const [searchQuery, setSearchQuery] = useState('');  // Used to save the user's search input
+  const productsPerPage = 20;  
+  const router = useRouter();  // Getting Route Objects
+  const { searchQuery: routerSearchQuery } = router.query;  // Securely deconstruct searchQuery from router.query
+
+  // Updated search input
+  const handleSearchQueryChange = (query,searchResults) => {
+    setSearchQuery(query);
+    setProductDisplayed(searchResults);  // Updated to show products as search results
+  };
 
   // Fetch categories and products when the component mounts
   useEffect(() => {
@@ -41,28 +54,41 @@ export default function Products({ user, onLogout }) {
 
         setCategories(categoryTree);
 
-        // Fetch all products, no longer filtering by category
-        const productsResponse = await axios.get(
-          "http://localhost:3001/api/products"
-        ); // Request all products
-        setProducts(productsResponse.data);
+        //  If productDisplayed is null, get all products.
+        if (routerSearchQuery) {
+          const searchResponse = await axios.get(`http://localhost:3001/api/productsName?query=${routerSearchQuery}`);
+          setProducts(searchResponse.data);  // Update Search Results
+          setProductDisplayed(searchResponse.data);  // Update the currently displayed products as search results
+          setSearchQuery(routerSearchQuery);  // Update Search Queries 
+        } else if (productDisplayed.length === 0) {
+          const productsResponse = await axios.get('http://localhost:3001/api/products'); 
+          setProducts(productsResponse.data);
+          setProductDisplayed(productsResponse.data);
+        }
       } catch (error) {
-        console.error("Error fetching categories or products:", error); // Log any errors
+        console.error('Error fetching categories or products:', error);
       }
     }
 
-    fetchCategoriesAndProducts();
-  }, []);
+    // Execute fetchCategoriesAndProducts only when the router.query is ready.
+    if (router.isReady) {
+      fetchCategoriesAndProducts();
+    }
+
+  }, [router.isReady, routerSearchQuery]);
 
   // Handle category selection and fetch products for the selected category
   const handleCategorySelect = async (category) => {
     setSelectedCategory(category.name); // Update the selected category
     setCurrentPage(1);
     try {
-      const response = await axios.get(
-        `http://localhost:3001/api/products/category/${category.id}`
-      );
-      setProducts(response.data); // Update products based on the selected category
+      const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
+      if (response.data.length > 0) {
+        setProductDisplayed(response.data); // Update the currently displayed products to the selected category products
+      } else {
+        console.warn('No products found for this category.');
+        setProductDisplayed([]);  // Clear displayed products
+      }
     } catch (error) {
       console.error("Error fetching products by category:", error); // Log any errors
     }
@@ -89,8 +115,11 @@ export default function Products({ user, onLogout }) {
 
   return (
     <main>
-      <Header user={user} onLogout={onLogout} />{" "}
-      {/* Pass user and logout functionality to the Header */}
+      <Header 
+      user={user} 
+      onLogout={onLogout} 
+      onSearchQueryChange={handleSearchQueryChange} 
+      />  {/* Pass user and logout functionality to the Header */}
       <div className="flex ml-6 mt-6">
         <CateSidebar
           categories={categories} // Pass categories data to CateSidebar
@@ -99,13 +128,17 @@ export default function Products({ user, onLogout }) {
         />
         <div className="flex-1 p-6">
           <div className="flex justify-between mb-6">
-            <h1 className="text-2xl font-bold">{selectedCategory}</h1>{" "}
-            {/* Display the selected category */}
-          </div>
-          <ProductGrid products={products} />{" "}
-          {/* ProductGrid is only rendered on the client side */}
-          {/* Pagination */}
-          <div className="flex justify-center items-center mt-4">
+            {/* Display the appropriate title according to the different situations */}
+          {searchQuery ? (
+              <h1 className="text-2xl font-bold">Products including "{searchQuery}"</h1>
+            ) : (
+              <h1 className="text-2xl font-bold">{selectedCategory}</h1>  // Display the selected category
+            )}
+        </div>
+        <ProductGrid products={productDisplayed} />  {/* ProductGrid is only rendered on the client side */}
+        
+        {/* Pagination */}
+        <div className="flex justify-center items-center mt-4">
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}

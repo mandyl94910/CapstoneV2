@@ -1,3 +1,4 @@
+//C:\CPRG306\CapstoneV2\components\admin\management\UserManagement.js
 import React, { useState } from "react";
 import { useRouter } from "next/router"; // Import useRouter for navigation
 import DataTable from "./DataTable";

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+//C:\CPRG306\CapstoneV2\components\common\Header.js
+import React, { useState } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";

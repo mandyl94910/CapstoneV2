@@ -7,7 +7,7 @@ exports.seed = async function(knex) {
   await knex('customer').del();
 
   // Define the number of customers to be generated
-  const numberOfCustomers = 50000; 
+  const numberOfCustomers = 500; 
   // Define the batch size for inserting data into the database in chunks
   const batchSize = 200; 
   // Create a Set to store used email addresses to ensure uniqueness
