@@ -1,26 +1,10 @@
-//C:\CPRG306\CapstoneV2\components\common\Header.js
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
-import SearchBar from '../common/SearchBar';
 
-function Header({ user, onLogout, onSearchQueryChange  }) {
-  const [searchResults, setSearchResults] = useState([]);
+function Header({ user, onLogout }) {
 
-  const handleSearch = async (query) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/productsName?query=${query}`);
-      //response.json() is a method that returns a Promise that will parse the stream of the response body and convert it to a JSON object. 
-      //This is because the server usually sends JSON data in the form of a string, 
-      //and the front-end needs to convert this JSON string into a JavaScript object so that it can be used by other functions or operations in the program.
-      const data = await response.json();
-      setSearchResults(data);
-      onSearchQueryChange(query,data);  // Update the search status in the parent component
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
@@ -55,11 +39,17 @@ function Header({ user, onLogout, onSearchQueryChange  }) {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-        <SearchBar onSearch={handleSearch} />  {/* pass handleSearch to SearchBar */}
+          <input
+            type="text"
+            placeholder="Search"
+            className="p-2 border rounded pl-10" 
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" /> {/* Adjust icon position */}
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-500" /> {/* Increase size of the cart icon */}
         </Link>
+      
         {user ? (
           <div className="flex items-center space-x-4">
             <div className="hover:underline hover:text-blue-600">
