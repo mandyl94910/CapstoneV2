@@ -1,10 +1,14 @@
 import React from "react";
 
-const Profile = () => {
+const Profile = ({adminId}) => {
+
+  const imgSrc = `/images/admin/${adminId}.webp`;
+  console.log(imgSrc)
+
   return (
     <div className="flex flex-col items-center">
       <img
-        src="https://via.placeholder.com/150"
+        src={imgSrc}
         alt="Admin Profile"
         className="w-64 h-64 rounded-full border-2 border-black"
       />
