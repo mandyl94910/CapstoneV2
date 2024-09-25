@@ -1,10 +1,10 @@
 // C:\CPRG306\CapstoneV2\pages\index.js
 import React, { useEffect, useState } from 'react';
 import Header from '../components/common/Header';
-import Banner from '../components/homepage/Banner';
+import Banner from './Banner';
 import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
-import CategoryHomeGrid from '../components/homepage/CategoryHomeGrid';
+import CategoryHomeGrid from '../components/category/CategoryHomeGrid';
 
 function Home({ user, onLogout }) {
   const [items, setItems] = useState([]);

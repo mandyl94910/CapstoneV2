@@ -1,5 +1,7 @@
 // C:\CPRG306\CapstoneV2\server\models\Product.js
-module.exports = (sequelize, DataTypes) => {
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('postgres://postgres:password@localhost:5432/capstonedatabase2');
+
 const Product = sequelize.define('Product', {
   product_id: {
     type: DataTypes.INTEGER,
@@ -45,5 +47,4 @@ const Product = sequelize.define('Product', {
   timestamps: false
 });
 
-return Product;
-};
+module.exports = Product;
