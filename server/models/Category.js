@@ -1,3 +1,4 @@
+//C:\CPRG306\CapstoneV2\server\models\Category.js
 module.exports = (sequelize, DataTypes) => {
   const Category = sequelize.define('Category', {
     id: {
