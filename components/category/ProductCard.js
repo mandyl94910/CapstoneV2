@@ -4,13 +4,7 @@ import React, { useEffect } from 'react';
 
 // Define the ProductCard component that takes a product object as a prop
 export default function ProductCard({ product }) {
-    // Log product information when the component mounts or the product data changes
-    // useEffect(() => {
-    //     console.log('Product Data:', product);
-    //     console.log('Image Path:', `/images/${product.image}`);
-    // }, [product]);
 
-    // Render the product card with an image and details
     return (
         <div className="w-56 h-auto border rounded-lg shadow-md p-4">
             {/* Link to the product detail page using product ID */}
