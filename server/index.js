@@ -14,8 +14,10 @@ events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for liste
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, registerFunction,getUserInformation } = require('../pages/functions/user/AccountController');
 const { getAdminInformation,updateAdminDetails,changeCredentials  } = require('../pages/functions/user/AdminController');
-const { getCategories } = require('../pages/functions/category/CategoriesController');
-const { getAllProducts,getAllProductsForDataTable, getProductsByCategory, getProductById } = require('../pages/functions/product/ProductsController');
+const { getCategories, getPrimaryCategories } = require('../pages/functions/category/CategoriesController');
+const { getAllProducts,getAllProductsForDataTable, 
+  getProductsByCategory, getProductById, 
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory } = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 const app = express();
@@ -88,8 +90,17 @@ app.get('/api/products', getAllProducts);
 // Get all products for admin
 app.get('/api/products-admin/datatable', getAllProductsForDataTable);
 
+// Get products by category and its subcategories
+app.get('/api/products/categories/:categoryId', getProductsByCategoryIncludeSubcategory);
+
 // Get products by category
 app.get('/api/products/category/:categoryId', getProductsByCategory);
+
+// Get products by parent category(only sub_for 1)
+app.get('/api/categories_sub_for_1', getPrimaryCategories);
+
+// Route to get some recommended products--price range
+app.get('/api/products/recommended_products', getRecommendedProducts);
 
 // Route to get a single product by ID
 app.get('/api/products/:productId', getProductById);
