@@ -24,6 +24,21 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/admin-dashboard": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/admin-dashboard.js"
+    ],
+    "/admin/settings/editAccount": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/admin/settings/editAccount.js"
+    ],
+    "/admin/settings/settings": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/admin/settings/settings.js"
+    ],
     "/all-products": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

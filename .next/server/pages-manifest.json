@@ -3,5 +3,8 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/all-products": "pages/all-products.js"
+  "/admin-dashboard": "pages/admin-dashboard.js",
+  "/all-products": "pages/all-products.js",
+  "/admin/settings/editAccount": "pages/admin/settings/editAccount.js",
+  "/admin/settings/settings": "pages/admin/settings/settings.js"
 }
