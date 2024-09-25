@@ -10,7 +10,7 @@ export default function Dashboard() {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
-        <Header title="Dashboard" />
+        <Header title="Dashboard"/>
         <Stats />
         <div className="grid grid-cols-2 gap-6">
           <Product />

@@ -22,7 +22,7 @@ export default function CategoryHomeGrid(){
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/categories');
-                // console.log('Fetched categories',response.data);
+                console.log('Fetched categories',response.data);
                 const filteredCategories = response.data.filter(cat => categories.sub_for === 1);
                 setCategories(filteredCategories);
             } catch (error) {
