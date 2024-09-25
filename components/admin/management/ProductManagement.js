@@ -1,50 +1,84 @@
-//C:\CPRG306\CapstoneV2\components\admin\management\ProductManagement.js
-import React, { useState, useEffect } from "react";
-import axios from 'axios'; // 确保已导入axios
+import React, { useState } from "react";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 
-const ProductManagement = () => {
-  const [products, setProducts] = useState([]);  // Initialized as an empty array, waiting to be populated with data from the API
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await axios.get('http://localhost:3001/api/products-admin/datatable')
-        setProducts(response.data); // Update the status using the data retrieved from the API
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    }
-
-    fetchProducts();
-  }, []);
-
+// Initial product data
+const initialProductData = [
+  {
+    product_id: 1,
+    product_name: "iPhone 13",
+    price: "$799.00",
+    quantity: 20,
+    category: "Mobile Phones & Accessories / Smartphones",
+    visibility: false,
+  },
+  {
+    product_id: 2,
+    product_name: "Samsung Galaxy S21",
+    price: "$699.00",
+    quantity: 15,
+    category: "Mobile Phones & Accessories / Smartphones",
+    visibility: true,
+  },
+  {
+    product_id: 3,
+    product_name: "LG Smart TV",
+    price: "$1299.00",
+    quantity: 5,
+    category: "TV & Home Entertainment / Televisions",
+    visibility: true,
+  },
+  {
+    product_id: 4,
+    product_name: "HP EliteBook Laptop",
+    price: "$1199.00",
+    quantity: 10,
+    category: "Computers & Accessories / Laptops",
+    visibility: true,
+  },
+  {
+    product_id: 5,
+    product_name: "Sony PlayStation 5",
+    price: "$499.00",
+    quantity: 8,
+    category: "Gaming & Accessories / Consoles",
+    visibility: true,
+  },
+  {
+    product_id: 6,
+    product_name: "Canon EOS R5",
+    price: "$3899.00",
+    quantity: 12,
+    category: "Cameras & Photography Gear / Digital Cameras",
+    visibility: false,
+  },
+];
 
 // Product status information
 const productStats = [
   {
     title: "Total Products",
-    value: products.length.toString(), 
-    description: "Based on current inventory",
+    value: "72",
+    description: "Based on 28 June 2024",
   },
   {
     title: "Total Categories",
-    value: "15", 
-    description: "Categories available",
+    value: "15",
+    description: "Based on 28 June 2024",
   },
   {
     title: "Total Values",
-    value: "$3.2k", 
-    description: "Estimated total value",
+    value: "$3.2k",
+    description: "Based on 28 June 2024",
   },
 ];
 
-
+const ProductManagement = () => {
+  const [products, setProducts] = useState(initialProductData);
 
   // Toggle visibility state
-    const handleToggleVisibility = (index) => {
+  const handleToggleVisibility = (index) => {
     const updatedProducts = [...products];
     updatedProducts[index].visibility = !updatedProducts[index].visibility;
     setProducts(updatedProducts);
@@ -62,7 +96,6 @@ const productStats = [
     console.log("Add new product");
   };
 
-
   return (
     <div>
       {/* Product Data Table */}
@@ -78,11 +111,7 @@ const productStats = [
           ]}
           data={products.map((product, index) => {
             return {
-              product_id: product.product_id,
-              product_name: product.product_name,
-              price: product.price,
-              quantity: product.quantity,
-              category: product.Category && product.Category.name ? product.Category.name : 'N/A',  // 访问 Category.name
+              ...product,
               visibility: (
                 <Switch
                   checked={!product.visibility}

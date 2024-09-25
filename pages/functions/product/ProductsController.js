@@ -1,17 +1,9 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category } = require('../../../server/models');  // 直接从 index.js 中导入 Product 模型
-const { getCachedProductInfo, 
-  cacheProductInfo } = require('../../../lib/redisUtils');
+const { Category, Product } = require('../../../server/models');
+//const Product = require('../../../server/models/Product');
+const { Op } = require('sequelize');
 
-
-// Function name: getAllProducts
-// Description: Retrieves all products that are marked as visible in the database.
-// Parameters: 
-//   req (object): The HTTP request object.
-//   res (object): The HTTP response object used to send back data or errors.
-// Functionality:
-//   This function queries all visible products from the 'Product' model.
-//   It responds with a JSON array of products or an error message if the retrieval fails.
+// Function to get all products
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
@@ -25,42 +17,7 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// Function name: getAllProductsForDataTable
-// Description: Retrieves all products with specific attributes for administrative purposes.
-// Parameters:
-//   req (object): The HTTP request object.
-//   res (object): The HTTP response object for sending back data or errors.
-// Functionality:
-//   This function fetches all visible products with selected attributes and associated categories.
-//   It uses Sequelize's 'include' to fetch related category names.
-//   It responds with a JSON array of products or logs an error if the retrieval fails.
-const getAllProductsForDataTable = async (req, res) => {
-  try {
-    const products = await Product.findAll({
-      attributes: ['product_id', 'product_name', 'price', 'quantity', 'visibility'],
-      include: [{
-        model: Category,
-        attributes: ['name'],   // Include only the name of the category
-      }],
-      where: {
-        visibility: true  // Retrieve only visible products
-      }
-    });
-    res.json(products);  // Send product data in JSON response
-  } catch (error) {
-    console.error("An error occurred while retrieving the product:", error);
-    res.status(500).send({ message: "Error retrieving product: " + error.message });  // Return an error message if the retrieval fails
-  }
-};
-
-// Function name: getProductsByCategory
-// Description: Retrieves all products under a specific category that are visible.
-// Parameters:
-//   req (object): The HTTP request object, containing the category ID in parameters.
-//   res (object): The HTTP response object for sending back data or errors.
-// Functionality:
-//   This function fetches products that match a specific category ID and are visible.
-//   It responds with a JSON array of filtered products or an error message if retrieval fails.
+// Function to get products by category ID
 const getProductsByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;  // Extract category ID from request parameters
@@ -76,46 +33,91 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-// Function name: getProductById
-// Description: Retrieves a single product by its ID from the cache or the database if not in cache.
-// Parameters:
-//   req (object): The HTTP request object, containing the product ID in parameters.
-//   res (object): The HTTP response object for sending back data or errors.
-// Functionality:
-//   This function first attempts to retrieve product information from Redis cache.
-//   If the product is not found in the cache, it queries the database.
-//   If the product is found in the database, it caches the result and returns the product data.
-//   It responds with the product data as a JSON response or an error message if retrieval fails.
-const getProductById = async (req, res) => {
+// Function to get products by categoryId and sub_for categoryId
+/** helped by chatGPT
+ *  prompt: the product itself doesn't have attribute called sub_for
+ *          but it is connected to category table which has sub_for
+ *          how can i use that attribute to retrieve data
+ */
+const getProductsByCategoryIncludeSubcategory = async (req, res) => {
   try {
-    const { productId } = req.params;
-    // console.log('Product ID:', productId);
-    let product = await getCachedProductInfo(productId);
-    // console.log('Cached Product:', product);
-    if (!product) {
-      const dbProduct = await Product.findOne({
-        where: {
-          product_id: productId,
-          visibility: true
+    const { categoryId } = req.params;  // Extract category ID from request parameters
+
+    console.log('Category ID:',categoryId);
+    const products = await Product.findAll({
+      where: {
+        visibility: true  // Only retrieve products that are visible
+      },
+      include: [{
+        model: Category, // conected to category table
+        //as: 'category',
+        where:{
+          [Op.or]: [
+            { id: categoryId },
+            { sub_for: categoryId }
+          ]
         }
-      });
-      if (!dbProduct) {
-        return res.status(404).send({ message: "Product not found" });
-      }
-      product = dbProduct.toJSON();
-      try {
-        await cacheProductInfo(productId, product); // Trying to cache product information
-      } catch (cacheError) {
-        console.error("Error caching product:", cacheError); // Logging cache errors
-      }
+      }]
+    });
+
+    console.log('Retrieved products:', products);
+    
+    if (!products || products.length === 0) {
+      return res.json([]);
+      // return res.status(404).send({ message: "No products found for this category" });
     }
 
-    res.json(product);
+    res.json(products);  // Send the filtered products as a JSON response
   } catch (error) {
-    console.error("Error retrieving product:", error);
-    res.status(500).send({ message: "Error retrieving product: " + error.message });
+    res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
   }
 };
 
+
+// Function to get a single product by product ID
+const getProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;  // Extract product ID from request parameters
+    const product = await Product.findOne({
+      where: {
+        product_id: productId,  // Find product by product ID
+        visibility: true  // Only retrieve product if it is visible
+      }
+    });
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });  // Return 404 if product is not found
+    }
+    res.json(product);  // Send the product data as a JSON response
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving product: " + error.message });  // Return an error message if retrieval fails
+  }
+};
+
+// Function to get recommended products list according to the range of price-- temporary       
+/** helped by chatGPT
+ *  prompt: how can retrieve data from products whose price is between a range
+ *  and limit the number in result
+ */
+const getRecommendedProducts = async (req, res) => {
+  try {
+    const { minPrice, maxPrice, limit } = req.query; // get query parameters
+
+    const products = await Product.findAll({
+      where: {
+        price: {
+          [Op.between]: [minPrice, maxPrice], // filter by price
+        },
+        visibility: true,
+      },
+      limit: parseInt(limit) || 6, // limit the number of returned products
+    }); 
+    //console.log('Recommended products:',products);
+    res.json(products); // return products
+    
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving recommended product: " + error.message });  // Return an error message if retrieval fails
+  }
+}
+
 // Export the functions
-module.exports = { getAllProducts,getAllProductsForDataTable, getProductsByCategory, getProductById };
+module.exports = { getAllProducts, getProductsByCategory, getProductById, getRecommendedProducts, getProductsByCategoryIncludeSubcategory };

@@ -1,30 +1,15 @@
-///C:\CPRG306\CapstoneV2\components\admin\settings\EditAccount.js
-import React, { useState,useEffect } from "react";
-import axios from 'axios';
+import React, { useState } from "react";
 import EditProfilePicture from "./EditProfilePicture";
 import EditField from "./EditField";
 
 const EditAccount = () => {
   const [adminDetails, setAdminDetails] = useState({
-    name: "",
-    title: "",
-    profilePicture: "",
+    name: "Admin Name",
+    title: "Administrator",
+    profilePicture: "https://via.placeholder.com/150",
   });
 
   const [newProfilePicture, setNewProfilePicture] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); 
-
-  useEffect(() => {
-    axios.get('http://localhost:3001/api/profile-admin')
-      .then(response => {
-        setAdminDetails({
-          name: response.data.name || "",  
-      title: response.data.title || "", 
-      profilePicture: `/images/${response.data.image}` || "https://via.placeholder.com/150"  
-        });
-      })
-      .catch(error => console.error('Error fetching admin details:', error));
-  }, []);
 
   // Handle input changes for name and email fields
   const handleChange = (e) => {
@@ -39,37 +24,22 @@ const EditAccount = () => {
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedFile(file);
       const imageUrl = URL.createObjectURL(file);
       setNewProfilePicture(imageUrl);
     }
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('name', adminDetails.name);
-    formData.append('title', adminDetails.title);
-    if (selectedFile) {
-      formData.append('profilePicture', selectedFile);
-    } else {
-      console.log('No file selected.');
-      alert('Please select a file to upload.');
-      return; 
-    }
-  
-    try {
-        const response = await axios.post('http://localhost:3001/api/update-admin', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        alert("Admin details updated successfully!");
-    } catch (error) {
-        console.error('Error updating admin details:', error);
-        alert("Failed to update admin details.");
-    }
+    // Update profile picture if changed
+    const updatedProfilePicture =
+      newProfilePicture || adminDetails.profilePicture;
+    setAdminDetails({
+      ...adminDetails,
+      profilePicture: updatedProfilePicture,
+    });
+    alert("Admin details updated!");
   };
 
   return (

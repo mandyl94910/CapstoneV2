@@ -9,8 +9,6 @@ exports.seed = async function(knex) {
   // Deletes ALL existing entries in product and category tables
   await knex('product').del();
   await knex('category').del();
-  await knex('admin').del(); 
-  await knex('review').del();
 
   // Insert initial data into category table
   await knex('category').insert([
@@ -70,31 +68,4 @@ exports.seed = async function(knex) {
       { product_name: 'Smartwatch Pro', price: 199.99, product_description: 'A smartwatch with fitness tracking features.', category_id: 27, quantity: 90, folder: 27, image: 'product/27/example.webp', visibility: true },
       { product_name: 'Smartwatch Lite', price: 149.99, product_description: 'A lightweight smartwatch for everyday use.', category_id: 27, quantity: 120, folder: 27, image: 'product/27/example.webp', visibility: true }
   ]);
-
-  // Insert a super admin account named 'Chris'
-  await knex('admin').insert({
-    password: 'securepassword123',
-    name: 'Chris',
-    pin: '1234',
-    title: 'Super Admin',
-    status: true,
-    image: 'admin/chris.webp',
-    register_date: knex.fn.now(),
-    last_login: null
-  });
-
-  // Insert 10 product reviews with customer_id ranging from 1 to 10
-  await knex('review').insert([
-    { customer_id: 1, product_id: 9, content: 'Great product! Works as expected.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 2, product_id: 9, content: 'Good quality but overpriced.', rating: 4, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 3, product_id: 10, content: 'The case fits perfectly and looks stylish.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 4, product_id: 11, content: 'Sound quality is decent for the price.', rating: 4, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 5, product_id: 13, content: 'Highly recommend this laptop for productivity.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 6, product_id: 15, content: 'Excellent mechanical keyboard for gaming.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 7, product_id: 18, content: 'The TV has an amazing display quality.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 8, product_id: 5, content: 'Next-gen console delivers a smooth experience.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 9, product_id: 19, content: 'Camera is good but battery life is short.', rating: 4, review_time: knex.fn.now(), visibility: true, pin_top: false },
-    { customer_id: 10, product_id: 20, content: 'Smartwatch Pro has all the features I need.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false }
-  ]);
-
 };
