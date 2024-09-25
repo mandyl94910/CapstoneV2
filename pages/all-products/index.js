@@ -1,68 +1,157 @@
-//C:\CPRG306\CapstoneV2\pages\all-products\products.js
+//pages\all-products\index.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import dynamic from 'next/dynamic';  // Import dynamic to enable dynamic loading
 import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
-
+import { useRouter } from 'next/router';
 
 // Dynamically load ProductGrid component, disable SSR
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
 
-export default function Products({ user, onLogout }) {
-  const [selectedCategory, setSelectedCategory] = useState('All Products');
+export default function Products() {
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);  // Initialize as an empty array
   const [currentPage, setCurrentPage] = useState(1);  
-  const productsPerPage = 20;  
+  const [sortOption, setSortOption] = useState('default');
+  const productsPerPage = 16; 
+  const [loading, setLoading] = useState(false); 
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');  // Used to save the user's search input
+  const { searchQuery: routerSearchQuery, categoryId } = router.query;  // Securely deconstruct searchQuery from router.query
 
-  // Fetch categories and products when the component mounts
+
+  // helped by chatGPT
+  /** prompt: the top level category 'All Products' and all second level categories all 
+  * have attribute sub_for === 1, how can i retrieve the top level category without changing
+  * the database structure
+  */
+  // hardcode the top level 'all products'
+  const allProductsCategory = {
+    id: 1,  // same as the `sub_for = 1` for second level categories at database
+    name: 'All Products',
+    sub_for: null,
+    subcategories: []
+  };
+  // Fetch category name for sidebar when open this page
   useEffect(() => {
-    async function fetchCategoriesAndProducts() {
+      async function fetchAllCategories(){
+        try {
+          //fetch categories
+          const response = await axios.get('http://localhost:3001/api/categories')
+          const categories = response.data;
+          // Build a tree structure for the categories
+          const categoryTree = [allProductsCategory, ...categories
+            .filter(cat => cat.sub_for === 1) // Filter top-level categories
+            .map(parent => ({
+              ...parent,
+              subcategories: categories.filter(sub => sub.sub_for === parent.id), // Find all subcategories
+            }))
+          ];
+          setCategories(categoryTree);
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      }
+      fetchAllCategories();
+  },[]);
+
+  // Fetch products based on the selected category or URL parameter
+  useEffect(() => {
+    // define the method
+    async function fetchProducts(){
+      setLoading(true); // set loading to true before fetching data
       try {
-        // Fetch category data from the API
-        const response = await axios.get('http://localhost:3001/api/categories');
-        const categoriesData = response.data;
+        let productsResponseData;
+        // give priority to searchQuery
+        if (routerSearchQuery){
+          const searchResponse = await axios.get(`http://localhost:3001/api/productsName?query=${routerSearchQuery}`)
+          productsResponseData = searchResponse.data;
+          setSelectedCategory(''); // clear category when searching
+        } else if(categoryId && parseInt(categoryId, 10) !== 1) {
+          // based on category selected
+          const productsResponse = await axios.get(`http://localhost:3001/api/products/categories/${categoryId}`);
+          productsResponseData = productsResponse.data;
+        } else {
+          //this make the link to 'All Products' on header work  
+          setSelectedCategory('All Products');
+          const productsResponse = await axios.get('http://localhost:3001/api/products');
+          productsResponseData = productsResponse.data;
+        }
 
-        // Build a tree structure for the categories
-        const categoryTree = categoriesData
-          .filter(cat => cat.sub_for === 1) // Filter top-level categories
-          .map(parent => ({
-            ...parent,
-            subcategories: categoriesData.filter(sub => sub.sub_for === parent.id), // Find all subcategories
-          }));
+        setProducts(productsResponseData);
 
-        setCategories(categoryTree);
-
-        // Fetch all products, no longer filtering by category
-        const productsResponse = await axios.get('http://localhost:3001/api/products'); // Request all products
-        setProducts(productsResponse.data);
       } catch (error) {
-        console.error('Error fetching categories or products:', error);  // Log any errors
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false); // set loading to false after fetching data
       }
     }
 
-    fetchCategoriesAndProducts();
-
-  }, []);
-
-  // Handle category selection and fetch products for the selected category
-  const handleCategorySelect = async (category) => {
-    setSelectedCategory(category.name); // Update the selected category
-    setCurrentPage(1); 
-    try {
-      const response = await axios.get(`http://localhost:3001/api/products/category/${category.id}`);
-      setProducts(response.data);  // Update products based on the selected category
-    } catch (error) {
-      console.error('Error fetching products by category:', error);  // Log any errors
+    // call the method when router is ready
+    if (router.isReady){
+      fetchProducts();
     }
+    
+  },[routerSearchQuery, categoryId, router.isReady]);
+
+
+  // Updated search input
+  const handleSearchQueryChange = (query, searchResults) => {
+    setSelectedCategory('');
+    setSearchQuery(query);
+    setProducts(searchResults);  // Updated to show products as search results
+    console.log('search result: ', products);
   };
+
+  // Handle category selection for the selected category
+  const handleCategorySelect = async (category) => {
+    setSearchQuery('');
+    setSelectedCategory(category.name); // Update the selected category
+    //console.log(category.name); // works here
+    setCurrentPage(1); 
+
+    router.push(`/all-products?categoryId=${category.id}`);
+  };
+
+  
+
+  const handleSortChange = (e) => {
+    //get new option when user change it
+    const option = e.target.value;
+    setSortOption(option);
+
+    const sortedProducts = [...products];
+    // sort products based on option chose
+    switch (option) {
+      case 'priceLowToHigh':
+        sortedProducts.sort((a,b) => a.price - b.price);
+        break;
+      case 'priceHighToLow':
+        sortedProducts.sort((a,b) => b.price - a.price);
+        break;
+      case 'newest':
+        sortedProducts.sort((a,b) => b.register_date - a.register_date);
+        break;
+      // case 'topRated':
+      //   sortedProducts.sort((a,b) => a.price - b.price);
+      //   break;
+      // case 'Sales':
+      //   sortedProducts.sort((a,b) => a.price - b.price);
+      //   break;
+      default:
+        break;
+    }
+    setProducts(sortedProducts);
+  }
 
   //calculate the products should be displayed
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  // if 
+  const currentProducts = Array.isArray(products) ? products.slice(indexOfFirstProduct, indexOfLastProduct) : [];
 
   // paginate
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -77,7 +166,7 @@ export default function Products({ user, onLogout }) {
 
   return (
     <main>
-      <Header user={user} onLogout={onLogout} />  {/* Pass user and logout functionality to the Header */}
+      <Header onSearchQueryChange={handleSearchQueryChange}/> 
       <div className="flex ml-6 mt-6">
         <CateSidebar
           categories={categories}  // Pass categories data to CateSidebar
@@ -85,13 +174,39 @@ export default function Products({ user, onLogout }) {
           onCategorySelect={handleCategorySelect}  // Handle category selection
         />
         <div className="flex-1 p-6">
-          <div className="flex justify-between mb-6">
-            <h1 className="text-2xl font-bold">{selectedCategory}</h1>  {/* Display the selected category */}
+          <div className='flex items-center justify-between'>
+            <div className="flex justify-between mb-6">
+              {/* Display the appropriate title according to the different situations */}
+              {routerSearchQuery? (
+                  <h1 className="text-2xl font-bold">Products including "{routerSearchQuery}"</h1>
+                ) : (
+                  <h1 className="text-2xl font-bold">{selectedCategory}</h1>  // Display the selected category
+                )}
+ 
+            </div>
+            <select value={sortOption} onChange={handleSortChange} className="border border-gray-300 px-4 py-2 rounded-lg">
+              <option value='default'>Sort By</option>
+              <option value='priceLowToHigh'>Price Low to High</option>
+              <option value='priceHighToLow'>Price High to Low</option>
+              <option value='newest'>Newest</option>
+              <option value='topRated'>Top Rated</option>
+              {/* <option>Sales</option> */}
+            </select>
           </div>
-          <ProductGrid products={products} />  {/* ProductGrid is only rendered on the client side */}
-        
-        {/* Pagination */}
-        <div className="flex justify-center items-center mt-4">
+
+          {/* ProductGrid is only rendered on the client side */}
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            currentProducts.length > 0 ? (
+              <ProductGrid products={currentProducts} />
+            ) : (
+              <p>No products available</p>
+            )
+          )}
+     
+          {/* Pagination */}
+          <div className="flex justify-center items-center mt-4">
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}

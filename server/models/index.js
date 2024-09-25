@@ -17,8 +17,8 @@ const Category = require('./Category')(sequelize, DataTypes);
 const Product = require('./Product')(sequelize, DataTypes);  /// Initialize the Product model
 
 // Define relationships between models (if any)
-Category.hasMany(Product, { foreignKey: 'category_id' });   // The association between Category and Product
-Product.belongsTo(Category, { foreignKey: 'category_id' });   // Reverse association
+Category.hasMany(Product, { foreignKey: 'category_id'});   // The association between Category and Product
+Product.belongsTo(Category, { foreignKey: 'category_id'});   // Reverse association
 
 const db = {
   Category,
