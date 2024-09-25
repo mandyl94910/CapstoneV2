@@ -1,4 +1,3 @@
-//C:\CPRG306\CapstoneV2\components\admin\management\UserManagement.js
 import React, { useState } from "react";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";

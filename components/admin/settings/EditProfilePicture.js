@@ -1,4 +1,3 @@
-//C:\CPRG306\CapstoneV2\components\admin\settings\EditProfilePicture.js
 import React from "react";
 
 const EditProfilePicture = ({ profilePicture, handleProfilePictureChange }) => {
