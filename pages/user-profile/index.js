@@ -43,8 +43,8 @@ export default function UserProfile() {
                             {/* avatar and basic info */}
                             <div className="flex items-center mr-16">
                                 <img
-                                    src="/user.webp" // hardcode for testing
-                                    // src={user.image}
+                                    src="/images/user/user.webp" // hardcode for testing
+                                    // src={`/images/${user.image}`} 
                                     alt="User Avatar"
                                     className="w-16 h-16 rounded-full mr-4"
                                 />

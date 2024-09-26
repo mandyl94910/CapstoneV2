@@ -105,11 +105,11 @@ export default function Register() {
   return (
     <div className="flex h-screen slide-in">
       <div className="w-full h-full flex flex-col justify-center items-center bg-white p-8">
-        <img src="/login-logo.png" alt="Logo" className="h-20 mb-8 cursor-pointer" />
+        <img src="/logo.png" alt="Logo" className="h-16 my-3 cursor-pointer" />
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Create Account</h1>
         <form className="w-full max-w-sm" onSubmit={register}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+          <div className="mb-3">
+            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username">
               Username
             </label>
             <input
@@ -121,8 +121,8 @@ export default function Register() {
               onChange={(e) => setRegisterUsername(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+          <div className="mb-3">
+            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
               Password
             </label>
             <input
@@ -134,8 +134,8 @@ export default function Register() {
               onChange={(e) => setRegisterPassword(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="passwordConfirm">
+          <div className="mb-3">
+            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="passwordConfirm">
               Confirm Password
             </label>
             <input
@@ -147,8 +147,8 @@ export default function Register() {
               onChange={(e) => setRegisterPasswordConfirm(e.target.value)}
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+          <div className="mb-3">
+            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="email">
               Email
             </label>
             <input
@@ -160,8 +160,8 @@ export default function Register() {
               onChange={(e) => setRegisterEmail(e.target.value)}
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">
+          <div className="mb-3">
+            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="phone">
               Phone Number
             </label>
             <input
