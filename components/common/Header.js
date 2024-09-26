@@ -81,7 +81,7 @@ function Header({ onSearchQueryChange }) {
             <Link href='/user-profile'>
               <img
                 className="min-w-10 h-10 rounded-full hover:opacity-80 transition-opacity duration-300"
-                src="/user.webp" //hardcode path for testing
+                src="/images/user/user.webp" //hardcode path for testing
                 // src={`/images/${user.image}`}      //retrieve from database
                 alt="User Profile"
               />
