@@ -1,9 +1,16 @@
-import React from "react";
+import React , { useEffect, useState }from "react";
+import { useRouter } from 'next/router';
 
 const Profile = ({adminId}) => {
-
-  const imgSrc = `/images/admin/${adminId}.webp`;
-  console.log(imgSrc)
+  const router = useRouter();
+  const [imgSrc, setImgSrc] = useState(`/images/admin/${adminId}.webp`);
+    // We use this timestamp to update the URL of the image.
+  useEffect(() => {
+      // If the route has a timestamp parameter, update the image path to include the timestamp
+    if (router.query.time) {
+      setImgSrc(`/images/admin/${adminId}.webp?time=${router.query.time}`);
+    }
+  }, [router.query.time]);
 
   return (
     <div className="flex flex-col items-center">

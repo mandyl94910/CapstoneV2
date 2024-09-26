@@ -14,7 +14,8 @@ events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for liste
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, 
   registerFunction, 
-  getUserInformation } = require('../pages/functions/user/AccountController');
+  getUserInformation,
+  getAllUsers } = require('../pages/functions/user/AccountController');
 const { getAdminInformation, 
   updateAdminDetails, 
   changeCredentials  } = require('../pages/functions/user/AdminController');
@@ -25,7 +26,8 @@ const { getAllProducts,
   getProductsByCategory, 
   getProductById, 
   getRecommendedProducts, 
-  getProductsByCategoryIncludeSubcategory } = require('../pages/functions/product/ProductsController');
+  getProductsByCategoryIncludeSubcategory,
+  changeProductVisibility } = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
@@ -120,12 +122,19 @@ app.get('/api/productsName', searchProductsByName);
 // Route to get admin information
 app.get('/api/profile-admin', getAdminInformation);
 
-// 路由配置
+//Handles POST request to update an admin's details, including uploading a single profile picture using multer middleware.
 app.post('/api/update-admin', upload.single('profilePicture'), updateAdminDetails);
 
 
-// 路由配置
+// Handles POST request to change credentials for a user or admin.
 app.post('/api/changeCredentials', changeCredentials);
+
+// Handles POST request to change the visibility status of a product in the admin's product management system.
+app.post('/api/products-admin/changeVisibility',changeProductVisibility);
+
+app.get('/api/user-admin/datatable', (req, res) => {
+  getAllUsers(req, res);
+});
 
 // Start the server
 app.listen(3001, () => {
