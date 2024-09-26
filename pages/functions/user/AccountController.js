@@ -139,7 +139,9 @@ async function getUserInformation(req, res) {
     const sessionKey = `session_${req.user.customer_id}`;
     const cachedSession = await redisClient.get(sessionKey);
     if (cachedSession) {
-      return res.send(cachedSession);
+      const sessionData = JSON.parse(cachedSession);
+      return res.send(sessionData);
+      console.log('user from cache');  // 输出调试信息，确保 user 被正确设置
     } else {
       // Cache the session if not already cached
       await setCache(sessionKey, req.user, 10800); // Cache for 3 hours
@@ -149,6 +151,7 @@ async function getUserInformation(req, res) {
     console.error('Error retrieving user session:', error);
     return res.status(500).send('Error retrieving user session');
   }
+  console.log("Received user info:", req.user);
 }
 
 // 获取所有用户的控制器函数
