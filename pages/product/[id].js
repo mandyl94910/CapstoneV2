@@ -63,7 +63,7 @@ const ProductPage = () => {
 
     localStorage.setItem('cart', JSON.stringify(cart)); // 将购物车更新到localStorage
     alert('Product added to cart!');
-    router.push('/cart');
+    //router.push('/cart');
   };
 
 
