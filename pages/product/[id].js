@@ -4,28 +4,52 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+
 
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data
   const [quantity, setQuantity] = useState(1);  // Store the selected quantity
+  const [selectedImage, setSelectedImage] = useState(null);
   const router = useRouter();
   const { id } = router.query;  // Get product ID from the URL
 
   useEffect(() => {
-    if (id) {
+    async function fetchProductById(id){
       // Fetch product data dynamically based on product ID when the page loads
-      axios.get(`http://localhost:3001/api/products/${id}`)
-        .then(response => {
-          setProduct(response.data);  // Set the product data
-        })
-        .catch(error => {
-          console.error('Error fetching product:', error);  // Log any errors
-        });
+      try {
+        const response = await axios.get(`http://localhost:3001/api/products/${id}`);
+        console.log('Fetched product by id: ', response.data);
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Error fetching product by id:', error); 
+      }
+    }
+    if (id){
+      fetchProductById(id);
     }
   }, [id]);  // Re-run the effect whenever the id changes
 
+  // when product updated, set image path of the product
+  useEffect(() => {
+    if (product && product.image) {
+      setSelectedImage(product.image);
+    }
+  }, [product]);
 
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+  }
 
+  const generateImagePaths = (image) => {
+    // remove .webp at the end of the original path
+    const basePath = image.replace('.webp', '');
+
+    // generate new image array
+    const imagePaths = [1, 2, 3].map((number) =>`${basePath}${number}.webp`);
+    const paths = [image, ...imagePaths];
+    return paths;
+  } 
 
   const addToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -42,25 +66,44 @@ const ProductPage = () => {
     router.push('/cart');
   };
 
+
+
   // Display loading message while product data is being fetched
   if (!product) {
-    return <p>Loading...</p>;
+    return (
+      <main>
+        <Header />
+        <div className="flex justify-center mt-20">
+            <p>Loading product...</p>
+        </div>
+      </main>
+    );
   }
 
   return (
     <main>
-      <Header />
+      <Header/>
       <div className="container mx-auto p-6">
         {/* productInfo - images and product data */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {/* main image */}
+          
           <div className="border p-4 min-w-10 max-w-lg">
-            <img src={`/images/${product.image}`} alt={product.product_name} className="w-full object-cover rounded-lg" />
+            {/* main image */}
+            <img src={`/images/${selectedImage}`} 
+                alt={product.product_name} 
+                className="w-full object-cover rounded-lg" />
             <div className="flex mt-4 space-x-4">
               {/* small images */}
-              <img src={`/images/${product.image}`} alt="Small view 1" className="w-16 h-16 object-cover border rounded" />
-              <img src={`/images/${product.image}`} alt="Small view 2" className="w-16 h-16 object-cover border rounded" />
-              <img src={`/images/${product.image}`} alt="Small view 3" className="w-16 h-16 object-cover border rounded" />
+              {generateImagePaths(product.image).map((image,index) =>  
+                <img 
+                  key={index}  
+                  src={`/images/${image}`}
+                  // src={`/images/${image}`} 
+                  alt={`Small view ${index + 1}`}
+                  className={`w-16 h-16 object-cover border-2 rounded cursor-pointer ${selectedImage === image ? 'border-blue-500' : ''}`}
+                  onClick={ () => handleImageClick(image)}
+                />
+              )}
             </div>
           </div>
 
@@ -69,24 +112,29 @@ const ProductPage = () => {
             <h1 className="text-3xl font-bold mb-4">{product.product_name}</h1>
             <p className="text-gray-600">{product.product_description}</p>
             <p className="text-2xl font-bold my-4">${product.price}</p>
+            <p className="text-gray-600 mb-6"> Detail description here providing more information about the product
+               such as style and size or more other features...
+            </p>
 
             {/* Set quantity */}
             <div className="flex items-center mb-4">
               <button
-                className="h-12 bg-gray-300 text-gray-800 px-6 rounded-l-lg text-3xl"
+                className={`h-12 w-20 ${quantity<= 1 ? ("text-gray-300"):("text-gray-800")} px-6 rounded-l-lg border-2 border-gray-300`}
+                onClick={ () => {setQuantity(quantity - 1)}}
                 disabled={quantity <= 1}  // Disable decrease button if quantity is 1
               >
-                -
+                <FaMinus/>
               </button>
               <input
                 type="text"
                 value={quantity}
-                className="w-full h-12 text-center border-2 border-gray-300"
+                className="w-full h-12 text-center border-y-2 border-gray-300"
               />
               <button
-                className="h-12 bg-gray-300 text-gray-800 px-6 rounded-r-lg text-3xl"
+                className="h-12 w-20 text-gray-800 px-6 rounded-r-lg border-2 border-gray-300"
+                onClick={ () => setQuantity(quantity + 1)}
               >
-                +
+                <FaPlus/>
               </button>
             </div>
 
