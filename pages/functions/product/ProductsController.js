@@ -2,6 +2,7 @@
 const { Product,Category } = require('../../../server/models');  // 直接从 index.js 中导入 Product 模型
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
+const { Op } = require('sequelize');
 
 
 // Function name: getAllProducts
@@ -76,6 +77,47 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
+// Function to get products by categoryId and sub_for categoryId
+/** helped by chatGPT
+ *  prompt: the product itself doesn't have attribute called sub_for
+ *          but it is connected to category table which has sub_for
+ *          how can i use that attribute to retrieve data
+ */
+const getProductsByCategoryIncludeSubcategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;  // Extract category ID from request parameters
+
+    console.log('Category ID:',categoryId);
+    const products = await Product.findAll({
+      where: {
+        visibility: true  // Only retrieve products that are visible
+      },
+      include: [{
+        model: Category, // conected to category table
+        //as: 'category',
+        where:{
+          [Op.or]: [
+            { id: categoryId },
+            { sub_for: categoryId }
+          ]
+        }
+      }]
+    });
+
+    console.log('Retrieved products:', products);
+    
+    if (!products || products.length === 0) {
+      return res.json([]);
+      // return res.status(404).send({ message: "No products found for this category" });
+    }
+
+    res.json(products);  // Send the filtered products as a JSON response
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
+  }
+};
+
+
 // Function name: getProductById
 // Description: Retrieves a single product by its ID from the cache or the database if not in cache.
 // Parameters:
@@ -117,5 +159,33 @@ const getProductById = async (req, res) => {
   }
 };
 
+// Function to get recommended products list according to the range of price-- temporary       
+/** helped by chatGPT
+ *  prompt: how can retrieve data from products whose price is between a range
+ *  and limit the number in result
+ */
+const getRecommendedProducts = async (req, res) => {
+  try {
+    const { minPrice, maxPrice, limit } = req.query; // get query parameters
+
+    const products = await Product.findAll({
+      where: {
+        price: {
+          [Op.between]: [minPrice, maxPrice], // filter by price
+        },
+        visibility: true,
+      },
+      limit: parseInt(limit) || 6, // limit the number of returned products
+    }); 
+    //console.log('Recommended products:',products);
+    res.json(products); // return products
+    
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving recommended product: " + error.message });  // Return an error message if retrieval fails
+  }
+};
+
 // Export the functions
-module.exports = { getAllProducts,getAllProductsForDataTable, getProductsByCategory, getProductById };
+module.exports = { getAllProducts,getAllProductsForDataTable, 
+  getProductsByCategory, getProductById, 
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory };
