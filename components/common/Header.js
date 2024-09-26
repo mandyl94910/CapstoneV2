@@ -73,7 +73,7 @@ function Header({ onSearchQueryChange }) {
           <div className="flex items-center space-x-4 pr-16">
             <Link href='/user-profile'>
               <div className="hover:underline hover:text-blue-600 text-blue-600">
-                Welcome, {user.customer_name}
+                {user.customer_name}
               </div>
             </Link>
             

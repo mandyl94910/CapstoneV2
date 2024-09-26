@@ -35,7 +35,7 @@ export default function Login() {
   // Function to validate the login form
   const validateLoginForm = () => {
     const emailOrUsernameRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/; // Regex to check for valid email or username format
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Regex to check for valid password format
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d_]{6,}$/;// Regex to check for valid password format
   
     if (!emailOrUsernameRegex.test(loginIdentifier)) {
       setError('Username or email format is invalid.');

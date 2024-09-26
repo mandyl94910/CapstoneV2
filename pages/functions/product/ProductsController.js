@@ -2,7 +2,6 @@
 const { Product,Category } = require('../../../server/models');  // 直接从 index.js 中导入 Product 模型
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
-const { Op } = require('sequelize');
 
 
 // Function name: getAllProducts
@@ -43,9 +42,7 @@ const getAllProductsForDataTable = async (req, res) => {
         model: Category,
         attributes: ['name'],   // Include only the name of the category
       }],
-      where: {
-        visibility: true  // Retrieve only visible products
-      }
+      order: [['product_id', 'ASC']],  // Sort by product_id in ascending order
     });
     res.json(products);  // Send product data in JSON response
   } catch (error) {
@@ -185,7 +182,31 @@ const getRecommendedProducts = async (req, res) => {
   }
 };
 
+// Function name: changeProductVisibility
+// Description: Toggle the visibility of a product based on its ID.
+// Parameters:
+//   req (object): The HTTP request object containing product ID and new visibility state.
+//   res (object): The HTTP response object used to send back data or errors.
+// Functionality:
+//   This function updates the visibility of a specific product in the database.
+const changeProductVisibility = async (req, res) => {
+  const { productId, visibility } = req.body;
+  try {
+    const product = await Product.findOne({
+      where: { product_id: productId }
+    });
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+    product.visibility = visibility;
+    await product.save();
+    res.json({ message: "Visibility updated successfully", product });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating product visibility: " + error.message });
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts,getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory };
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility };

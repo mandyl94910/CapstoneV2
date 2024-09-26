@@ -104,8 +104,8 @@ async function registerFunction(req, res) {
     if (!recaptchaResult.isValid) {
       return res.status(400).send({ message: recaptchaResult.message });
     }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // Password hashing
+    //const hashedPassword = bcrypt.hashSync(password, 10);
     const query = "SELECT customer_name, email FROM customer WHERE customer_name = $1 OR email = $2";
     const result = await db.query(query, [username, email]);
     if (result.rows.length > 0) {
@@ -113,7 +113,8 @@ async function registerFunction(req, res) {
     }
 
     const insertQuery = "INSERT INTO customer (customer_name, password, email, phone) VALUES ($1, $2, $3, $4)";
-    await db.query(insertQuery, [username, hashedPassword, email, phone]);
+    //if you want to recover the hashedPassword then change the "password" to hashedPassword
+    await db.query(insertQuery, [username, password, email, phone]);
     res.send({ message: "User created" });
   } catch (error) {
     console.error('Registration error:', error);
@@ -134,7 +135,6 @@ async function getUserInformation(req, res) {
   if (!req.user) {
     return res.status(401).send('Not authenticated');
   }
-
   try {
     const sessionKey = `session_${req.user.customer_id}`;
     const cachedSession = await redisClient.get(sessionKey);
@@ -151,10 +151,24 @@ async function getUserInformation(req, res) {
   }
 }
 
+// 获取所有用户的控制器函数
+const getAllUsers = (req, res) => {
+  const sqlQuery = 'SELECT customer_id, customer_name, email FROM customer'; // 只获取需要的字段
 
+  db.query(sqlQuery, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      res.status(500).send('Error fetching users');
+      return;
+    }
+    console.log('Results from DB:', results);
+    res.json(results); // 将查询结果以JSON格式发送给前端
+  });
+};
 
   module.exports = {
     loginFunction,
     registerFunction,
-    getUserInformation
+    getUserInformation,
+    getAllUsers
   };

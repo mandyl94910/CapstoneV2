@@ -20,7 +20,6 @@ const ProductManagement = () => {
         console.error("Error fetching products:", error);
       }
     }
-
     fetchProducts();
   }, []);
 
@@ -46,10 +45,22 @@ const ProductManagement = () => {
   const router = useRouter(); // Initialize the router
 
   // Toggle visibility state
-  const handleToggleVisibility = (index) => {
-    const updatedProducts = [...products];
-    updatedProducts[index].visibility = !updatedProducts[index].visibility;
-    setProducts(updatedProducts);
+    const handleToggleVisibility = async (index) => {
+    const product = products[index];
+    const updatedVisibility = !product.visibility;
+    try {
+      const response = await axios.post('http://localhost:3001/api/products-admin/changeVisibility', {
+        productId: product.product_id,
+        visibility: updatedVisibility
+      });
+      if (response.data) {
+        const updatedProducts = [...products];
+        updatedProducts[index].visibility = updatedVisibility;
+        setProducts(updatedProducts);
+      }
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+    }
   };
 
   const handleEdit = (index) => {
