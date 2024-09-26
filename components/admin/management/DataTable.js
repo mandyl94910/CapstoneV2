@@ -14,7 +14,15 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
 
   // Handle page change when a page button is clicked
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPageRange = () => {
+    const startPage = Math.max(currentPage - 1, 1);
+    const endPage = Math.min(currentPage + 4, totalPages);
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
   };
 
   return (
@@ -65,19 +73,33 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
 
       {/* Pagination controls */}
       <div className="flex justify-center mt-3">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`mx-1 px-3 py-2 rounded ${
-              currentPage === page
-                ? "bg-indigo-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            {page}
-          </button>
+          {/* Page buttons */}
+          {getPageRange().map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`mx-1 px-3 py-2 rounded ${
+                  currentPage === page
+                    ? "bg-indigo-500 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {page}
+              </button>
         ))}
+
+        {/* Dropdown for selecting the page */}
+        <select
+              className="border border-gray-300 rounded px-2 py-1 mr-4 ml-5"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <option key={page} value={page}>
+                  Page {page}
+                </option>
+              ))}
+            </select>
       </div>
     </div>
   );
