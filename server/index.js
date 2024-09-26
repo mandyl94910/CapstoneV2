@@ -12,13 +12,22 @@ const events = require('events');
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 
 require('./passportConfig')(passport); // Correctly import passportConfig.js
-const { loginFunction, registerFunction,getUserInformation } = require('../pages/functions/user/AccountController');
-const { getAdminInformation,updateAdminDetails,changeCredentials  } = require('../pages/functions/user/AdminController');
-const { getCategories, getPrimaryCategories } = require('../pages/functions/category/CategoriesController');
-const { getAllProducts,getAllProductsForDataTable, 
-  getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory } = require('../pages/functions/product/ProductsController');
+const { loginFunction, 
+  registerFunction, 
+  getUserInformation } = require('../pages/functions/user/AccountController');
+const { getAdminInformation, 
+  updateAdminDetails, 
+  changeCredentials  } = require('../pages/functions/user/AdminController');
+const { getCategories, 
+  getPrimaryCategories } = require('../pages/functions/category/CategoriesController');
+const { getAllProducts, 
+  getAllProductsForDataTable, 
+  getProductsByCategory, 
+  getProductById, 
+  getRecommendedProducts, 
+  getProductsByCategoryIncludeSubcategory } = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
+
 
 const app = express();
 

@@ -5,11 +5,13 @@ import Banner from '../components/homepage/Banner';
 import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
 import CategoryHomeGrid from '../components/homepage/CategoryHomeGrid';
+import OnSale from '../components/homepage/OnSale';
 
-function Home({ user, onLogout }) {
+function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
+  // useEffect to fetch products
   useEffect(() => {
     axios.get('http://localhost:3001/products')
       .then(response => {
@@ -43,9 +45,10 @@ function Home({ user, onLogout }) {
 
   return (
     <div>
-      <Header user={user} onLogout={onLogout} />
+      <Header/>
       <Banner/>
-      {/* <div className="container mx-auto mt-8">
+      {/* testing add funtion ///////////////////
+      <div className="container mx-auto mt-8">
         <input
           type="text"
           value={newItem}
@@ -75,6 +78,7 @@ function Home({ user, onLogout }) {
         </ul>
       </div> */} 
       <CategoryHomeGrid />
+      <OnSale />
       <Footer />
     </div>
   );
