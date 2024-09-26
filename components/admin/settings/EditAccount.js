@@ -3,6 +3,7 @@ import React, { useState,useEffect } from "react";
 import axios from 'axios';
 import EditProfilePicture from "./EditProfilePicture";
 import EditField from "./EditField";
+import { useRouter } from 'next/router';
 
 const EditAccount = () => {
   const [adminDetails, setAdminDetails] = useState({
@@ -13,14 +14,15 @@ const EditAccount = () => {
 
   const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null); 
+  const router = useRouter();
 
   useEffect(() => {
     axios.get('http://localhost:3001/api/profile-admin')
       .then(response => {
         setAdminDetails({
           name: response.data.name || "",  
-      title: response.data.title || "", 
-      profilePicture: `/images/${response.data.image}` || "https://via.placeholder.com/150"  
+          title: response.data.title || "", 
+          profilePicture: `/images/${response.data.image}` || "https://via.placeholder.com/150"  
         });
       })
       .catch(error => console.error('Error fetching admin details:', error));
@@ -66,6 +68,10 @@ const EditAccount = () => {
             },
         });
         alert("Admin details updated successfully!");
+        //  // We want updated avatars to show up immediately, 
+        //rather than showing the old avatar due to browser caching issues. 
+        //We add a timestamp parameter to the URL on the page jump.
+        router.push(`/admin/settings/settings?time=${new Date().getTime()}`);
     } catch (error) {
         console.error('Error updating admin details:', error);
         alert("Failed to update admin details.");
