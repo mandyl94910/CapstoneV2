@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState(''); // State to store error messages from login attempts
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // State to indicate if a login request is in progress
-  const router = useRouter(); // use Next.js router ///////////
+  const router = useRouter(); // use Next.js router 
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
