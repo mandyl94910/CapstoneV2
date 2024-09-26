@@ -152,9 +152,24 @@ async function getUserInformation(req, res) {
 }
 
 
+// 获取所有用户的控制器函数
+const getAllUsers = (req, res) => {
+  const sqlQuery = 'SELECT customer_id, customer_name, email FROM customer'; // 只获取需要的字段
+
+  db.query(sqlQuery, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      res.status(500).send('Error fetching users');
+      return;
+    }
+    console.log('Results from DB:', results);
+    res.json(results); // 将查询结果以JSON格式发送给前端
+  });
+};
 
   module.exports = {
     loginFunction,
     registerFunction,
-    getUserInformation
+    getUserInformation,
+    getAllUsers
   };
