@@ -40,7 +40,6 @@ const getPrimaryCategories = async (req, res) => {
         }
       }
     });
-    console.log('Categories:', categories);
     res.json(categories);
   } catch (error) {
     console.error('Failed to retrieve parent categories', error);

@@ -76,7 +76,7 @@ async function loginFunction(req, res, next) {
               return res.status(500).send('Login error');
           }
 
-            // After successful login, delete previous login attempt records
+          // After successful login, delete previous login attempt records
           await deleteSession(`login_attempts_${loginIdentifier}`);
           // Cache user session data with a 3-hour expiration
           const sessionData = { id: user.customer_id, username: user.customer_name };
@@ -105,7 +105,8 @@ async function registerFunction(req, res) {
       return res.status(400).send({ message: recaptchaResult.message });
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // Password hashing
+    //const hashedPassword = bcrypt.hashSync(password, 10);
     const query = "SELECT customer_name, email FROM customer WHERE customer_name = $1 OR email = $2";
     const result = await db.query(query, [username, email]);
     if (result.rows.length > 0) {
@@ -113,7 +114,7 @@ async function registerFunction(req, res) {
     }
 
     const insertQuery = "INSERT INTO customer (customer_name, password, email, phone) VALUES ($1, $2, $3, $4)";
-    await db.query(insertQuery, [username, hashedPassword, email, phone]);
+    await db.query(insertQuery, [username, password, email, phone]);
     res.send({ message: "User created" });
   } catch (error) {
     console.error('Registration error:', error);
@@ -131,6 +132,7 @@ async function registerFunction(req, res) {
 //   If the data is not cached, it caches the current session data and returns the user's information. It handles errors
 //   that may occur during data retrieval.
 async function getUserInformation(req, res) {
+  console.log('the user for getUserInformation:',req.user)
   if (!req.user) {
     return res.status(401).send('Not authenticated');
   }
@@ -139,7 +141,9 @@ async function getUserInformation(req, res) {
     const sessionKey = `session_${req.user.customer_id}`;
     const cachedSession = await redisClient.get(sessionKey);
     if (cachedSession) {
-      return res.send(cachedSession);
+      console.log(`Cached session found: ${cachedSession}`);
+      const parsedSession = JSON.parse(cachedSession);
+      return res.send(parsedSession);
     } else {
       // Cache the session if not already cached
       await setCache(sessionKey, req.user, 10800); // Cache for 3 hours
@@ -151,11 +155,9 @@ async function getUserInformation(req, res) {
   }
 }
 
-
-// 获取所有用户的控制器函数
+// Get all users' controller functions
 const getAllUsers = (req, res) => {
   const sqlQuery = 'SELECT customer_id, customer_name, email FROM customer'; // 只获取需要的字段
-
   db.query(sqlQuery, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -163,10 +165,9 @@ const getAllUsers = (req, res) => {
       return;
     }
     console.log('Results from DB:', results);
-    res.json(results); // 将查询结果以JSON格式发送给前端
+    res.json(results);
   });
 };
-
   module.exports = {
     loginFunction,
     registerFunction,

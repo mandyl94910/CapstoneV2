@@ -85,7 +85,7 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
   try {
     const { categoryId } = req.params;  // Extract category ID from request parameters
 
-    console.log('Category ID:',categoryId);
+    // console.log('Category ID:',categoryId);
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
@@ -102,7 +102,7 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
       }]
     });
 
-    console.log('Retrieved products:', products);
+    // console.log('Retrieved products:', products);
     
     if (!products || products.length === 0) {
       return res.json([]);
