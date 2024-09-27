@@ -11,6 +11,7 @@ exports.seed = async function(knex) {
   await knex('category').del();
   await knex('admin').del(); 
   await knex('review').del();
+  await knex('address').del();
 
   // Insert initial data into category table
   await knex('category').insert([
@@ -95,6 +96,64 @@ exports.seed = async function(knex) {
     { customer_id: 8, product_id: 5, content: 'Next-gen console delivers a smooth experience.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false },
     { customer_id: 9, product_id: 19, content: 'Camera is good but battery life is short.', rating: 4, review_time: knex.fn.now(), visibility: true, pin_top: false },
     { customer_id: 10, product_id: 20, content: 'Smartwatch Pro has all the features I need.', rating: 5, review_time: knex.fn.now(), visibility: true, pin_top: false }
+  ]);
+
+  await knex('address').insert([
+    { customer_id: 1, street: '443 Roncesvalles Ave', city: 'London', province: 'NS', postal: 'V5K 0A1', country: 'Canada', is_default: false },
+    { customer_id: 1, street: '479 Bathurst St', city: 'Vancouver', province: 'SK', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 1, street: '996 College St', city: 'Winnipeg', province: 'ON', postal: 'G1A 1A1', country: 'Canada', is_default: false },
+    { customer_id: 2, street: '527 Church St', city: 'Ottawa', province: 'AB', postal: 'T2P 3N4', country: 'Canada', is_default: true },
+    { customer_id: 2, street: '141 Bay St', city: 'Edmonton', province: 'MB', postal: 'N2G 4M4', country: 'Canada', is_default: false },
+    { customer_id: 3, street: '255 York St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 4, street: '881 Yonge St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 5, street: '212 Main St', city: 'Victoria', province: 'BC', postal: 'V8W 1T2', country: 'Canada', is_default: true },
+    { customer_id: 6, street: '920 Bay St', city: 'Halifax', province: 'NS', postal: 'B3H 1W3', country: 'Canada', is_default: true },
+    { customer_id: 7, street: '567 Dundas St', city: 'Hamilton', province: 'ON', postal: 'L8N 1T1', country: 'Canada', is_default: true },
+    { customer_id: 8, street: '333 Spadina Ave', city: 'Quebec City', province: 'QC', postal: 'G1A 1A1', country: 'Canada', is_default: true },
+    { customer_id: 9, street: '999 King St', city: 'Montreal', province: 'QC', postal: 'H3Z 2Y7', country: 'Canada', is_default: true },
+    { customer_id: 10, street: '623 Richmond St', city: 'Edmonton', province: 'AB', postal: 'T5J 3E3', country: 'Canada', is_default: true },
+    { customer_id: 11, street: '141 Church St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 12, street: '789 Front St', city: 'Windsor', province: 'ON', postal: 'N9A 3J3', country: 'Canada', is_default: true },
+    { customer_id: 13, street: '414 Queen St', city: 'Calgary', province: 'AB', postal: 'T2P 3N4', country: 'Canada', is_default: true },
+    { customer_id: 14, street: '919 King St', city: 'Regina', province: 'SK', postal: 'S4P 3Y2', country: 'Canada', is_default: true },
+    { customer_id: 15, street: '231 York St', city: "St. John's", province: 'NL', postal: 'A1C 1A1', country: 'Canada', is_default: true },
+    { customer_id: 16, street: '876 Queen St', city: 'Saskatoon', province: 'SK', postal: 'S7K 0A1', country: 'Canada', is_default: true },
+    { customer_id: 17, street: '654 Bloor St', city: 'Ottawa', province: 'ON', postal: 'K1A 0B1', country: 'Canada', is_default: true },
+    { customer_id: 18, street: '321 Adelaide St', city: 'Markham', province: 'ON', postal: 'L3P 3J3', country: 'Canada', is_default: true },
+    { customer_id: 19, street: '123 College St', city: 'Kitchener', province: 'ON', postal: 'N2G 4M4', country: 'Canada', is_default: true },
+    { customer_id: 20, street: '456 Main St', city: 'Mississauga', province: 'ON', postal: 'L5B 3M7', country: 'Canada', is_default: true },
+    { customer_id: 21, street: '555 King St', city: 'Calgary', province: 'AB', postal: 'T2P 3N4', country: 'Canada', is_default: true },
+    { customer_id: 22, street: '876 Queen St', city: 'Vancouver', province: 'BC', postal: 'V5K 0A1', country: 'Canada', is_default: true },
+    { customer_id: 23, street: '432 Main St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 24, street: '655 Front St', city: 'Ottawa', province: 'ON', postal: 'K1A 0B1', country: 'Canada', is_default: true },
+    { customer_id: 25, street: '987 Richmond St', city: 'Halifax', province: 'NS', postal: 'B3H 1W3', country: 'Canada', is_default: true },
+    { customer_id: 26, street: '123 Spadina Ave', city: 'Hamilton', province: 'ON', postal: 'L8N 1T1', country: 'Canada', is_default: true },
+    { customer_id: 27, street: '456 Bloor St', city: 'Victoria', province: 'BC', postal: 'V8W 1T2', country: 'Canada', is_default: true },
+    { customer_id: 28, street: '789 Bay St', city: 'London', province: 'ON', postal: 'N6A 5B9', country: 'Canada', is_default: true },
+    { customer_id: 29, street: '101 Dundas St', city: 'Montreal', province: 'QC', postal: 'H3Z 2Y7', country: 'Canada', is_default: true },
+    { customer_id: 30, street: '222 York St', city: 'Vancouver', province: 'BC', postal: 'V5K 0A1', country: 'Canada', is_default: true },
+    { customer_id: 31, street: '303 King St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 32, street: '123 Church St', city: 'Windsor', province: 'ON', postal: 'N9A 3J3', country: 'Canada', is_default: true },
+    { customer_id: 33, street: '879 Queen St', city: 'Calgary', province: 'AB', postal: 'T2P 3N4', country: 'Canada', is_default: true },
+    { customer_id: 34, street: '654 College St', city: 'Victoria', province: 'BC', postal: 'V8W 1T2', country: 'Canada', is_default: true },
+    { customer_id: 35, street: '876 Bay St', city: 'Halifax', province: 'NS', postal: 'B3H 1W3', country: 'Canada', is_default: true },
+    { customer_id: 36, street: '919 Front St', city: 'Markham', province: 'ON', postal: 'L3P 3J3', country: 'Canada', is_default: true },
+    { customer_id: 37, street: '324 Yonge St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 38, street: '123 Queen St', city: 'Montreal', province: 'QC', postal: 'H3Z 2Y7', country: 'Canada', is_default: true },
+    { customer_id: 39, street: '567 Spadina Ave', city: 'Vancouver', province: 'BC', postal: 'V5K 0A1', country: 'Canada', is_default: true },
+    { customer_id: 40, street: '234 Main St', city: 'London', province: 'ON', postal: 'N6A 5B9', country: 'Canada', is_default: true },
+    { customer_id: 41, street: '789 Church St', city: 'Regina', province: 'SK', postal: 'S4P 3Y2', country: 'Canada', is_default: true },
+    { customer_id: 42, street: '456 Richmond St', city: 'Edmonton', province: 'AB', postal: 'T5J 3E3', country: 'Canada', is_default: true },
+    { customer_id: 43, street: '987 Bay St', city: 'Ottawa', province: 'ON', postal: 'K1A 0B1', country: 'Canada', is_default: true },
+    { customer_id: 44, street: '321 Spadina Ave', city: 'Windsor', province: 'ON', postal: 'N9A 3J3', country: 'Canada', is_default: true },
+    { customer_id: 45, street: '654 Queen St', city: 'Toronto', province: 'ON', postal: 'M5H 1T1', country: 'Canada', is_default: true },
+    { customer_id: 46, street: '101 Front St', city: 'Vancouver', province: 'BC', postal: 'V5K 0A1', country: 'Canada', is_default: true },
+    { customer_id: 47, street: '222 Yonge St', city: 'Montreal', province: 'QC', postal: 'H3Z 2Y7', country: 'Canada', is_default: true },
+    { customer_id: 48, street: '128 College St', city: 'Montreal', province: 'QC', postal: 'S4P 3Y2', country: 'Canada', is_default: true },
+    { customer_id: 48, street: '295 King St', city: 'Hamilton', province: 'SK', postal: 'A1C 1A1', country: 'Canada', is_default: false },
+    { customer_id: 49, street: '557 Richmond St', city: 'Calgary', province: 'ON', postal: 'N9A 3J3', country: 'Canada', is_default: true },
+    { customer_id: 50, street: '717 Main St', city: 'Windsor', province: 'QC', postal: 'L6Y 1N2', country: 'Canada', is_default: false },
+    { customer_id: 50, street: '394 St. Clair Ave', city: 'London', province: 'NS', postal: 'T2P 3N4', country: 'Canada', is_default: true }
   ]);
 
 };
