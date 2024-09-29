@@ -4,25 +4,20 @@ import Link from 'next/link';
 import Image from 'next/image'; 
 import { useAuth } from "../../hooks/useAuth";
 import SearchBar from '../common/SearchBar';
+import { useRouter } from "next/router";
 
 
-function Header({ onSearchQueryChange }) {
+function Header() {
 
   const { user, onLogout } = useAuth();
-  const [searchResults, setSearchResults] = useState([]);
+  const router = useRouter();
+
  
-  const handleSearch = async (query) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/productsName?query=${query}`);
-      //response.json() is a method that returns a Promise that will parse the stream of the response body and convert it to a JSON object.
-      //This is because the server usually sends JSON data in the form of a string,
-      //and the front-end needs to convert this JSON string into a JavaScript object so that it can be used by other functions or operations in the program.
-      const data = await response.json();
-      setSearchResults(data);
-      onSearchQueryChange(query,data);  // Update the search status in the parent component
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
+  const handleSearchQueryChange = async (query) => {
+    router.replace({
+      pathname: '/all-products',
+      query: { searchQuery: query },
+    })
   };
 
   return (
@@ -63,7 +58,7 @@ function Header({ onSearchQueryChange }) {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-          <SearchBar onSearch={handleSearch} />  {/* pass handleSearch to SearchBar */}
+          <SearchBar onSearch={handleSearchQueryChange} />  {/* pass handleSearch to SearchBar */}
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-600" /> {/* Increase size of the cart icon */}

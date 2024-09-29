@@ -1,11 +1,11 @@
 // components\common\SearchBar.js
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { useRouter } from 'next/router'; // 引入 useRouter
+
 
 const SearchBar = ({ onSearch }) => {
 const [query, setQuery] = useState('');
-const router = useRouter(); // Page jumps with useRouter
+
   
     const handleInputChange = (e) => {
       setQuery(e.target.value);
@@ -14,11 +14,8 @@ const router = useRouter(); // Page jumps with useRouter
   
     //using async for future explore
     const handleSearch = async() => {
-        onSearch(query) // Search triggered when user clicks search button
-        router.push({
-            pathname: '/all-products',
-            query: { searchQuery: query },
-          });
+      // pass query to the parent component which is header on this case
+      onSearch(query) // Search triggered when user clicks search button
     };
   
     return (
