@@ -47,5 +47,22 @@ const getPrimaryCategories = async (req, res) => {
   }
 };
 
+const getSubCategories = async (req, res) => {
+  try {
+    const subCategories = await Category.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        sub_for: {
+          [Op.gt]: 1
+        }
+      }
+    });
+    res.json(subCategories);
+  } catch (error) {
+    console.error('Failed to retrieve sub categories', error);
+    res.status(500).send('Server Error');
+  }
+};
+
 // Export the getCategories function
-module.exports = { getCategories, getPrimaryCategories };
+module.exports = { getCategories, getPrimaryCategories,getSubCategories };
