@@ -1,9 +1,9 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category } = require('../../../server/models');  // 直接从 index.js 中导入 Product 模型
+const { Product,Category,Review } = require('../../../server/models');  
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
 const { Op } = require('sequelize');
-const { uploadProductImages } = require('../imageController'); // 引入新的 multer 配置
+const { uploadProductImages } = require('../imageController'); 
 
 // Function name: getAllProducts
 // Description: Retrieves all products that are marked as visible in the database.
@@ -263,11 +263,14 @@ const deleteProduct = async (req, res) => {
       return res.status(404).send({ message: "Product not found" });
     }
 
+    // Delete all product-related reviews
+    await Review.destroy({ where: { product_id: productId } });
+
     // Delete the product
     await Product.destroy({ where: { product_id: productId } });
 
     // Send success response
-    res.json({ message: "Product deleted successfully" });
+    res.json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
     res.status(500).send({ message: "Error deleting product: " + error.message });

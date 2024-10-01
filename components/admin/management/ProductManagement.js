@@ -8,6 +8,7 @@ import Switch from "../Switch";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]); // Initialized as an empty array, waiting to be populated with data from the API
+  const router = useRouter(); // Initialize the Next.js router
 
   useEffect(() => {
     async function fetchProducts() {
@@ -43,8 +44,6 @@ const ProductManagement = () => {
     },
   ];
 
-  const router = useRouter(); // Initialize the router
-
   // Toggle visibility state
     const handleToggleVisibility = async (productId) => {
       const product = products.find(p => p.product_id === productId);
@@ -70,19 +69,26 @@ const ProductManagement = () => {
   };
 
   const handleDelete = async (productId) => {
-    console.log("Trying to delete product with ID:", productId);
     if (confirm("Are you sure you want to delete this product?")) { // 确认删除
       try {
         const response = await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}`); // 向后端发送删除请求
         if (response.data.success) {
           // Update the front-end product list if the deletion was successful.
-          const updatedProducts = products.filter(product => product.product_id !== productId);
-          setProducts(updatedProducts);
           console.log("Product deleted:", productId);
-        }
+          await refreshProductList();
+          }
       } catch (error) {
         console.error("Error deleting product:", error);
       }
+    }
+  };
+
+  const refreshProductList = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/products-admin/datatable");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error refreshing product list:", error);
     }
   };
 
@@ -105,7 +111,7 @@ const ProductManagement = () => {
           ]}
           data={products.map((product) => {
             return {
-              product_id: product.product_id,
+              id: product.product_id,
               product_name: product.product_name,
               price: product.price,
               quantity: product.quantity,
