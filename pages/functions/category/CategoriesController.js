@@ -1,3 +1,4 @@
+//C:\proj309\CapstoneV2\pages\functions\category\CategoriesController.js
 const db = require('../../../server/models');  // Note that the entire db object is imported here
 const Category = db.Category;  // Extract the Category model from the db object
 const { Op } = require('sequelize');

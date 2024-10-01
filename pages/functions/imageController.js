@@ -1,4 +1,4 @@
-// imageController.js
+// C:\proj309\CapstoneV2\pages\functions\imageController.js
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');

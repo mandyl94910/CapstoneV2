@@ -1,7 +1,7 @@
 //C:\CPRG306\CapstoneV2\components\admin\management\ProductManagement.js
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios"; // 确保已导入axios
+import axios from "axios"; 
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
@@ -15,7 +15,8 @@ const ProductManagement = () => {
         const response = await axios.get(
           "http://localhost:3001/api/products-admin/datatable"
         );
-        setProducts(response.data); // Update the status using the data retrieved from the API
+        const fetchedProducts = response.data;
+        setProducts(fetchedProducts); // Update the status using the data retrieved from the API
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -45,17 +46,18 @@ const ProductManagement = () => {
   const router = useRouter(); // Initialize the router
 
   // Toggle visibility state
-    const handleToggleVisibility = async (index) => {
-    const product = products[index];
+    const handleToggleVisibility = async (productId) => {
+      const product = products.find(p => p.product_id === productId);
     const updatedVisibility = !product.visibility;
     try {
       const response = await axios.post('http://localhost:3001/api/products-admin/changeVisibility', {
-        productId: product.product_id,
+        productId: productId,
         visibility: updatedVisibility
       });
       if (response.data) {
-        const updatedProducts = [...products];
-        updatedProducts[index].visibility = updatedVisibility;
+        const updatedProducts = products.map(p =>
+          p.product_id === productId ? { ...p, visibility: updatedVisibility } : p
+        );
         setProducts(updatedProducts);
       }
     } catch (error) {
@@ -67,8 +69,21 @@ const ProductManagement = () => {
     console.log("Edit product:", index);
   };
 
-  const handleDelete = (index) => {
-    console.log("Delete product:", index);
+  const handleDelete = async (productId) => {
+    console.log("Trying to delete product with ID:", productId);
+    if (confirm("Are you sure you want to delete this product?")) { // 确认删除
+      try {
+        const response = await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}`); // 向后端发送删除请求
+        if (response.data.success) {
+          // Update the front-end product list if the deletion was successful.
+          const updatedProducts = products.filter(product => product.product_id !== productId);
+          setProducts(updatedProducts);
+          console.log("Product deleted:", productId);
+        }
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
+    }
   };
 
   const handleAddProduct = () => {
@@ -88,7 +103,7 @@ const ProductManagement = () => {
             "Category",
             "Visibility",
           ]}
-          data={products.map((product, index) => {
+          data={products.map((product) => {
             return {
               product_id: product.product_id,
               product_name: product.product_name,
@@ -101,7 +116,7 @@ const ProductManagement = () => {
               visibility: (
                 <Switch
                   checked={!product.visibility}
-                  onChange={() => handleToggleVisibility(index)}
+                  onChange={() => handleToggleVisibility(product.product_id)}
                 />
               ),
             };

@@ -246,7 +246,35 @@ const addProduct = async (req, res) => {
   }
 };
 
+// Function name: deleteProduct
+// Description: Deletes a product by its ID from the database.
+// Parameters:
+//   req (object): The HTTP request object containing the product ID in parameters.
+//   res (object): The HTTP response object used to send back data or errors.
+// Functionality:
+//   This function deletes a product by its ID and responds with a success message if deletion is successful,
+//   or an error message if the deletion fails or the product is not found.
+const deleteProduct = async (req, res) => {
+  const { productId } = req.params;
+  try {
+    // Find the product to ensure it exists
+    const product = await Product.findOne({ where: { product_id: productId } });
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    // Delete the product
+    await Product.destroy({ where: { product_id: productId } });
+
+    // Send success response
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).send({ message: "Error deleting product: " + error.message });
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts,getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,addProduct  };
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,addProduct,deleteProduct  };

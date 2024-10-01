@@ -75,8 +75,8 @@ const AddProduct = () => {
       });
 
       if (response.ok) {
-
-        router.push('/admin/product')
+        // router.push("/admin/product");
+        router.reload("/admin/product");
       } 
     } catch (error) {
       console.error("Error adding product:", error);

@@ -30,7 +30,8 @@ const { getAllProducts,
   getRecommendedProducts, 
   getProductsByCategoryIncludeSubcategory,
   changeProductVisibility,
-  addProduct } = require('../pages/functions/product/ProductsController');
+  addProduct,
+  deleteProduct} = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
@@ -108,6 +109,9 @@ app.post('/api/products/add', uploadProductImage.single('image'), async (req, re
   console.log('Request received to add product');
   await addProduct(req, res);
 });
+
+// Route to delete a product by ID
+app.delete('/api/products-admin/delete/:productId', deleteProduct);
 
 // Start the server
 app.listen(3001, () => {
