@@ -89,7 +89,7 @@ exports.up = function(knex) {
         table.integer('customer_id').notNullable();  // Foreign key to customer table
         table.integer('address_id').notNullable();   // Foreign key to address table
         table.decimal('total', 10, 2).notNullable();  // Total order amount
-        table.decimal('total_tax', 10, 2).notNullable();  // Total tax amount
+        table.decimal('total_tax', 10, 2);  // Total tax amount
         table.string('status', 255).notNullable();  // Order status
         table.timestamp('order_date').notNullable();  // Order creation date
         table.timestamp('ship_date');  // Shipping date
