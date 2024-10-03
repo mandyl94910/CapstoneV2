@@ -12,7 +12,6 @@ const searchProductsByName = async (req, res) => {
           product_name: {
             [Op.iLike]: `%${query}%`, // Use fuzzy search, ignoring case, to find products with matching names
           },
-          visibility: true
         },
       });
   

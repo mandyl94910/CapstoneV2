@@ -1,4 +1,4 @@
-import { FaBell, FaFileLines, FaGear, FaHeart, FaUser } from "react-icons/fa6";
+import { FaBell, FaFileLines, FaGear, FaHeart, FaRegFileLines, FaUser } from "react-icons/fa6";
 
 
 export default function Sidebar() {

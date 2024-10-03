@@ -11,6 +11,7 @@ export default function CategoryHomeGrid(){
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/categories_sub_for_1');
+                console.log('Fetched Primary Categories',response.data);
                 setCategories(response.data);
             } catch (error) {
                 console.error('Error fetching primary categories:', error);
