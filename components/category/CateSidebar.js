@@ -34,18 +34,17 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
       <li
         key={category.id}
         className={`p-2 mb-2 rounded ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : 'cursor-pointer'}`}
-        // onClick={() => {
-        //   if (!isParent) {
-        //     // If it's not a parent category, select only the clicked subcategory
-        //     onCategorySelect(category); 
-        //   }
-        // }}
-        onClick={ () => onCategorySelect(category)}
+        onClick={() => {
+          if (!isParent) {
+            // If it's not a parent category, select only the clicked subcategory
+            onCategorySelect(category); 
+          }
+        }}
       >
         <div className="flex justify-between items-center">
           <span 
-            //className={`${isSelected ? 'text-white' : ''}`}
-            className={`${isSelected || isParentSelected ? 'text-white' : ''}`}
+            className={`${isSelected ? 'text-white' : ''}`}
+            // className={`${isSelected || isParentSelected ? 'text-white' : ''}`}
             onClick={() => {
               if (isParent) {
                 // Click the parent to expand/collapse, but only select the parent when not expanding
