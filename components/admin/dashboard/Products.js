@@ -12,7 +12,7 @@ const Products = () => {
     <div className="overflow-x-auto bg-white p-4 rounded shadow-md border border-indigo-500">
       <table className="min-w-full border-separate border-spacing-y-3">
         <thead>
-          <tr className="bg-indigo-800 text-white">
+          <tr className="bg-slate-500 text-white">
             <th className="py-2 px-4 text-left font-semibold">No</th>
             <th className="py-2 px-4 text-left font-semibold">Product Name</th>
             <th className="py-2 px-4 text-left font-semibold">Status</th>
@@ -24,7 +24,7 @@ const Products = () => {
           {products.map((product, index) => (
             <tr
               key={product.id}
-              className={`bg-blue-400 rounded-lg ${
+              className={`bg-slate-300 rounded-lg ${
                 index === 2 ? "border-indigo-500 border-2" : ""
               }`}
             >

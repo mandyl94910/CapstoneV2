@@ -98,7 +98,7 @@ const ReportManagement = () => {
       <div className="mb-4 space-x-4">
         <button
           className={`py-2 px-4 rounded ${
-            period === "weekly" ? "bg-indigo-500 text-white" : "bg-gray-300"
+            period === "weekly" ? "bg-indigo-400 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("weekly")}
         >
@@ -106,7 +106,7 @@ const ReportManagement = () => {
         </button>
         <button
           className={`py-2 px-4 rounded ${
-            period === "monthly" ? "bg-indigo-500 text-white" : "bg-gray-300"
+            period === "monthly" ? "bg-indigo-400 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("monthly")}
         >
@@ -114,7 +114,7 @@ const ReportManagement = () => {
         </button>
         <button
           className={`py-2 px-4 rounded ${
-            period === "yearly" ? "bg-indigo-500 text-white" : "bg-gray-300"
+            period === "yearly" ? "bg-indigo-400 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("yearly")}
         >
