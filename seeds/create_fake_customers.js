@@ -9,7 +9,7 @@ exports.seed = async function(knex) {
   // Define the number of customers to be generated
   const numberOfCustomers = 500; 
   // Define the batch size for inserting data into the database in chunks
-  const batchSize = 200; 
+  const batchSize = 100; 
   // Create a Set to store used email addresses to ensure uniqueness
   const usedEmails = new Set(); 
 
