@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 
+/**
+ * helped by chatGPT
+ * prompt：create a sidebar for categories with subcategories，categories can be expanded when being clicked
+ * @param {*} param0 
+ * @returns 
+ */
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
   const [selectedParent, setSelectedParent] = useState(null); // Track selected parent category
@@ -9,7 +15,9 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   // Toggle category expansion for parent categories
   const toggleCategory = (categoryId) => {
     setExpandedCategories(prevState => ({
+      // keep the prevState of all other parent Id
       ...prevState,
+      // toggle the state for the category with categoryId
       [categoryId]: !prevState[categoryId]
     }));
   };
@@ -54,7 +62,7 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
                 ): (
                 <FaAngleDown className= {`${isSelected ? 'text-white text-sm' : 'text-gray-500 text-sm'} `}/>
                 )}
-            </span> // Show + for collapsed and - for expanded categories
+            </span> // Show angleDown for collapsed and angleUp for expanded categories
           )}
         </div>
 

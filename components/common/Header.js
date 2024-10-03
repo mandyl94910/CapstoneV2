@@ -1,29 +1,18 @@
-import React, { useState } from "react";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import React from "react";
+import { FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
 import { useAuth } from "../../hooks/useAuth";
 import SearchBar from '../common/SearchBar';
+import { useRouter } from "next/router";
 
 
-function Header({ onSearchQueryChange }) {
+
+function Header() {
 
   const { user, onLogout } = useAuth();
-  const [searchResults, setSearchResults] = useState([]);
- 
-  const handleSearch = async (query) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/productsName?query=${query}`);
-      //response.json() is a method that returns a Promise that will parse the stream of the response body and convert it to a JSON object.
-      //This is because the server usually sends JSON data in the form of a string,
-      //and the front-end needs to convert this JSON string into a JavaScript object so that it can be used by other functions or operations in the program.
-      const data = await response.json();
-      setSearchResults(data);
-      onSearchQueryChange(query,data);  // Update the search status in the parent component
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
+  const router = useRouter();
+
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
@@ -33,7 +22,11 @@ function Header({ onSearchQueryChange }) {
           admin dashboard
         </Link>
         <Link href="/all-products?categoryId=1"  
-          className="hover:text-blue-600"
+          /**
+           * helped by chatGPT
+           * prompt: how can i keep the "All Products" show selected state when choosen
+           */
+          className={`${router.pathname === '/all-products' ? 'text-blue-600' : 'hover:text-blue-600'}`}
           >
           All Products
         </Link>
@@ -63,7 +56,7 @@ function Header({ onSearchQueryChange }) {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-          <SearchBar onSearch={handleSearch} />  {/* pass handleSearch to SearchBar */}
+          <SearchBar />  {/* pass handleSearch to SearchBar */}
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-600" /> {/* Increase size of the cart icon */}
