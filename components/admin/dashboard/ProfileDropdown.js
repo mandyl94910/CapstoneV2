@@ -35,7 +35,7 @@ const ProfileDropdown = () => {
           {/* Menu Options */}
           <div className="p-2">
             <Link
-              href="/profile"
+              href="/admin/myProfile"
               className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
             >
               <FaUser className="text-lg" />
