@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import React from "react";
+import { FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
 import { useAuth } from "../../hooks/useAuth";
@@ -7,18 +7,12 @@ import SearchBar from '../common/SearchBar';
 import { useRouter } from "next/router";
 
 
+
 function Header() {
 
   const { user, onLogout } = useAuth();
   const router = useRouter();
 
- 
-  const handleSearchQueryChange = async (query) => {
-    router.replace({
-      pathname: '/all-products',
-      query: { searchQuery: query },
-    })
-  };
 
   return (
     <header className="bg-white py-4 flex justify-between items-center shadow-md">
@@ -28,7 +22,11 @@ function Header() {
           admin dashboard
         </Link>
         <Link href="/all-products?categoryId=1"  
-          className="hover:text-blue-600"
+          /**
+           * helped by chatGPT
+           * prompt: how can i keep the "All Products" show selected state when choosen
+           */
+          className={`${router.pathname === '/all-products' ? 'text-blue-600' : 'hover:text-blue-600'}`}
           >
           All Products
         </Link>
@@ -58,7 +56,7 @@ function Header() {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-          <SearchBar onSearch={handleSearchQueryChange} />  {/* pass handleSearch to SearchBar */}
+          <SearchBar />  {/* pass handleSearch to SearchBar */}
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-600" /> {/* Increase size of the cart icon */}

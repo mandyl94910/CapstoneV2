@@ -128,14 +128,6 @@ export default function Products() {
     return null;  
   }
 
-  // Updated search input
-  // const handleSearchQueryChange = (query, searchResults) => {
-  //   setSelectedCategory('');
-  //   setSearchQuery(query);
-  //   setProducts(searchResults);  // Updated to show products as search results
-  //   console.log('search result: ', products);
-  // };
-
   // Handle category selection for the selected category
   const handleCategorySelect = async (category) => {
     setSearchQuery('');
