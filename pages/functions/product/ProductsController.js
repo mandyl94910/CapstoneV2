@@ -85,7 +85,6 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
   try {
     const { categoryId } = req.params;  // Extract category ID from request parameters
 
-    console.log('Category ID:',categoryId);
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
@@ -101,8 +100,6 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
         }
       }]
     });
-
-    console.log('Retrieved products:', products);
     
     if (!products || products.length === 0) {
       return res.json([]);
@@ -164,7 +161,7 @@ const getProductById = async (req, res) => {
  */
 const getRecommendedProducts = async (req, res) => {
   try {
-    const { minPrice, maxPrice, limit } = req.query; // get query parameters
+    const { minPrice, maxPrice, limit } = req.query; // get query parameters from URL
 
     const products = await Product.findAll({
       where: {
@@ -208,6 +205,7 @@ const changeProductVisibility = async (req, res) => {
 };
 
 // Export the functions
-module.exports = { getAllProducts,getAllProductsForDataTable, 
+module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility };
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory, 
+  changeProductVisibility };

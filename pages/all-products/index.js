@@ -67,15 +67,30 @@ export default function Products() {
         let productsResponseData;
         // give priority to searchQuery
         if (routerSearchQuery){
+          // clear category when searching
+          setSelectedCategory('');
           const searchResponse = await axios.get(`http://localhost:3001/api/productsName?query=${routerSearchQuery}`)
           productsResponseData = searchResponse.data;
-          setSelectedCategory(''); // clear category when searching
         } else if(categoryId && parseInt(categoryId, 10) !== 1) {
+          
+          if (!categories.length) {
+            // if categories haven't been loaded, wait, this happen when visit the category page with specific URL
+            // otherwise it cannot set selected category to selected status
+            console.log('Categories are still empty, waiting to load.');
+            return;
+          }
+
+          setSearchQuery('');
+          // get category object with id categoryId
+          const selectedCategoryObj = findCategoryById(categories, parseInt(categoryId, 10));
+          setSelectedCategory(selectedCategoryObj.name);
           // based on category selected
           const productsResponse = await axios.get(`http://localhost:3001/api/products/categories/${categoryId}`);
           productsResponseData = productsResponse.data;
+          
         } else {
-          //this make the link to 'All Products' on header work  
+          // this make the link to 'All Products' on header work  
+          // show all products by default
           setSelectedCategory('All Products');
           const productsResponse = await axios.get('http://localhost:3001/api/products');
           productsResponseData = productsResponse.data;
@@ -91,26 +106,32 @@ export default function Products() {
     }
 
     // call the method when router is ready
-    if (router.isReady){
+    if (router.isReady && categories.length > 0){
       fetchProducts();
     }
     
-  },[routerSearchQuery, categoryId, router.isReady]);
+  },[routerSearchQuery, categoryId, router.isReady, categories.length]);
 
 
-  // Updated search input
-  const handleSearchQueryChange = (query, searchResults) => {
-    setSelectedCategory('');
-    setSearchQuery(query);
-    setProducts(searchResults);  // Updated to show products as search results
-    console.log('search result: ', products);
-  };
+  function findCategoryById(categoryTree, id) {
+    for (let category of categoryTree) {
+      if (category.id === id) {
+        return category;  // if category is current level
+      }
+      if (category.subcategories) {
+        const foundSubcategory = findCategoryById(category.subcategories, id);  // if category is sub level
+        if (foundSubcategory) {
+          return foundSubcategory;
+        }
+      }
+    }
+    return null;  
+  }
 
   // Handle category selection for the selected category
   const handleCategorySelect = async (category) => {
     setSearchQuery('');
     setSelectedCategory(category.name); // Update the selected category
-    //console.log(category.name); // works here
     setCurrentPage(1); 
 
     router.push(`/all-products?categoryId=${category.id}`);
@@ -166,7 +187,7 @@ export default function Products() {
 
   return (
     <main>
-      <Header onSearchQueryChange={handleSearchQueryChange}/> 
+      <Header/> 
       <div className="flex ml-6 mt-6">
         <CateSidebar
           categories={categories}  // Pass categories data to CateSidebar

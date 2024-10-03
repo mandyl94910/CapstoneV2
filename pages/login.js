@@ -102,16 +102,20 @@ const login = () => {
     })
     .then((res) => {
         console.log("Received user info:", res.data);
-        console.log("Username:", res.data.customer_name);   // 特别检查username字段是否存在
+        console.log("Username:", res.data.customer_name);   // check if username field exists
         setWelcomeMessage(`Welcome user ${res.data.customer_name}`); // Set welcome message with username
         setError('');
 
         // helped by chatGPT
-        // prompt: how can I display user info on the header
-        // Note: we can store user info in local storage when login
-        // and read user info from local storage when open homepage
+        /**
+         * prompt: how can I display user info on the header
+         * Note: we can store user info in local storage when login
+         *       and read user info from local storage when open homepage
+         */
+        // check if code is running in the browser/client-side, 
+        // because window object only exists in the browser
         if (typeof window !== 'undefined') {
-          //store user info in local storage
+          //store user info in local storage in key value pair
           localStorage.setItem('user', JSON.stringify(res.data));
         } 
         router.push('/'); // go to the home page if get user
