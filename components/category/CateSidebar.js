@@ -40,7 +40,7 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
         //     onCategorySelect(category); 
         //   }
         // }}
-        onClick={onCategorySelect(category)}
+        onClick={ () => onCategorySelect(category)}
       >
         <div className="flex justify-between items-center">
           <span 
