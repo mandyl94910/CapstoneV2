@@ -1,12 +1,11 @@
 // components\common\SearchBar.js
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router'; // 引入 useRouter
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
 const [query, setQuery] = useState('');
-const router = useRouter();
-
+const router = useRouter(); // Page jumps with useRouter
   
     const handleInputChange = (e) => {
       setQuery(e.target.value);
@@ -14,22 +13,13 @@ const router = useRouter();
     };
   
     //using async for future explore
-    // const handleSearch = async() => {
-    //   // pass query to the parent component which is header on this case
-    //   onSearch(query); // Search triggered when user clicks search button
-    // };
-
-   /**
-   * helped by chatGPT
-   * prompt: how can i use searchBar on different pages
-   * @param {*} query 
-   */
-  const handleSearchQueryChange = async (query) => {
-    router.replace({
-      pathname: '/all-products',
-      query: { searchQuery: query },
-    })
-  };
+    const handleSearch = async() => {
+        onSearch(query) // Search triggered when user clicks search button
+        router.push({
+            pathname: '/all-products',
+            query: { searchQuery: query },
+          });
+    };
   
     return (
         <div className="flex items-center"> {/* Spacing between search box and buttons */}
@@ -46,7 +36,7 @@ const router = useRouter();
         </div>
      
         {/* buttons */}
-        <button onClick={() => handleSearchQueryChange(query)} className="bg-blue-600 text-white px-3 py-2 rounded-r-lg hover:bg-blue-700 focus:outline-none">
+        <button onClick={handleSearch} className="bg-blue-600 text-white px-3 py-2 rounded-r-lg hover:bg-blue-700 focus:outline-none">
           Search
         </button>
       </div>

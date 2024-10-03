@@ -3,7 +3,6 @@ import Header from "../../components/common/Header";
 import { useAuth } from "../../hooks/useAuth";
 import Sidebar from "../../components/user/Sidebar";
 import RecommendedProducts from "../../components/common/RecommendedProducts";
-import { FaEdit } from "react-icons/fa";
 
 
 
@@ -38,7 +37,7 @@ export default function UserProfile() {
                 <div className="container flex mt-6">
                     <Sidebar/>
                     {/* Main Content */}
-                    <main className="w-auto border bg-white py-4 px-6 rounded-md shadow-md ml-4">
+                    <main className="min-w-[800px] border bg-white py-4 px-6 rounded-md shadow-md ml-4">
                     {/* User Info */}
                         <div className="flex justify-between items-center mb-6">
                             {/* avatar and basic info */}
@@ -66,13 +65,9 @@ export default function UserProfile() {
 
                         {/* Shipping Address */}
                         <div className="bg-blue-100 p-4 rounded-md mb-6">
-                            <div className="flex justify-between">
-                                <h3 className="font-bold">Main Shipping Address:</h3>
-                                <FaEdit />
-                            </div>
-                            
+                            <h3 className="font-bold">Main Shipping Address:</h3>
                             <p>Name: {user.firstName} {user.lastName}</p>
-                            <p>Phone: {user.phone}</p>
+                            <p>Phone: 1 403 543 2378</p>
                             <p className="text-gray-700">{user.address} 786 14 Street NW, Calgary, AB {user.postcal}E39 5H2</p>
                         </div>
 

@@ -13,8 +13,9 @@ function Home() {
 
   // useEffect to fetch products
   useEffect(() => {
-    axios.get('http://localhost:3001/api/products')
+    axios.get('http://localhost:3001/products')
       .then(response => {
+        console.log('Received data:', response.data); // Log the received data structure
         setItems(response.data); // Set state to store product data
       })
       .catch(error => console.error('Error fetching products:', error));
