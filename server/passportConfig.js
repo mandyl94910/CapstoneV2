@@ -30,6 +30,7 @@ module.exports = function(passport) {
               return done(null, false, { message: 'No user found' });
             }
       
+            // Password hashing
             bcrypt.compare(password, result.rows[0].password, (err, isMatch) => {
               if (err) {
                 return done(err);
@@ -40,6 +41,12 @@ module.exports = function(passport) {
                 return done(null, false, { message: 'Incorrect password' });
               }
                 });
+            // normal password validation
+            // if (password === result.rows[0].password) { 
+            //   return done(null, result.rows[0]);
+            // } else {
+            //     return done(null, false, { message: 'Incorrect password' });
+            // }
             });
         })
     );

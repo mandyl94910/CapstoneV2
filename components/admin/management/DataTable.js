@@ -1,3 +1,4 @@
+//C:\proj309\CapstoneV2\components\admin\management\DataTable.js
 import React, { useState } from "react";
 
 const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
@@ -45,8 +46,8 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
             </tr>
           </thead>
           <tbody>
-            {currentData.map((row, index) => (
-              <tr key={index} className="bg-white even:bg-gray-100">
+            {currentData.map((row) => (
+              <tr key={row.id} className="bg-white even:bg-gray-100">
                 {Object.values(row).map((value, idx) => (
                   <td key={idx} className="p-3 border border-gray-300">
                     {value}
@@ -54,7 +55,7 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
                 ))}
                 <td className="p-2 border border-gray-300 w-24">
                   <button
-                    onClick={() => onEdit(index)}
+                    onClick={() => onEdit(row.id)}
                     className="bg-green-500 text-white py-1 px-4 rounded"
                   >
                     Edit
@@ -62,7 +63,7 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
                 </td>
                 <td className="p-2 border border-gray-300 w-24">
                   <button
-                    onClick={() => onDelete(index)}
+                    onClick={() => onDelete(row.id)}
                     className="bg-red-500 text-white py-1 px-4 rounded"
                   >
                     Delete

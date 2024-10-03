@@ -4,6 +4,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadSellerAvatar } = require('../imageController');
 //Set the adminid to variable first, since there may be different admins later.
 //And we may design login and register logic for admin later.
 const adminId = 1;
@@ -57,51 +58,28 @@ async function updateAdminDetails (req, res) {
     const { name, title } = req.body;
     // Multer handles file upload and makes it accessible via req.file
     const file = req.file;
-    console.log('Received data to update:', { name, title, file }); 
+    console.log('Uploaded file:', file); // 日志：上传的文件信息
     try {
         let imagePath = null; // Define it as null first
         //Because we're going to try to store the new avatar first, return the new path and name after storing it, 
         //and then store it in the database, we'll set it to null first
         // Upload an avatar and get the path
         if (file) {
-            imagePath = await uploadAvatar(file,adminId);
-            console.log('Image path after upload:', imagePath); 
+            imagePath = `admin/${adminId}.webp`;
+            console.log(`Image path set to: ${imagePath}`); // 日志：图片路径
+        }else {
+            console.log('No file uploaded'); // 日志：没有上传文件
         }
 
         // Update the database with new admin details
         const result = await saveAdminDetailsToDatabase(name, title, imagePath, adminId);
-        console.log('Database update result:', result); 
-
+        console.log('Database update result:', result); // 日志：数据库更新结果
         res.send({ message: 'Admin details updated successfully!' });
     } catch (error) {
         console.error('Error updating admin details:', error);
         res.status(500).send({ message: 'Failed to update admin details.' });
     }
 };
-
-// Function name: uploadAvatar
-// Description: Uploads the admin's avatar image to a specific location on the server.
-// Parameters:
-//   file (object): The uploaded file object containing the file path and metadata.
-//   adminId (number): The ID of the admin whose avatar is being uploaded.
-// Functionality:
-//   This function takes the uploaded file and moves it to a designated directory (`public/images/admin/`),
-//   renaming it to match the admin's ID. It returns the relative path to the uploaded file, which can be
-//   stored in the database for later retrieval.
-// Example:
-//   A file uploaded for admin with ID 1 will be renamed to `1.webp` and stored in `/public/images/admin/1.webp`.
-async function uploadAvatar(file, adminId) {
-    if (!file) {
-        throw new Error('No file uploaded');
-    }
-    // Set the destination path for the file and rename it based on adminId
-    const newPath = path.join('public/images/admin/', `${adminId}.webp`); // 使用传入的 adminId
-    const tempPath = file.path;
-
-    // Move and rename the file to the new location
-    fs.renameSync(tempPath, newPath);
-    return `admin/${adminId}.webp`; // Return the relative path
-}
 
 // Function name: saveAdminDetailsToDatabase
 // Description: Updates the admin's name, title, and avatar image path in the database.
@@ -121,7 +99,6 @@ function saveAdminDetailsToDatabase(name, title, imagePath,adminId) {
         // SQL query to update admin information in the database
         const query = 'UPDATE admin SET name = $1, title = $2, image = $3 WHERE id = $4';
         const values = [name, title, imagePath, adminId]; 
-        console.log(`Executing query: ${query} with values: ${values}`);// // Log the query and values
         db.query(query, values, (error, results) => {
             if (error) {
                 return reject(error);

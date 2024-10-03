@@ -101,8 +101,6 @@ const login = () => {
         url: 'http://localhost:3001/api/getUser',
     })
     .then((res) => {
-        console.log("Received user info:", res.data);
-        console.log("Username:", res.data.customer_name);   // check if username field exists
         setWelcomeMessage(`Welcome user ${res.data.customer_name}`); // Set welcome message with username
         setError('');
 

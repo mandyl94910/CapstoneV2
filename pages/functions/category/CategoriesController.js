@@ -1,3 +1,4 @@
+//C:\proj309\CapstoneV2\pages\functions\category\CategoriesController.js
 const db = require('../../../server/models');  // Note that the entire db object is imported here
 const Category = db.Category;  // Extract the Category model from the db object
 const { Op } = require('sequelize');
@@ -40,7 +41,6 @@ const getPrimaryCategories = async (req, res) => {
         }
       }
     });
-    console.log('Categories:', categories);
     res.json(categories);
   } catch (error) {
     console.error('Failed to retrieve parent categories', error);
@@ -48,5 +48,22 @@ const getPrimaryCategories = async (req, res) => {
   }
 };
 
+const getSubCategories = async (req, res) => {
+  try {
+    const subCategories = await Category.findAll({
+      attributes: ['id', 'name'],
+      where: {
+        sub_for: {
+          [Op.gt]: 1
+        }
+      }
+    });
+    res.json(subCategories);
+  } catch (error) {
+    console.error('Failed to retrieve sub categories', error);
+    res.status(500).send('Server Error');
+  }
+};
+
 // Export the getCategories function
-module.exports = { getCategories, getPrimaryCategories };
+module.exports = { getCategories, getPrimaryCategories,getSubCategories };

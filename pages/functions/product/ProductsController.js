@@ -1,9 +1,9 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category } = require('../../../server/models');  // 直接从 index.js 中导入 Product 模型
+const { Product,Category,Review } = require('../../../server/models');  
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
 const { Op } = require('sequelize');
-
+const { uploadProductImages } = require('../imageController'); 
 
 // Function name: getAllProducts
 // Description: Retrieves all products that are marked as visible in the database.
@@ -84,7 +84,7 @@ const getProductsByCategory = async (req, res) => {
 const getProductsByCategoryIncludeSubcategory = async (req, res) => {
   try {
     const { categoryId } = req.params;  // Extract category ID from request parameters
-
+    // console.log('Category ID:',categoryId);
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
@@ -100,7 +100,7 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
         }
       }]
     });
-    
+    // console.log('Retrieved products:', products);
     if (!products || products.length === 0) {
       return res.json([]);
       // return res.status(404).send({ message: "No products found for this category" });
@@ -204,8 +204,77 @@ const changeProductVisibility = async (req, res) => {
   }
 };
 
+
+// Function name: addProduct
+// Description: Add a new product to the database with detailed information and optionally handle image upload.
+// Parameters:
+//   req (object): The HTTP request object containing product details such as name, description, price, etc.
+//   res (object): The HTTP response object used to send back data or errors.
+// Functionality:
+//   This function creates a new product entry in the database using details provided in the request body. 
+//   It also handles image upload if an image file is included in the request.
+const addProduct = async (req, res) => {
+  const { product_name, product_description, price, quantity, category_id, visibility } = req.body;
+
+  try {
+      // First, create the product in the database and retrieve the product_id
+      const newProduct = await Product.create({
+          product_name,
+          product_description,
+          price,
+          quantity,
+          category_id,
+          visibility,
+          folder: category_id  // Use category_id as the folder name
+      });
+
+      req.productId = newProduct.product_id;  // Pass the product_id to req for use in multer
+
+      // If there is an uploaded image
+      if (req.file) {
+          const imagePath = `product/${category_id}/${newProduct.product_id}.webp`;
+          newProduct.image = imagePath;  // Set the image path
+          await newProduct.save();  // Save the updated product information
+
+      }
+      res.status(200).send({ message: 'Product added successfully!' });
+  } catch (error) {
+      res.status(500).send({ message: 'Failed to add product.' });
+  }
+};
+
+// Function name: deleteProduct
+// Description: Deletes a product by its ID from the database.
+// Parameters:
+//   req (object): The HTTP request object containing the product ID in parameters.
+//   res (object): The HTTP response object used to send back data or errors.
+// Functionality:
+//   This function deletes a product by its ID and responds with a success message if deletion is successful,
+//   or an error message if the deletion fails or the product is not found.
+const deleteProduct = async (req, res) => {
+  const { productId } = req.params;
+  try {
+    // Find the product to ensure it exists
+    const product = await Product.findOne({ where: { product_id: productId } });
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    // Delete all product-related reviews
+    await Review.destroy({ where: { product_id: productId } });
+
+    // Delete the product
+    await Product.destroy({ where: { product_id: productId } });
+
+    // Send success response
+    res.json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).send({ message: "Error deleting product: " + error.message });
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory, 
-  changeProductVisibility };
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,addProduct,deleteProduct  };

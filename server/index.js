@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const events = require('events');
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 
+const { uploadSellerAvatar,uploadProductImage } = require('../pages/functions/imageController');
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, 
   registerFunction, 
@@ -20,14 +21,17 @@ const { getAdminInformation,
   updateAdminDetails, 
   changeCredentials  } = require('../pages/functions/user/AdminController');
 const { getCategories, 
-  getPrimaryCategories } = require('../pages/functions/category/CategoriesController');
+  getPrimaryCategories,
+  getSubCategories  } = require('../pages/functions/category/CategoriesController');
 const { getAllProducts, 
   getAllProductsForDataTable, 
   getProductsByCategory, 
   getProductById, 
   getRecommendedProducts, 
   getProductsByCategoryIncludeSubcategory,
-  changeProductVisibility } = require('../pages/functions/product/ProductsController');
+  changeProductVisibility,
+  addProduct,
+  deleteProduct} = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
@@ -42,46 +46,6 @@ app.use(cookieParser('mySecretKey'));
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);  // Initialize Passport for authentication
-
-//followings are from <chatgpt>
-//Multer is a middleware usually used for uploading files. 
-//It parses the request for multipart/form-data data, 
-//which is a common encoding type used when uploading files.
-//Storage Management: It provides a variety of storage options, 
-//including in-memory storage and disk storage. 
-//You can choose to store uploaded files in the server's memory or directly to disk.
-//We'll use multer to store photos, etc. for now. In the future we plan to use cloud storage.
-//Configuring multer storage
-const storage = multer.diskStorage({
-    //This initializes the storage engine for Multer, 
-    //specifically defining how and where to store the uploaded files. 
-    //It uses the diskStorage method to store files on the disk.
-    destination: (req, file, cb) => {
-      //Used to determine the directory where the uploaded file is saved. 
-      //Contains the “HTTP request object req”, the “uploaded file object file”, and the callback function “cb”.  
-      const dir = './public/images/admin';
-      //If the directory does not exist, it will be created next.
-      if (!fs.existsSync(dir)){
-        //The mkdirSync() method synchronizes the creation of the directory
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      //Passes the destination directory dir as the second 
-    //argument, and null as the first argument to indicate that 
-    //there is no error.Multer uses this callback to indicate 
-    //that the file should be saved to the specified directory.
-      cb(null, dir);
-    },
-    //Decide how uploaded files should be named
-    filename: (req, file, cb) => {
-      const adminId = req.body.adminId;  
-      const filename = `${adminId}.webp`;
-      cb(null, filename);
-    }
-  });
-//Initialize the Multer with the configured storage object. 
-//the Multer will now handle file uploads based on the storage 
-//rules defined earlier, specifically how files are saved and how they are named.
-const upload = multer({ storage: storage });
 
 // Registration route
 app.post('/api/register', registerFunction);
@@ -123,7 +87,7 @@ app.get('/api/productsName', searchProductsByName);
 app.get('/api/profile-admin', getAdminInformation);
 
 //Handles POST request to update an admin's details, including uploading a single profile picture using multer middleware.
-app.post('/api/update-admin', upload.single('profilePicture'), updateAdminDetails);
+app.post('/api/update-admin', uploadSellerAvatar.single('profilePicture'), updateAdminDetails);
 
 
 // Handles POST request to change credentials for a user or admin.
@@ -132,9 +96,22 @@ app.post('/api/changeCredentials', changeCredentials);
 // Handles POST request to change the visibility status of a product in the admin's product management system.
 app.post('/api/products-admin/changeVisibility',changeProductVisibility);
 
+// Route to get users
 app.get('/api/user-admin/datatable', (req, res) => {
   getAllUsers(req, res);
 });
+
+// Route to get Sub Categories
+app.get('/api/subcategories', getSubCategories);
+
+// Product Image Upload Routing
+app.post('/api/products/add', uploadProductImage.single('image'), async (req, res) => {
+  console.log('Request received to add product');
+  await addProduct(req, res);
+});
+
+// Route to delete a product by ID
+app.delete('/api/products-admin/delete/:productId', deleteProduct);
 
 // Start the server
 app.listen(3001, () => {
