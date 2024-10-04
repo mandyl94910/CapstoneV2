@@ -1,9 +1,9 @@
 ///C:\CPRG306\CapstoneV2\components\admin\settings\EditAccount.js
-import React, { useState,useEffect } from "react";
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import EditProfilePicture from "./EditProfilePicture";
 import EditField from "./EditField";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 const EditAccount = () => {
   const [adminDetails, setAdminDetails] = useState({
@@ -13,19 +13,22 @@ const EditAccount = () => {
   });
 
   const [newProfilePicture, setNewProfilePicture] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); 
+  const [selectedFile, setSelectedFile] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/profile-admin')
-      .then(response => {
+    axios
+      .get("http://localhost:3001/api/profile-admin")
+      .then((response) => {
         setAdminDetails({
-          name: response.data.name || "",  
-          title: response.data.title || "", 
-          profilePicture: `/images/${response.data.image}` || "https://via.placeholder.com/150"  
+          name: response.data.name || "",
+          title: response.data.title || "",
+          profilePicture:
+            `/images/${response.data.image}` ||
+            "https://via.placeholder.com/150",
         });
       })
-      .catch(error => console.error('Error fetching admin details:', error));
+      .catch((error) => console.error("Error fetching admin details:", error));
   }, []);
 
   // Handle input changes for name and email fields
@@ -51,30 +54,34 @@ const EditAccount = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('name', adminDetails.name);
-    formData.append('title', adminDetails.title);
+    formData.append("name", adminDetails.name);
+    formData.append("title", adminDetails.title);
     if (selectedFile) {
-      formData.append('profilePicture', selectedFile);
+      formData.append("profilePicture", selectedFile);
     } else {
-      console.log('No file selected.');
-      alert('Please select a file to upload.');
-      return; 
+      console.log("No file selected.");
+      alert("Please select a file to upload.");
+      return;
     }
-  
+
     try {
-        const response = await axios.post('http://localhost:3001/api/update-admin', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        alert("Admin details updated successfully!");
-        //  // We want updated avatars to show up immediately, 
-        //rather than showing the old avatar due to browser caching issues. 
-        //We add a timestamp parameter to the URL on the page jump.
-        router.push(`/admin/settings/settings?time=${new Date().getTime()}`);
+      const response = await axios.post(
+        "http://localhost:3001/api/update-admin",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      alert("Admin details updated successfully!");
+      //  // We want updated avatars to show up immediately,
+      //rather than showing the old avatar due to browser caching issues.
+      //We add a timestamp parameter to the URL on the page jump.
+      router.push(`/admin/settings/settings?time=${new Date().getTime()}`);
     } catch (error) {
-        console.error('Error updating admin details:', error);
-        alert("Failed to update admin details.");
+      console.error("Error updating admin details:", error);
+      alert("Failed to update admin details.");
     }
   };
 

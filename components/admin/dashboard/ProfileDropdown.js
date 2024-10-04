@@ -1,16 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Link from "next/link";
-import {
-  FaUser,
-  FaCog,
-  FaSignOutAlt,
-  FaDesktop,
-  FaPaypal,
-  FaMoneyCheck,
-} from "react-icons/fa";
+import { FaUser, FaCog, FaSignOutAlt, FaMoneyCheck } from "react-icons/fa";
 
 const ProfileDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Manage dropdown state
+  const [adminDetails, setAdminDetails] = useState({
+    name: "",
+    title: "",
+    profilePicture: "https://via.placeholder.com/150", // Default placeholder image
+  });
+
+  // Fetch admin details on component mount
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/api/profile-admin")
+      .then((response) => {
+        setAdminDetails({
+          name: response.data.name || "",
+          title: response.data.title || "",
+          profilePicture:
+            `/images/${response.data.image}` ||
+            "https://via.placeholder.com/150",
+        });
+      })
+      .catch((error) => console.error("Error fetching admin details:", error));
+  }, []);
 
   return (
     <div className="relative">
@@ -18,7 +33,7 @@ const ProfileDropdown = () => {
       <button onClick={() => setIsOpen(!isOpen)} className="focus:outline-none">
         <img
           className="w-10 h-10 rounded-full"
-          src="https://via.placeholder.com/150"
+          src={adminDetails.profilePicture} // Use the profile picture from state
           alt="User Profile"
         />
       </button>
@@ -28,8 +43,8 @@ const ProfileDropdown = () => {
         <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-50">
           {/* Profile Info */}
           <div className="p-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-800">Admin1</h3>
-            <p className="text-sm text-gray-500">admin1@gmail.com</p>
+            <h3 className="font-semibold text-gray-800">{adminDetails.name}</h3>
+            <p className="text-sm text-gray-500">{adminDetails.title}</p>
           </div>
 
           {/* Menu Options */}
