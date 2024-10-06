@@ -5,7 +5,7 @@ const SearchBar = ({
   setSearchQuery,
   placeholder = "Search...",
 }) => {
-  // 검색 입력 필드의 변경 핸들러
+  // Handler for changes in the search input field
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
