@@ -50,22 +50,22 @@ const ProfileDropdown = () => {
           {/* Menu Options */}
           <div className="p-2">
             <Link
-              href="/admin/myProfile"
-              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              href="/admin/adminProfile"
+              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-slate-300 rounded-md"
             >
               <FaUser className="text-lg" />
               <span>My Profile</span>
             </Link>
             <Link
               href="/admin/settings/settings"
-              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-slate-300 rounded-md"
             >
               <FaCog className="text-lg" />
               <span>Account Settings</span>
             </Link>
             <Link
               href="/device-management"
-              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-slate-300 rounded-md"
             >
               <FaMoneyCheck className="text-lg" />
               <span>Payment System</span>
@@ -76,7 +76,7 @@ const ProfileDropdown = () => {
           <div className="p-2 border-t border-gray-100">
             <Link
               href="/"
-              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-red-50 rounded-md"
+              className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-red-100 rounded-md"
             >
               <FaSignOutAlt className="text-lg text-red-500" />
               <span>Sign Out</span>

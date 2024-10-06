@@ -1,4 +1,3 @@
-///C:\CPRG306\CapstoneV2\components\admin\settings\EditAccount.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditProfilePicture from "./EditProfilePicture";

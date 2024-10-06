@@ -1,31 +1,47 @@
-import React, { useState,useEffect } from "react";
-import { useRouter } from "next/router"; // Import useRouter for navigation
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router"; // Next.js router for navigation
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
-import axios from "axios"; 
-const UserManagement = () => {
-  // Initial user data
-  const [users, setUsers] = useState([]); // State for users
-    const router = useRouter(); // Next.js router for navigation
+import axios from "axios";
 
-  // Fetch users when the component mounts
+const UserManagement = () => {
+  const [users, setUsers] = useState([]); // State to hold all user data
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query input
+  const router = useRouter(); // Next.js router instance
+
+  // Fetch user data when the component mounts
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await axios.get('http://localhost:3001/api/user-admin/datatable');
-        console.log(response.data.rows);
-        setUsers(response.data.rows); // 更新状态 // 确保是数组
+        const response = await axios.get(
+          "http://localhost:3001/api/user-admin/datatable"
+        );
+        setUsers(response.data.rows); // Set state with fetched data
       } catch (error) {
         console.error("Error fetching users:", error);
-        setUsers([]);  // 请求失败时设置为空数组
+        setUsers([]); // Set state to an empty array if the request fails
       }
     }
     fetchUsers();
   }, []);
 
-  // User stats information
+  // Filter users based on name and email only
+  const filteredUsers = users.filter((user) => {
+    return (
+      (user.customer_name &&
+        user.customer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (user.email &&
+        user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
+
+  // User statistics information
   const userStats = [
-    { title: "Total Users", value: 25, description: "Based on 28 June 2024" },
+    {
+      title: "Total Users",
+      value: users.length,
+      description: "Based on 28 June 2024",
+    },
     { title: "New Users", value: "+3", description: "Based on 28 June 2024" },
     {
       title: "Withdrawal Users",
@@ -34,44 +50,48 @@ const UserManagement = () => {
     },
   ];
 
-    // Placeholder for edit functionality
-    const handleEdit = (index) => {
-      console.log("Edit user:", index);
-    };
+  // Handle user edit action
+  const handleEdit = (index) => {
+    console.log("Edit user:", index);
+  };
 
-    // Placeholder for delete functionality
-    const handleDelete = (index) => {
-      console.log("Delete user:", index);
-    };
+  // Handle user delete action
+  const handleDelete = (index) => {
+    console.log("Delete user:", index);
+  };
 
-    // Navigate to Add User page (if needed later)
-    const handleAddUser = () => {
-      router.push("/admin/addUser"); // Redirect to the Add User page
-    };
-
-    return (
-      <div className="border-t-2">
-        {/* User Data Table */}
-        <div className="bg-white p-4 rounded shadow-md">
-          <DataTable
-            columns={["User ID", "User Name", "Email"]}
-            data={users.map((user, index) => {
-              return {
-                userNo: user.customer_id,
-                userName: user.customer_name,
-                email: user.email,
-                // buy: user.buy,
-                // return: user.return,
-              };
-            })}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+  return (
+    <div className="border-t-2">
+      {/* Container for search and table */}
+      <div className="bg-white p-4 rounded shadow-md">
+        {/* Search Bar above the DataTable */}
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update the search query state
+            placeholder="Search by Name or Email" // Adjusted placeholder text
+            className="border p-2 rounded w-full" // Styling for the search bar
           />
         </div>
 
-        {/* User Info Cards */}
-        <InfoCards stats={userStats} />
+        {/* User Data Table */}
+        <DataTable
+          columns={["User ID", "User Name", "Email"]} // Display columns for ID, Name, and Email
+          data={filteredUsers.map((user, index) => ({
+            userNo: user.customer_id, // Display User ID in the table
+            userName: user.customer_name,
+            email: user.email,
+          }))}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
-    );
-  };
+
+      {/* Info Cards for User Statistics */}
+      <InfoCards stats={userStats} />
+    </div>
+  );
+};
+
 export default UserManagement;

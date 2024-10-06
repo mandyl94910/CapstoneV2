@@ -1,5 +1,5 @@
-//C:\proj309\CapstoneV2\components\admin\management\DataTable.js
 import React, { useState } from "react";
+import PaginationButton from "./PaginationButton"; // Import the new PaginationButton component
 
 const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,9 +20,28 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
     }
   };
 
+  // Calculate the range of pages to be displayed (maximum 4 pages)
   const getPageRange = () => {
-    const startPage = Math.max(currentPage - 1, 1);
-    const endPage = Math.min(currentPage + 4, totalPages);
+    let startPage, endPage;
+    if (totalPages <= 4) {
+      // If total pages are less than or equal to 4, show all pages
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      if (currentPage <= 2) {
+        // Show first 4 pages if currentPage is in the first 2 pages
+        startPage = 1;
+        endPage = 4;
+      } else if (currentPage >= totalPages - 1) {
+        // Show last 4 pages if currentPage is in the last 2 pages
+        startPage = totalPages - 3;
+        endPage = totalPages;
+      } else {
+        // Show 4 pages around the current page
+        startPage = currentPage - 1;
+        endPage = currentPage + 2;
+      }
+    }
     return Array.from(
       { length: endPage - startPage + 1 },
       (_, i) => startPage + i
@@ -76,34 +95,47 @@ const DataTable = ({ columns, data, onEdit, onDelete, itemsPerPage = 5 }) => {
       </div>
 
       {/* Pagination controls */}
-      <div className="flex justify-center mt-3">
-        {/* Page buttons */}
+      <div className="flex justify-center items-center mt-4">
+        {/* Previous Button */}
+        <PaginationButton
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-500"
+              : "bg-gray-300 text-gray-500"
+          } w-10 h-10`}
+        >
+          ◀
+        </PaginationButton>
+
+        {/* Page Buttons */}
         {getPageRange().map((page) => (
-          <button
+          <PaginationButton
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`mx-1 px-3 py-2 rounded ${
+            className={`${
               currentPage === page
                 ? "bg-slate-500 text-white"
                 : "bg-gray-200 text-slate-700"
-            }`}
+            } w-10 h-10`} // Fixed size for pagination buttons
           >
             {page}
-          </button>
+          </PaginationButton>
         ))}
 
-        {/* Dropdown for selecting the page */}
-        <select
-          className="border border-gray-300 rounded px-2 py-1 mr-4 ml-5"
-          value={currentPage}
-          onChange={(e) => handlePageChange(Number(e.target.value))}
+        {/* Next Button */}
+        <PaginationButton
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-500"
+              : "bg-gray-300 text-gray-500"
+          } w-10 h-10`}
         >
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <option key={page} value={page}>
-              Page {page}
-            </option>
-          ))}
-        </select>
+          ▶
+        </PaginationButton>
       </div>
     </div>
   );

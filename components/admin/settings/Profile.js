@@ -17,11 +17,8 @@ const Profile = ({ adminId }) => {
       <img
         src={imgSrc}
         alt="Admin Profile"
-        className="w-64 h-64 rounded-full border-2 border-black"
+        className="w-64 h-64 rounded-full border-2 border-black m-4"
       />
-      <h1 className="text-2xl font-bold mt-4">
-        Hello! <span className="text-black">Admin</span>
-      </h1>
     </div>
   );
 };
