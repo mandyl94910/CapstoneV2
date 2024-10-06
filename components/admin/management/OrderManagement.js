@@ -1,28 +1,9 @@
 //C:\CPRG306\CapstoneV2\components\admin\management\OrderManagement.js
-import React, { useState } from "react";
+import React, { useState,useEffect  } from "react";
 import { useRouter } from "next/router"; // Import useRouter for navigation
+import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
-
-// Initial order data
-const initialOrderData = [
-  {
-    orderNo: "1000A2T34",
-    productName: "Product 1",
-    price: "$126.44",
-    shipTo: "User1",
-    orderPlaced: "June 29, 2024",
-    status: "Prepared",
-  },
-  {
-    orderNo: "1000A2T35",
-    productName: "Product 2",
-    price: "$98.22",
-    shipTo: "User2",
-    orderPlaced: "July 1, 2024",
-    status: "Delivered",
-  },
-];
 
 // Order stats information
 const orderStats = [
@@ -44,8 +25,22 @@ const orderStats = [
 ];
 
 const OrderManagement = () => {
-  const [orders, setOrders] = useState(initialOrderData); // State for orders
+  const [orders, setOrders] = useState([]); // State for orders
   const router = useRouter(); // Next.js router for navigation
+
+  // Fetch orders when the component mounts
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const response = await axios.get('http://localhost:3001/api/order-admin/datatable');
+        console.log('Fetched orders:', response.data);
+        setOrders(response.data);  // Update orders state
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+    fetchOrders();  // Call the fetchOrders function when the component mounts
+  }, []);
 
   // Placeholder for edit functionality
   const handleEdit = (index) => {
@@ -68,15 +63,20 @@ const OrderManagement = () => {
       <div className="bg-white p-4 rounded shadow-md">
         <DataTable
           columns={[
-            "Order No",
-            "Product Name",
-            "Price",
-            "Ship To",
-            "Order Placed",
+            "Order ID",
+            "Product ID",
+            "Total",
+            "Customer Name",
+            "Order Date",
             "Status",
           ]}
-          data={orders.map((order, index) => ({
-            ...order,
+          data={orders.map((order) => ({
+            orderNo: order.order_id,
+            productID: order.product_id,
+            total: order.total,
+            customerName: order.customer_name,
+            orderDate: new Date(order.order_date).toLocaleDateString(),
+            status: order.status,
           }))}
           onEdit={handleEdit}
           onDelete={handleDelete}

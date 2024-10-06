@@ -13,11 +13,11 @@ const UserManagement = () => {
     async function fetchUsers() {
       try {
         const response = await axios.get('http://localhost:3001/api/user-admin/datatable');
-        console.log(response.data.rows);
-        setUsers(response.data.rows); // 更新状态 // 确保是数组
+        console.log(response.data);
+        setUsers(response.data); 
       } catch (error) {
         console.error("Error fetching users:", error);
-        setUsers([]);  // 请求失败时设置为空数组
+        setUsers([]);  
       }
     }
     fetchUsers();
@@ -54,13 +54,13 @@ const UserManagement = () => {
         {/* User Data Table */}
         <div className="bg-white p-4 rounded shadow-md">
           <DataTable
-            columns={["User ID", "User Name", "Email"]}
-            data={users.map((user, index) => {
+            columns={["User ID", "User Name", "Email","Orders"]}
+            data={users.map((user) => {
               return {
                 userNo: user.customer_id,
                 userName: user.customer_name,
                 email: user.email,
-                // buy: user.buy,
+                Orders: user.order_count
                 // return: user.return,
               };
             })}

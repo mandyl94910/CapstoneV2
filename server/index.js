@@ -32,6 +32,7 @@ const { getAllProducts,
   changeProductVisibility,
   addProduct,
   deleteProduct} = require('../pages/functions/product/ProductsController');
+const {getAllOrders} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
@@ -101,12 +102,16 @@ app.get('/api/user-admin/datatable', (req, res) => {
   getAllUsers(req, res);
 });
 
+// Route to get order
+app.get('/api/order-admin/datatable', (req, res) => {
+  getAllOrders(req, res);
+});
+
 // Route to get Sub Categories
 app.get('/api/subcategories', getSubCategories);
 
 // Product Image Upload Routing
 app.post('/api/products/add', uploadProductImage.single('image'), async (req, res) => {
-  console.log('Request received to add product');
   await addProduct(req, res);
 });
 

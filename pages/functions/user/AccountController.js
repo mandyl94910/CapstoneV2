@@ -12,6 +12,7 @@ const { saveSession, getSession,updateSession,deleteSession,incrementLoginAttemp
 const { setCache, getCache} = require('../../../lib/redisUtils/cacheOps');
 const bcrypt = require('bcrypt');
 const db = require('../../../server/db');
+const { Customer, Order,sequelize} = require('../../../server/models');  
 
 const { verifyRecaptchaToken } = require('./recaptcha');
 
@@ -156,18 +157,35 @@ async function getUserInformation(req, res) {
 }
 
 // Get all users' controller functions
-const getAllUsers = (req, res) => {
-  const sqlQuery = 'SELECT customer_id, customer_name, email FROM customer'; // 只获取需要的字段
-  db.query(sqlQuery, (err, results) => {
-    if (err) {
+const getAllUsers = async (req, res) => {
+    try {
+      const customers = await Customer.findAll({
+        attributes: [
+          'customer_id',
+          'customer_name',
+          'email',
+          // Using the Sequelize Function COUNT to Calculate Order Quantity
+          [sequelize.fn('COUNT', sequelize.col('Orders.id')), 'order_count']
+        ],
+        include: [
+          {
+            model: Order,  // Associated Order Form
+            attributes: [], 
+          }
+        ],
+        order: [['customer_id', 'ASC']],
+        //so that the database can know how to group these columns
+        group: ['Customer.customer_id']  //Grouping is required to avoid aggregation errors
+      });
+      
+      // console.log('Filtered Results from DB:', customers.filter(customer => customer.customer_id >= 1 && customer.customer_id <= 20));
+      res.json(customers);
+    } catch (err) {
       console.error('Error fetching users:', err);
       res.status(500).send('Error fetching users');
-      return;
     }
-    console.log('Results from DB:', results);
-    res.json(results);
-  });
-};
+  };
+
   module.exports = {
     loginFunction,
     registerFunction,
