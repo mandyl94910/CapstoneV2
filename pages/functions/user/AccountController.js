@@ -156,7 +156,15 @@ async function getUserInformation(req, res) {
   }
 }
 
-// Get all users' controller functions
+// Function name: getAllUsers
+// Description: Retrieves all users along with the count of their associated orders from the database.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object, used to return the users' data or an error message.
+// Functionality:
+//   This function queries the Customer model to get each customer's ID, name, and email along with the count of their
+//   orders by joining with the Orders table. It groups the data by customer ID to avoid aggregation errors. 
+//   If successful, it sends back the data; otherwise, it handles any errors that occur during the query.
 const getAllUsers = async (req, res) => {
     try {
       const customers = await Customer.findAll({
@@ -186,25 +194,41 @@ const getAllUsers = async (req, res) => {
     }
   };
 
+  // Function name: getUserTotalNumber
+// Description: Retrieves the total count of users from the Customer table.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object used to return the total user count or an error message.
+// Functionality:
+//   This function counts the total number of customers in the Customer table. If successful, it returns the count in JSON format.
+//   It also handles any errors that may occur during the count query.
   const getUserTotalNumber = async (req, res) => {
     try {
       const totalUsers = await Customer.count();
+      //totalUsers need to be return as an object
       res.json({ totalUsers });
     } catch (error) {
       res.status(500).send('Server Error');
     }
   };
 
-  // 获取近一周的新用户数量
+// Function name: getNewUsers
+// Description: Counts new users who registered within the last week.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object used to return the count of new users or an error message.
+// Functionality:
+//   This function calculates a date one week prior to the current date, then counts users in the Customer table
+//   who registered on or after that date. It returns the count in JSON format if successful and handles any errors.
 const getNewUsers = async (req, res) => {
   try {
     const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // 设置为一周前的日期
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // Set the date to one week ago
 
     const newUsers = await Customer.count({
       where: {
         register_date: {
-          $gte: oneWeekAgo, // 筛选条件，获取注册日期在一周内的用户
+          $gte: oneWeekAgo, // Filter criteria to get users with registration date within one week
         },
       },
     });

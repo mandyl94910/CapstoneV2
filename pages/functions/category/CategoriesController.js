@@ -1,6 +1,9 @@
 //C:\proj309\CapstoneV2\pages\functions\category\CategoriesController.js
 const db = require('../../../server/models');  // Note that the entire db object is imported here
 const Category = db.Category;  // Extract the Category model from the db object
+//n Sequelize, Op represents the Operators provided by Sequelize to facilitate advanced query conditions. Op is a shorthand for Sequelize.
+//Op, an object containing various operators that can be used in the where clause of a query to create complex conditions.
+//helped by chatgpt
 const { Op } = require('sequelize');
 
 // Function name: getCategories
@@ -48,12 +51,23 @@ const getPrimaryCategories = async (req, res) => {
   }
 };
 
+// Function name: getSubCategories
+// Description: Retrieves all subcategories with a specific `sub_for` value greater than 1.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object, used to send back the subcategories data or an error message.
+// Functionality:
+//   This function fetches categories where `sub_for` is greater than 1, meaning it retrieves only subcategories.
+//   It selects only the `id` and `name` attributes of each subcategory. If successful, it sends back the subcategories
+//   in JSON format; if not, it catches any error and sends a server error response.
 const getSubCategories = async (req, res) => {
   try {
     const subCategories = await Category.findAll({
+      // Specifies only id and name attributes to be retrieved
       attributes: ['id', 'name'],
       where: {
         sub_for: {
+          // Retrieves categories where `sub_for` is greater than 1, indicating subcategories
           [Op.gt]: 1
         }
       }
@@ -65,8 +79,17 @@ const getSubCategories = async (req, res) => {
   }
 };
 
+// Function name: getCategoriesTotalNumber
+// Description: Retrieves the total count of categories in the Category table.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object, used to send back the total number of categories or an error message.
+// Functionality:
+//   This function counts the total number of categories in the database. If the count is successful, it returns the
+//   total count in JSON format. It also handles any errors that may occur during the counting process.
 const getCategoriesTotalNumber = async (req, res) => {
   try {
+    // Counts total records in the Category table
     const totalCategories = await Category.count();
     res.json({ totalCategories });
   } catch (error) {

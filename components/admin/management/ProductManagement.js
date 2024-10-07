@@ -99,14 +99,18 @@ const ProductManagement = () => {
   };
 
   const handleDelete = async (productId) => {
-    if (confirm("Are you sure you want to delete this product?")) { // 确认删除
+    if (confirm("Are you sure you want to delete this product?")) { 
       try {
-        const response = await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}`); // 向后端发送删除请求
-        if (response.data.success) {
-          // Update the front-end product list if the deletion was successful.
+        const response = await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}`); 
+        if (response.data.prompt) {
+          //// If the user chooses to make the product invisible
+          if (confirm(response.data.message)) { 
+            await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}?action=hide`);
+          }
+        } else if (response.data.success) {
           console.log("Product deleted:", productId);
           await refreshProductList();
-          }
+        }
       } catch (error) {
         console.error("Error deleting product:", error);
       }

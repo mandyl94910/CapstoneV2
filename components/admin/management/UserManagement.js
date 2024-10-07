@@ -10,7 +10,7 @@ const UserManagement = () => {
     const [userStats, setUserStats] = useState({
       totalUsers: "Loading...",
       newUsers: "Loading...",
-      withdrawalUsers: "-2", // 保持静态数据
+      withdrawalUsers: "-2", // Keep static data
     });
 
   // Fetch users when the component mounts
@@ -36,7 +36,7 @@ const UserManagement = () => {
         setUserStats({
           totalUsers: totalUsersRes.data.totalUsers,
           newUsers: `+${newUsersRes.data.newUsers}`,
-          withdrawalUsers: "-2" // 保持静态数据
+          withdrawalUsers: "-2" // Keep static data
         });
 
         console.log("Updated userStats:", {
