@@ -16,6 +16,7 @@ const sequelize = new Sequelize('postgres://postgres:password@localhost:5432/cap
 const Category = require('./Category')(sequelize, DataTypes);
 const Product = require('./Product')(sequelize, DataTypes);  /// Initialize the Product model
 const Review = require('./Review')(sequelize, DataTypes);
+const Customer = require('./Customer')(sequelize, DataTypes);
 
 // Define relationships between models (if any)
 Category.hasMany(Product, { foreignKey: 'category_id' });   // The association between Category and Product
@@ -25,10 +26,16 @@ Product.belongsTo(Category, { foreignKey: 'category_id' });   // Reverse associa
 Product.hasMany(Review, { foreignKey: 'product_id', onDelete: 'CASCADE' });  // A product can have many reviews
 Review.belongsTo(Product, { foreignKey: 'product_id' });  // A review belongs to a product
 
+// Customer and Review relationship
+Customer.hasMany(Review, { foreignKey: 'customer_id' });   // A customer can write many reviews
+Review.belongsTo(Customer, { foreignKey: 'customer_id' }); // A review belongs to a customer
+
+
 const db = {
   Category,
   Product,
   Review,  
+  Customer,
   sequelize,
   Sequelize
 };

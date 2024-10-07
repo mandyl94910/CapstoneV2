@@ -44,7 +44,6 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
         <div className="flex justify-between items-center">
           <span 
             className={`${isSelected ? 'text-white' : ''}`}
-            // className={`${isSelected || isParentSelected ? 'text-white' : ''}`}
             onClick={() => {
               if (isParent) {
                 // Click the parent to expand/collapse, but only select the parent when not expanding

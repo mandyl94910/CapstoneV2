@@ -33,6 +33,7 @@ const { getAllProducts,
   addProduct,
   deleteProduct} = require('../pages/functions/product/ProductsController');
 const searchProductsByName = require('../pages/functions/product/search');
+const getReviewByProductId = require('../pages/functions/product/review');
 
 
 const app = express();
@@ -61,6 +62,9 @@ app.get('/api/categories', getCategories);
 
 // Get all products
 app.get('/api/products', getAllProducts);
+
+// Get reviews
+app.get('/api/reviews/:productId', getReviewByProductId);
 
 // Get all products for admin
 app.get('/api/products-admin/datatable', getAllProductsForDataTable);
