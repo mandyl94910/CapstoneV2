@@ -1,8 +1,8 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category,Review } = require('../../../server/models');  
+const { Product,Category,Review,OrderDetail} = require('../../../server/models');  
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
-const { Op } = require('sequelize');
+  const { Sequelize, Op } = require('sequelize');
 const { uploadProductImages } = require('../imageController'); 
 
 // Function name: getAllProducts
@@ -274,7 +274,69 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProductTotalNumber = async (req, res) => {
+  try {
+    const totalProducts = await Product.count();
+    res.json({ totalProducts });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+};
+
+
+const getTopSellingProducts = async (req, res) => {
+  try {
+    const products = await Product.findAll({
+      include: [{
+        model: OrderDetail,
+        attributes: ['quantity']
+      }],
+      attributes: ['product_id', 'product_name', 'price', 'visibility']
+    });
+
+    // 计算每个产品的总销量
+    const result = products.map(product => {
+      const orderQuantities = product.OrderDetails.map(orderDetail => orderDetail.quantity);
+      const totalSold = orderQuantities.reduce((sum, quantity) => sum + quantity, 0); // 累加所有的 quantity
+
+      return {
+        ...product.toJSON(),
+        order_quantities: orderQuantities, // 保留每个订单的 quantity
+        sold: totalSold // 总销量
+      };
+    });
+
+    // 按销量降序排序，并获取前四个产品
+    const topSellingProducts = result
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 4);
+
+    res.json(topSellingProducts);
+  } catch (error) {
+    console.error('Error fetching top selling products:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+// 获取总价值
+const getTotalValue = async (req, res) => {
+  try {
+    const products = await Product.findAll({
+      attributes: ['price', 'quantity'],
+    });
+    
+    // 计算总价值
+    const totalValue = products.reduce((acc, product) => {
+      return acc + product.price * product.quantity;
+    }, 0);
+    res.json({ totalValue });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
-  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,addProduct,deleteProduct  };
+  getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
+  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue  };

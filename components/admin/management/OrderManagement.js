@@ -27,6 +27,11 @@ const orderStats = [
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]); // State for orders
   const router = useRouter(); // Next.js router for navigation
+  const [orderStats, setOrderStats] = useState({
+    totalSales: "Loading...",
+    totalProducts: "Loading...",
+    totalOrders: "Loading..."
+  });
 
   // Fetch orders when the component mounts
   useEffect(() => {
@@ -39,7 +44,33 @@ const OrderManagement = () => {
         console.error("Error fetching orders:", error);
       }
     }
+
+    async function fetchOrderStats() {
+      try {
+        const [totalSalesRes, totalProductsRes, totalOrdersRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/total-sales'),
+          axios.get('http://localhost:3001/api/total-products'),
+          axios.get('http://localhost:3001/api/total-orders')
+        ]);
+
+        setOrderStats({
+          totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalOrders: totalOrdersRes.data.totalOrders
+        });
+
+        console.log("Updated orderStats:", {
+          totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalOrders: totalOrdersRes.data.totalOrders
+        });
+      } catch (error) {
+        console.error("Error fetching order stats:", error);
+      }
+    }
+    
     fetchOrders();  // Call the fetchOrders function when the component mounts
+    fetchOrderStats();
   }, []);
 
   // Placeholder for edit functionality
@@ -56,6 +87,24 @@ const OrderManagement = () => {
   const handleAddOrder = () => {
     router.push("/admin/addOrder"); // Redirect to the Add Order page
   };
+
+  const stats = [
+    {
+      title: "Total Sales",
+      value: orderStats.totalSales,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+    {
+      title: "Total Products",
+      value: orderStats.totalProducts,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+    {
+      title: "Total Orders",
+      value: orderStats.totalOrders,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+  ];
 
   return (
     <div className="border-t-2 ">
@@ -84,7 +133,7 @@ const OrderManagement = () => {
       </div>
 
       {/* Order Info Cards */}
-      <InfoCards stats={orderStats} />
+      <InfoCards stats={stats} />
     </div>
   );
 };

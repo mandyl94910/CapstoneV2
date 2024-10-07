@@ -65,5 +65,14 @@ const getSubCategories = async (req, res) => {
   }
 };
 
+const getCategoriesTotalNumber = async (req, res) => {
+  try {
+    const totalCategories = await Category.count();
+    res.json({ totalCategories });
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+};
+
 // Export the getCategories function
-module.exports = { getCategories, getPrimaryCategories,getSubCategories };
+module.exports = { getCategories, getPrimaryCategories,getSubCategories,getCategoriesTotalNumber };

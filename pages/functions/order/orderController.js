@@ -35,8 +35,6 @@ const getAllOrders = async (req, res) => {
           status: order.status,
         };
       });
-    
-    console.log('Formatted orders:', formattedOrders);
     res.json(formattedOrders);
   } catch (error) {
     console.error('Error fetching orders:', error.message); // 打印错误信息
@@ -44,6 +42,27 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+const getTotalSales = async (req, res) => {
+    try {
+      const result = await Order.sum('total');
+      const totalSales = result || 0; // 如果没有订单，则返回0
+      res.json({ totalSales });
+    } catch (error) {
+      res.status(500).send('Server Error');
+    }
+  };
+
+const getOrderTotalNumber = async (req, res) => {
+try {
+    const totalOrders = await Order.count();
+    res.json({ totalOrders });
+} catch (error) {
+    res.status(500).send('Server Error');
+}
+};
+
 module.exports = {
   getAllOrders,
+  getTotalSales,
+  getOrderTotalNumber
 };

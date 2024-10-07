@@ -16,13 +16,16 @@ require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, 
   registerFunction, 
   getUserInformation,
-  getAllUsers } = require('../pages/functions/user/AccountController');
+  getAllUsers,
+  getUserTotalNumber,
+  getNewUsers } = require('../pages/functions/user/AccountController');
 const { getAdminInformation, 
   updateAdminDetails, 
   changeCredentials  } = require('../pages/functions/user/AdminController');
 const { getCategories, 
   getPrimaryCategories,
-  getSubCategories  } = require('../pages/functions/category/CategoriesController');
+  getSubCategories,
+  getCategoriesTotalNumber} = require('../pages/functions/category/CategoriesController');
 const { getAllProducts, 
   getAllProductsForDataTable, 
   getProductsByCategory, 
@@ -31,8 +34,13 @@ const { getAllProducts,
   getProductsByCategoryIncludeSubcategory,
   changeProductVisibility,
   addProduct,
-  deleteProduct} = require('../pages/functions/product/ProductsController');
-const {getAllOrders} = require('../pages/functions/order/orderController');
+  deleteProduct,
+  getProductTotalNumber,
+  getTopSellingProducts,
+  getTotalValue } = require('../pages/functions/product/ProductsController');
+const {getAllOrders,
+    getTotalSales,
+    getOrderTotalNumber} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
@@ -117,6 +125,30 @@ app.post('/api/products/add', uploadProductImage.single('image'), async (req, re
 
 // Route to delete a product by ID
 app.delete('/api/products-admin/delete/:productId', deleteProduct);
+
+// 获取产品总数量
+app.get('/api/total-products', getProductTotalNumber);
+
+// 获取产品总类目
+app.get('/api/total-categories', getCategoriesTotalNumber);
+
+// 获取产品总价值
+app.get('/api/total-value', getTotalValue);
+
+// 获取用户总数量
+app.get('/api/total-users', getUserTotalNumber);
+
+// 获取一周内增加用户
+app.get('/api/new-users', getNewUsers);
+
+// 获取销售总额
+app.get('/api/total-sales', getTotalSales);
+
+// 获取订单总数量
+app.get('/api/total-orders', getOrderTotalNumber);
+
+// 定义获取销量最高的四个产品的路由
+app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Start the server
 app.listen(3001, () => {

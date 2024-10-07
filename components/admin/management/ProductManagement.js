@@ -9,6 +9,11 @@ import Switch from "../Switch";
 const ProductManagement = () => {
   const [products, setProducts] = useState([]); // Initialized as an empty array, waiting to be populated with data from the API
   const router = useRouter(); // Initialize the Next.js router
+  const [productStats, setProductStats] = useState({
+    totalProducts: "Loading...",
+    totalCategories: "Loading...",
+    totalValue: "Loading..."
+  });
 
   useEffect(() => {
     async function fetchProducts() {
@@ -22,24 +27,49 @@ const ProductManagement = () => {
         console.error("Error fetching products:", error);
       }
     }
+
+    async function fetchProductStats() {
+      try {
+        const [totalProductsRes, totalCategoriesRes, totalValueRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/total-products'),
+          axios.get('http://localhost:3001/api/total-categories'),
+          axios.get('http://localhost:3001/api/total-value')
+        ]);
+
+        setProductStats({
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalCategories: totalCategoriesRes.data.totalCategories,
+          totalValue: `$${totalValueRes.data.totalValue.toFixed(2)}`
+        });
+
+        console.log("Updated productStats:", {
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalCategories: totalCategoriesRes.data.totalCategories,
+          totalValue: `$${totalValueRes.data.totalValue.toFixed(2)}`
+        });
+      } catch (error) {
+        console.error("Error fetching product stats:", error);
+      }
+    }
+
     fetchProducts();
+    fetchProductStats();
   }, []);
 
-  // Product status information
-  const productStats = [
+  const stats = [
     {
       title: "Total Products",
-      value: products.length.toString(),
+      value: productStats.totalProducts,
       description: "Based on current inventory",
     },
     {
       title: "Total Categories",
-      value: "15",
+      value: productStats.totalCategories,
       description: "Categories available",
     },
     {
-      title: "Total Values",
-      value: "$3.2k",
+      title: "Total Value",
+      value: productStats.totalValue,
       description: "Estimated total value",
     },
   ];
@@ -142,7 +172,7 @@ const ProductManagement = () => {
       </div>
 
       {/* Product Info Cards */}
-      <InfoCards stats={productStats} />
+      <InfoCards stats={stats} />
     </div>
   );
 };

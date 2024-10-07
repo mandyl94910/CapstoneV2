@@ -7,6 +7,11 @@ const UserManagement = () => {
   // Initial user data
   const [users, setUsers] = useState([]); // State for users
     const router = useRouter(); // Next.js router for navigation
+    const [userStats, setUserStats] = useState({
+      totalUsers: "Loading...",
+      newUsers: "Loading...",
+      withdrawalUsers: "-2", // 保持静态数据
+    });
 
   // Fetch users when the component mounts
   useEffect(() => {
@@ -20,18 +25,39 @@ const UserManagement = () => {
         setUsers([]);  
       }
     }
+
+    async function fetchUserStats() {
+      try {
+        const [totalUsersRes, newUsersRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/total-users'),
+          axios.get('http://localhost:3001/api/new-users')
+        ]);
+
+        setUserStats({
+          totalUsers: totalUsersRes.data.totalUsers,
+          newUsers: `+${newUsersRes.data.newUsers}`,
+          withdrawalUsers: "-2" // 保持静态数据
+        });
+
+        console.log("Updated userStats:", {
+          totalUsers: totalUsersRes.data.totalUsers,
+          newUsers: `+${newUsersRes.data.newUsers}`,
+          withdrawalUsers: "-2"
+        });
+      } catch (error) {
+        console.error("Error fetching user stats:", error);
+      }
+    }
+
     fetchUsers();
+    fetchUserStats();
   }, []);
 
   // User stats information
-  const userStats = [
-    { title: "Total Users", value: 25, description: "Based on 28 June 2024" },
-    { title: "New Users", value: "+3", description: "Based on 28 June 2024" },
-    {
-      title: "Withdrawal Users",
-      value: "-2",
-      description: "Based on 28 June 2024",
-    },
+  const stats = [
+    { title: "Total Users", value: userStats.totalUsers, description: `Based on ${new Date().toLocaleDateString()}` },
+    { title: "New Users", value: userStats.newUsers, description: `Based on ${new Date().toLocaleDateString()}` },
+    { title: "Withdrawal Users", value: userStats.withdrawalUsers, description: "Based on 28 June 2024" },
   ];
 
     // Placeholder for edit functionality
@@ -70,7 +96,7 @@ const UserManagement = () => {
         </div>
 
         {/* User Info Cards */}
-        <InfoCards stats={userStats} />
+        <InfoCards stats={stats} />
       </div>
     );
   };

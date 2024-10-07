@@ -186,9 +186,41 @@ const getAllUsers = async (req, res) => {
     }
   };
 
+  const getUserTotalNumber = async (req, res) => {
+    try {
+      const totalUsers = await Customer.count();
+      res.json({ totalUsers });
+    } catch (error) {
+      res.status(500).send('Server Error');
+    }
+  };
+
+  // 获取近一周的新用户数量
+const getNewUsers = async (req, res) => {
+  try {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // 设置为一周前的日期
+
+    const newUsers = await Customer.count({
+      where: {
+        register_date: {
+          $gte: oneWeekAgo, // 筛选条件，获取注册日期在一周内的用户
+        },
+      },
+    });
+
+    res.json({ newUsers });
+  } catch (error) {
+    console.error("Error fetching new users:", error);
+    res.status(500).send('Server Error');
+  }
+};
+
   module.exports = {
     loginFunction,
     registerFunction,
     getUserInformation,
-    getAllUsers
+    getAllUsers,
+    getUserTotalNumber,
+    getNewUsers
   };
