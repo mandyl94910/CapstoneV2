@@ -11,7 +11,7 @@ export default function RecommendedProducts() {
     // fetch product info
     useEffect(() => {
     const fetchRecommendedProducts = async () => {
-        
+        // hardcode the condition for testing
         const response = await axios.get('http://localhost:3001/api/products/recommended_products?minPrice=500&maxPrice=800&limit=6');
         setRecommendedProducts(response.data);
     };

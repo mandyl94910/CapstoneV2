@@ -1,12 +1,18 @@
-// C:\CPRG306\CapstoneV2\pages\product\[id].js
+//CapstoneV2\pages\product\[id].js
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import Review from '../../components/product/Review';
 
-
+/**
+ * helped by chatGPT
+ * prompt: How can I switch the image of the product so that it will show the image being clicked on the big frame
+ * while the image being selected with blue border
+ * 
+ */
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data
   const [quantity, setQuantity] = useState(1);  // Store the selected quantity
@@ -37,10 +43,8 @@ const ProductPage = () => {
     }
   }, [product]);
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
-  }
-
+  // get other images from the same directory of the product, requiring the structure of pictures well-organized
+  // the default image with path .webp without number at the end, while others start from 1,2,3
   const generateImagePaths = (image) => {
     // remove .webp at the end of the original path
     const basePath = image.replace('.webp', '');
@@ -53,7 +57,7 @@ const ProductPage = () => {
 
   const addToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const productExists = cart.find((item) => item.id === product.id);
+    const productExists = cart.find((item) => item.product_id === product.product_id);
 
     if (productExists) {
       productExists.quantity += 1;
@@ -61,7 +65,7 @@ const ProductPage = () => {
       cart.push({ ...product, quantity: 1 });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart)); // 将购物车更新到localStorage
+    localStorage.setItem('cart', JSON.stringify(cart)); 
     alert('Product added to cart!');
     //router.push('/cart');
   };
@@ -101,7 +105,7 @@ const ProductPage = () => {
                   // src={`/images/${image}`} 
                   alt={`Small view ${index + 1}`}
                   className={`w-16 h-16 object-cover border-2 rounded cursor-pointer ${selectedImage === image ? 'border-blue-500' : ''}`}
-                  onClick={ () => handleImageClick(image)}
+                  onClick={ () => setSelectedImage(image)}
                 />
               )}
             </div>
@@ -147,36 +151,7 @@ const ProductPage = () => {
           </div>
         </div>
 
-        {/* ratings and reviews */}
-        <div className="mt-8">
-          {/* ratings */}
-          <h2 className="text-xl font-bold mb-4">Reviews and ratings</h2>
-          <div className="flex items-center mb-4">
-            <div className="text-4xl font-bold">4.0</div>
-            <div className="ml-4">
-              <p className="text-gray-600">based on 46 ratings</p>
-              <div className="flex items-center space-x-2 mt-1">
-                <span className="text-yellow-500">★★★★★</span>
-              </div>
-            </div>
-          </div>
-
-          {/* reviews */}
-          <div className="space-y-4">
-            {[1, 2, 3].map((review) => (
-              <div key={review} className="border p-4 rounded-lg">
-                <div className="flex items-center mb-2">
-                  <span className="font-bold mr-2">User Name</span>
-                  <span className="text-yellow-500">★★★★★</span>
-                </div>
-                <p className="text-gray-600">
-                  Lorem ipsum dolor sit amet consectetur. Sapien massa cras tristique tortor 
-                  misit amet consectetur. Sapien massa cras tristique lorem ipsum dolor sit amet consectetur.
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Review productId={id}/>
       </div>
       <Footer />
     </main>

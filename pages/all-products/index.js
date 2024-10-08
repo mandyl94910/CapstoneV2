@@ -8,6 +8,7 @@ import Footer from '../../components/common/Footer';
 import { useRouter } from 'next/router';
 
 // Dynamically load ProductGrid component, disable SSR
+// only load this component when being visited
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
 
 export default function Products() {

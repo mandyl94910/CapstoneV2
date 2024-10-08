@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Register() {
    // State hooks to store input values and control states
@@ -11,6 +13,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
+
 //6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -105,7 +109,9 @@ export default function Register() {
   return (
     <div className="flex h-screen slide-in">
       <div className="w-full h-full flex flex-col justify-center items-center bg-white p-8">
-        <img src="/logo.png" alt="Logo" className="h-16 my-3 cursor-pointer" />
+        <Link href="/">
+          <img src="/logo.png" alt="Logo" className="h-16 my-3 cursor-pointer" />
+        </Link>
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Create Account</h1>
         <form className="w-full max-w-sm" onSubmit={register}>
           <div className="mb-3">

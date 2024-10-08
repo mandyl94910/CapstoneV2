@@ -56,7 +56,7 @@ function Header() {
       </Link>
       <div className="flex items-center space-x-8"> {/* Increase space between elements */}
         <div className="relative">
-          <SearchBar />  {/* pass handleSearch to SearchBar */}
+          <SearchBar />
         </div>
         <Link href='/cart'>
           <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-600" /> {/* Increase size of the cart icon */}

@@ -39,6 +39,8 @@ const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
+const getReviewByProductId = require('../pages/functions/product/review');
+const getAddresses = require('../pages/functions/user/address');
 
 
 const app = express();
@@ -82,11 +84,17 @@ app.post('/api/login', loginFunction);
 // Route to get current user information
 app.get('/api/getUser', getUserInformation);
 
+// Get addresses by customer id
+app.get('/api/addresses/:customerId', getAddresses);
+
 // Route to get all categories
 app.get('/api/categories', getCategories);
 
 // Get all products
 app.get('/api/products', getAllProducts);
+
+// Get reviews
+app.get('/api/reviews/:productId', getReviewByProductId);
 
 // Get all products for admin
 app.get('/api/products-admin/datatable', getAllProductsForDataTable);

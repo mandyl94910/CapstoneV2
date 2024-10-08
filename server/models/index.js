@@ -21,11 +21,11 @@ const sequelize = new Sequelize('postgres://postgres:password@localhost:5432/cap
 const Category = require('./Category')(sequelize, DataTypes);
 const Product = require('./Product')(sequelize, DataTypes);  
 const Review = require('./Review')(sequelize, DataTypes);
+
 const Order = require('./Order')(sequelize, DataTypes);  
 const Address = require('./Address')(sequelize, DataTypes); 
 const Customer = require('./Customer')(sequelize, DataTypes);  
 const OrderDetail = require('./Orders_detail')(sequelize, DataTypes);  
-
 
 
 // Define relationships between models (if any)
@@ -35,6 +35,11 @@ Product.belongsTo(Category, { foreignKey: 'category_id' });   // Reverse associa
 // Define relationship between Product and Review
 Product.hasMany(Review, { foreignKey: 'product_id', onDelete: 'CASCADE' });  // A product can have many reviews
 Review.belongsTo(Product, { foreignKey: 'product_id' });  // A review belongs to a product
+
+
+// Customer and Review relationship
+Customer.hasMany(Review, { foreignKey: 'customer_id' });   // A customer can write many reviews
+Review.belongsTo(Customer, { foreignKey: 'customer_id' }); // A review belongs to a customer
 
 // Define relationships for Order (if any)
 Order.belongsTo(Customer, { foreignKey: 'customer_id' });  // An order belongs to a customer (assuming you have a Customer model)
@@ -54,6 +59,7 @@ OrderDetail.belongsTo(Order, { foreignKey: 'order_id' });  // Order details belo
 
 Product.hasMany(OrderDetail, { foreignKey: 'product_id', onDelete: 'CASCADE'});  //  Product Related Order Details
 OrderDetail.belongsTo(Product, { foreignKey: 'product_id' });  // Order details associated with a product
+
 
 const db = {
   Category,

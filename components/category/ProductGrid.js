@@ -1,5 +1,3 @@
-// Import React library and the ProductCard component
-import React from 'react';
 import ProductCard from './ProductCard';
 
 // Define the ProductGrid functional component that receives a list of products as props
