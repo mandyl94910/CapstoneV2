@@ -24,7 +24,7 @@ const getAllOrders = async (req, res) => {
             {
               model: Product,
               // Retrieves product ID for each product in the order
-              attributes: ['product_id']  
+              attributes: ['product_name']  
             }
           ]
         }
@@ -39,11 +39,11 @@ const getAllOrders = async (req, res) => {
     //desired format for front-end display without changing the original array of orders.
     const formattedOrders = orders.map(order => {
       //The map function iterates through each detail in the OrderDetails array and returns a new array with each element being detail.Product.product_id.
-        const productIDs = order.OrderDetails.map(detail => detail.Product.product_id).join(', ');
+      const productNames = order.OrderDetails.map(detail => detail.Product.product_name).join(', ');
         return {
           order_id: order.id,
           // If the order contains multiple products, splice into a string
-          product_id: productIDs,  
+          product_name: productNames,  
           // Joins multiple product IDs into a comma-separated string if necessary
           total: order.total,
           customer_name: order.Customer.customer_name,
