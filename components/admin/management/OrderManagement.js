@@ -1,3 +1,4 @@
+
 //C:\CPRG306\CapstoneV2\components\admin\management\OrderManagement.js
 import React, { useState,useEffect  } from "react";
 import { useRouter } from "next/router"; // Import useRouter for navigation
@@ -26,6 +27,8 @@ const orderStats = [
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]); // State for orders
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  
   const router = useRouter(); // Next.js router for navigation
   const [orderStats, setOrderStats] = useState({
     totalSales: "Loading...",
@@ -73,6 +76,15 @@ const OrderManagement = () => {
     fetchOrderStats();
   }, []);
 
+  // Filter orders based on Order No, Product Name, and Ship To
+  const filteredOrders = orders.filter((order) => {
+    return (
+      order.orderNo.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by Order No
+      order.productName.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by Product Name
+      order.shipTo.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by Ship To
+    );
+  });
+
   // Placeholder for edit functionality
   const handleEdit = (index) => {
     console.log("Edit order:", index);
@@ -83,7 +95,7 @@ const OrderManagement = () => {
     console.log("Delete order:", index);
   };
 
-  // Navigate to Add Order page (if needed later)
+  // Navigate to Add Order page
   const handleAddOrder = () => {
     router.push("/admin/addOrder"); // Redirect to the Add Order page
   };
@@ -107,9 +119,21 @@ const OrderManagement = () => {
   ];
 
   return (
-    <div className="border-t-2 ">
-      {/* Order Data Table */}
+    <div className="border-t-2">
+      {/* Container for search bar and DataTable */}
       <div className="bg-white p-4 rounded shadow-md">
+        {/* Search Bar above the DataTable */}
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Order No, Product Name, or Ship To"
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* Order Data Table */}
         <DataTable
           columns={[
             "Order ID",
@@ -125,6 +149,7 @@ const OrderManagement = () => {
             total: order.total,
             customerName: order.customer_name,
             orderDate: new Date(order.order_date).toLocaleDateString(),
+
             status: order.status,
           }))}
           onEdit={handleEdit}

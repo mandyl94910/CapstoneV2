@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import Sidebar from '../../components/admin/Sidebar';
-import Header from '../../components/admin/Header';
+import React, { useState } from "react";
+import Header from "../../components/admin/Header";
 
 const ProtectionPage = () => {
-  const [pin, setPin] = useState(['', '', '', '']);
+  const [pin, setPin] = useState(["", "", "", ""]);
 
   // PIN input
   const handlePinChange = (e, index) => {
@@ -19,7 +18,6 @@ const ProtectionPage = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
       <div className="flex-1 p-6 bg-gray-100">
         <Header title="Protection" />
         <div className="flex flex-col items-center justify-center h-screen">
