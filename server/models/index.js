@@ -17,6 +17,7 @@ const Category = require('./Category')(sequelize, DataTypes);
 const Product = require('./Product')(sequelize, DataTypes);  /// Initialize the Product model
 const Review = require('./Review')(sequelize, DataTypes);
 const Customer = require('./Customer')(sequelize, DataTypes);
+const Address = require('./Address')(sequelize, DataTypes);
 
 // Define relationships between models (if any)
 Category.hasMany(Product, { foreignKey: 'category_id' });   // The association between Category and Product
@@ -30,12 +31,17 @@ Review.belongsTo(Product, { foreignKey: 'product_id' });  // A review belongs to
 Customer.hasMany(Review, { foreignKey: 'customer_id' });   // A customer can write many reviews
 Review.belongsTo(Customer, { foreignKey: 'customer_id' }); // A review belongs to a customer
 
+// Customer and Address relationship
+Customer.hasMany(Address, { foreignKey: 'customer_id', onDelete: 'CASCADE' });  // A customer can have many addresses
+Address.belongsTo(Customer, { foreignKey: 'customer_id' });  // An address belongs to a customer
+
 
 const db = {
   Category,
   Product,
   Review,  
   Customer,
+  Address,
   sequelize,
   Sequelize
 };

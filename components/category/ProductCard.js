@@ -1,6 +1,5 @@
-// Import Next.js Link component and React's useEffect hook
 import Link from 'next/link';
-import React from 'react';
+
 
 // Define the ProductCard component that takes a product object as a prop
 export default function ProductCard({ product }) {

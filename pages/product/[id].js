@@ -1,4 +1,4 @@
-// C:\CPRG306\CapstoneV2\pages\product\[id].js
+//CapstoneV2\pages\product\[id].js
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -7,7 +7,12 @@ import Footer from '../../components/common/Footer';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import Review from '../../components/product/Review';
 
-
+/**
+ * helped by chatGPT
+ * prompt: How can I switch the image of the product so that it will show the image being clicked on the big frame
+ * while the image being selected with blue border
+ * 
+ */
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data
   const [quantity, setQuantity] = useState(1);  // Store the selected quantity
@@ -38,10 +43,8 @@ const ProductPage = () => {
     }
   }, [product]);
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
-  }
-
+  // get other images from the same directory of the product, requiring the structure of pictures well-organized
+  // the default image with path .webp without number at the end, while others start from 1,2,3
   const generateImagePaths = (image) => {
     // remove .webp at the end of the original path
     const basePath = image.replace('.webp', '');
@@ -54,7 +57,7 @@ const ProductPage = () => {
 
   const addToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const productExists = cart.find((item) => item.id === product.id);
+    const productExists = cart.find((item) => item.product_id === product.product_id);
 
     if (productExists) {
       productExists.quantity += 1;
@@ -62,7 +65,7 @@ const ProductPage = () => {
       cart.push({ ...product, quantity: 1 });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart)); // 将购物车更新到localStorage
+    localStorage.setItem('cart', JSON.stringify(cart)); 
     alert('Product added to cart!');
     //router.push('/cart');
   };
@@ -102,7 +105,7 @@ const ProductPage = () => {
                   // src={`/images/${image}`} 
                   alt={`Small view ${index + 1}`}
                   className={`w-16 h-16 object-cover border-2 rounded cursor-pointer ${selectedImage === image ? 'border-blue-500' : ''}`}
-                  onClick={ () => handleImageClick(image)}
+                  onClick={ () => setSelectedImage(image)}
                 />
               )}
             </div>

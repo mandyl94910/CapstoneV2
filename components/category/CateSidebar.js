@@ -3,13 +3,12 @@ import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 
 /**
  * helped by chatGPT
- * prompt：create a sidebar for categories with subcategories，categories can be expanded when being clicked
- * @param {*} param0 
- * @returns 
+ * prompt：create a sidebar for categories with subcategories，
+ * categories can be expanded or collapsed when being clicked
+ *
  */
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
-  const [selectedParent, setSelectedParent] = useState(null); // Track selected parent category
 
 
   // Toggle category expansion for parent categories
@@ -28,11 +27,11 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
     const isParent = category.subcategories && category.subcategories.length > 0; // Check if the category is a parent
     const isExpanded = expandedCategories[category.id]; // Check if this category is expanded
     const isSelected = selectedCategory === category.name; // Check if this category is selected
-    const isParentSelected = selectedParent === category.name && !isSelected; // Check if the parent is selected but not as a specific category
-
+   
     return (
       <li
         key={category.id}
+        // lever > 0 means it is a child category
         className={`p-2 mb-2 rounded ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : 'cursor-pointer'}`}
         onClick={() => {
           if (!isParent) {
@@ -47,7 +46,6 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
             onClick={() => {
               if (isParent) {
                 // Click the parent to expand/collapse, but only select the parent when not expanding
-                setSelectedParent(category.name); // Mark parent as selected
                 onCategorySelect(category); // Select the parent category
               }
             }}
@@ -73,7 +71,6 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
                 className={`p-2 mb-2 rounded ${selectedCategory === subcategory.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} pl-6 cursor-pointer`}
                 onClick={() => {
                   onCategorySelect(subcategory); // Select the clicked subcategory
-                  setSelectedParent(null); // Deselect the parent category
                 }}
               >
                 {subcategory.name}
