@@ -1,48 +1,27 @@
-
-//C:\CPRG306\CapstoneV2\components\admin\management\OrderManagement.js
-import React, { useState,useEffect  } from "react";
-import { useRouter } from "next/router"; // Import useRouter for navigation
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 
-// Order stats information
-const orderStats = [
-  {
-    title: "Total Sales",
-    value: "$3740.25",
-    description: "Based on 28 June 2024",
-  },
-  {
-    title: "Total Products",
-    value: "79",
-    description: "Based on 28 June 2024",
-  },
-  {
-    title: "Total Orders",
-    value: "22",
-    description: "Based on 28 June 2024",
-  },
-];
-
 const OrderManagement = () => {
-  const [orders, setOrders] = useState([]); // State for orders
+  const [orders, setOrders] = useState([]); // State to hold order data
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
-  
   const router = useRouter(); // Next.js router for navigation
   const [orderStats, setOrderStats] = useState({
     totalSales: "Loading...",
     totalProducts: "Loading...",
-    totalOrders: "Loading..."
+    totalOrders: "Loading...",
   });
 
-  // Fetch orders when the component mounts
+  // Fetch order data and order statistics when the component mounts
   useEffect(() => {
     async function fetchOrders() {
       try {
-        const response = await axios.get('http://localhost:3001/api/order-admin/datatable');
-        console.log('Fetched orders:', response.data);
-        setOrders(response.data);  // Update orders state
+        const response = await axios.get(
+          "http://localhost:3001/api/order-admin/datatable"
+        );
+        setOrders(response.data); // Set the orders data from the API response
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -50,38 +29,43 @@ const OrderManagement = () => {
 
     async function fetchOrderStats() {
       try {
-        const [totalSalesRes, totalProductsRes, totalOrdersRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/total-sales'),
-          axios.get('http://localhost:3001/api/total-products'),
-          axios.get('http://localhost:3001/api/total-orders')
-        ]);
+        const [totalSalesRes, totalProductsRes, totalOrdersRes] =
+          await Promise.all([
+            axios.get("http://localhost:3001/api/total-sales"),
+            axios.get("http://localhost:3001/api/total-products"),
+            axios.get("http://localhost:3001/api/total-orders"),
+          ]);
 
         setOrderStats({
           totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
           totalProducts: totalProductsRes.data.totalProducts,
-          totalOrders: totalOrdersRes.data.totalOrders
-        });
-
-        console.log("Updated orderStats:", {
-          totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
-          totalProducts: totalProductsRes.data.totalProducts,
-          totalOrders: totalOrdersRes.data.totalOrders
+          totalOrders: totalOrdersRes.data.totalOrders,
         });
       } catch (error) {
         console.error("Error fetching order stats:", error);
       }
     }
-    
-    fetchOrders();  // Call the fetchOrders function when the component mounts
-    fetchOrderStats();
+
+    fetchOrders(); // Fetch order data
+    fetchOrderStats(); // Fetch order statistics
   }, []);
 
-  // Filter orders based on Order No, Product Name, and Ship To
+  // Filter orders based on Order No, Product Name, and Customer Name
   const filteredOrders = orders.filter((order) => {
+    // Check if properties are defined and convert them to strings to avoid undefined errors
     return (
-      order.orderNo.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by Order No
-      order.productName.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by Product Name
-      order.shipTo.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by Ship To
+      (order.order_id &&
+        order.order_id
+          .toString()
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())) || // Filter by Order ID
+      (order.product_id &&
+        order.product_id
+          .toString()
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())) || // Filter by Product ID
+      (order.customer_name &&
+        order.customer_name.toLowerCase().includes(searchQuery.toLowerCase())) // Filter by Customer Name
     );
   });
 
@@ -100,6 +84,7 @@ const OrderManagement = () => {
     router.push("/admin/addOrder"); // Redirect to the Add Order page
   };
 
+  // Array to hold order stats for displaying in InfoCards component
   const stats = [
     {
       title: "Total Sales",
@@ -124,11 +109,12 @@ const OrderManagement = () => {
       <div className="bg-white p-4 rounded shadow-md">
         {/* Search Bar above the DataTable */}
         <div className="mb-4">
+          {/* Search input field */}
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by Order No, Product Name, or Ship To"
+            value={searchQuery} // Bind input value to searchQuery state
+            onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on user input
+            placeholder="Search by Order No, Product ID, or Customer Name"
             className="border p-2 rounded w-full"
           />
         </div>
@@ -143,17 +129,16 @@ const OrderManagement = () => {
             "Order Date",
             "Status",
           ]}
-          data={orders.map((order) => ({
-            orderNo: order.order_id,
-            productID: order.product_id,
-            total: order.total,
-            customerName: order.customer_name,
-            orderDate: new Date(order.order_date).toLocaleDateString(),
-
-            status: order.status,
+          data={filteredOrders.map((order) => ({
+            orderNo: order.order_id, // Order ID
+            productID: order.product_id, // Product ID
+            total: order.total, // Total amount
+            customerName: order.customer_name, // Customer name
+            orderDate: new Date(order.order_date).toLocaleDateString(), // Format order date
+            status: order.status, // Order status
           }))}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={handleEdit} // Handle edit action
+          onDelete={handleDelete} // Handle delete action
         />
       </div>
 
