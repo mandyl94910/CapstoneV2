@@ -7,31 +7,26 @@ module.exports = (sequelize, DataTypes) => {
       },
       customer_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-        model: 'customer', 
-        key: 'customer_id'
-        },
-        onDelete: 'CASCADE' // Optional: Deletes addresses if the associated customer is deleted
+        allowNull: false
       },
       street: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
       },
       city: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
       },
       province: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
       },
       postal: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
       },
       country: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
       },
       is_default: {

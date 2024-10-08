@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import axios from 'axios';
 
 const Products = () => {
-  const [products, setProducts] = useState([
-    { id: 1, name: "Product 1", status: "Active", sold: 2, view: 25 },
-    { id: 2, name: "Product 2", status: "Active", sold: 2, view: 125 },
-    { id: 3, name: "Product 3", status: "Active", sold: 2, view: 51 },
-    { id: 4, name: "Product 4", status: "Inactive", sold: 2, view: 7 },
-  ]);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // 从后端获取销量最高的四个产品
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/top-selling-products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Failed to fetch products', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="overflow-x-auto bg-white p-4 rounded shadow-md border border-indigo-500">
@@ -15,24 +25,17 @@ const Products = () => {
           <tr className="bg-slate-500 text-white">
             <th className="py-2 px-4 text-left font-semibold">No</th>
             <th className="py-2 px-4 text-left font-semibold">Product Name</th>
-            <th className="py-2 px-4 text-left font-semibold">Status</th>
+            <th className="py-2 px-4 text-left font-semibold">Visibility</th>
             <th className="py-2 px-4 text-left font-semibold">Sold</th>
-            <th className="py-2 px-4 text-left font-semibold">View</th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product, index) => (
-            <tr
-              key={product.id}
-              className={`bg-slate-300 rounded-lg ${
-                index === 2 ? "border-indigo-500 border-2" : ""
-              }`}
-            >
-              <td className="py-2 px-4 rounded-l-lg">{product.id}</td>
-              <td className="py-2 px-4">{product.name}</td>
-              <td className="py-2 px-4">{product.status}</td>
+        {products.map((product, index) => (
+            <tr key={product.product_id} className={`bg-slate-300 rounded-lg ${index === 2 ? "border-indigo-500 border-2" : ""}`}>
+              <td className="py-2 px-4 rounded-l-lg">{product.product_id}</td>
+              <td className="py-2 px-4">{product.product_name}</td>
+              <td className="py-2 px-4">{product.visibility ? "Active" : "Inactive"}</td>
               <td className="py-2 px-4">{product.sold}</td>
-              <td className="py-2 px-4 rounded-r-lg">{product.view}</td>
             </tr>
           ))}
         </tbody>

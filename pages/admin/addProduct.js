@@ -1,5 +1,4 @@
-//C:\proj309\CapstoneV2\pages\admin\addProduct.js
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 const AddProduct = () => {
@@ -9,13 +8,14 @@ const AddProduct = () => {
     product_description: "",
     price: "",
     quantity: "",
-    category: "", // Start with an empty category
+    category: "",
     visibility: false,
-    image: null,
+    images: [], // Array to store multiple images
   });
-  const [imagePreview, setImagePreview] = useState(null);
-  const [categories, setCategories] = useState([]); // Store categories from the database
-  const [validationMessage, setValidationMessage] = useState(""); // For displaying validation errors
+
+  const [imagePreviews, setImagePreviews] = useState([]); // Array for image previews
+  const [categories, setCategories] = useState([]);
+  const [validationMessage, setValidationMessage] = useState("");
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -43,9 +43,22 @@ const AddProduct = () => {
 
   // Handle image file selection and preview
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({ ...formData, image: file });
-    setImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files);
+    if (formData.images.length + files.length > 4) {
+      alert("You can only upload a maximum of 4 images."); // Alert user
+      return;
+    }
+
+    // Update formData with new images
+    const updatedImages = [...formData.images, ...files].slice(0, 4); // Limit to 4 images
+    setFormData({
+      ...formData,
+      images: updatedImages,
+    });
+
+    // Generate previews for each image
+    const previews = updatedImages.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
 
   // Handle form submission
@@ -61,12 +74,13 @@ const AddProduct = () => {
     data.append("product_description", formData.product_description);
     data.append("price", formData.price);
     data.append("quantity", formData.quantity);
-    data.append("category_id", formData.category); // Assume category ID is stored in category
+    data.append("category_id", formData.category);
     data.append("visibility", formData.visibility);
 
-    if (formData.image) {
-      data.append("image", formData.image);
-    }
+    // Append each selected image file
+    formData.images.forEach((image, index) => {
+      data.append(`image${index + 1}`, image);
+    });
 
     try {
       const response = await fetch("http://localhost:3001/api/products/add", {
@@ -75,9 +89,8 @@ const AddProduct = () => {
       });
 
       if (response.ok) {
-        // router.push("/admin/product");
         router.reload("/admin/product");
-      } 
+      }
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -106,8 +119,8 @@ const AddProduct = () => {
       setValidationMessage("Please select a category.");
       return false;
     }
-    if (!formData.image) {
-      setValidationMessage("Please upload a product image.");
+    if (formData.images.length === 0) {
+      setValidationMessage("Please upload at least one product image.");
       return false;
     }
     setValidationMessage(""); // Clear the message if everything is valid
@@ -124,19 +137,28 @@ const AddProduct = () => {
 
         {/* Image Upload */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Upload Image</label>
+          <label className="block text-gray-700 mb-2">
+            Upload Images (Max: 4)
+          </label>
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={handleImageChange}
             className="w-full p-2 border rounded"
           />
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Product Preview"
-              className="mt-4 w-32 h-32 object-cover"
-            />
+          {imagePreviews.length > 0 && (
+            <div className="mt-4 flex space-x-2">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={preview}
+                    alt={`Product Preview ${index + 1}`}
+                    className="w-20 h-12 object-cover border border-gray-300 rounded"
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
@@ -155,7 +177,9 @@ const AddProduct = () => {
 
         {/* Product Description */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Product Description</label>
+          <label className="block text-gray-700 mb-2">
+            Product Description
+          </label>
           <input
             type="text"
             name="product_description"
@@ -201,12 +225,10 @@ const AddProduct = () => {
             onChange={handleChange}
             className="w-full p-2 border rounded"
           >
-            {/* Default Prompt Options */}
-            <option value="">Select one category</option>  
-
+            <option value="">Select one category</option>
             {categories.length > 0 ? (
               categories.map((category) => (
-                <option key={category.id} value={category.id}> 
+                <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))
@@ -230,16 +252,6 @@ const AddProduct = () => {
           </select>
         </div>
 
-        {/* Submit Button
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className="bg-indigo-500 hover:bg-indigo-700 hover:text-green-200 text-white py-3 px-20 mt-4 rounded"
-          >
-            Add Product
-          </button>
-        </div> */}
-
         {/* Validation Message */}
         {validationMessage && (
           <div className="text-red-500 mb-4">{validationMessage}</div>
@@ -255,7 +267,7 @@ const AddProduct = () => {
           </button>
           <button
             type="button"
-            onClick={handleCancel} // Cancels the form and navigates back
+            onClick={handleCancel}
             className="bg-red-500 text-white py-2 px-6 rounded"
           >
             Cancel
