@@ -123,7 +123,7 @@ const OrderManagement = () => {
         <DataTable
           columns={[
             "Order ID",
-            "Product ID",
+            "Product Name",
             "Total",
             "Customer Name",
             "Order Date",
@@ -131,7 +131,7 @@ const OrderManagement = () => {
           ]}
           data={filteredOrders.map((order) => ({
             orderNo: order.order_id, // Order ID
-            productID: order.product_id, // Product ID
+            productID: order.product_name, // Product ID
             total: order.total, // Total amount
             customerName: order.customer_name, // Customer name
             orderDate: new Date(order.order_date).toLocaleDateString(), // Format order date
