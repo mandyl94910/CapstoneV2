@@ -6,20 +6,25 @@
 //Object–relational mapping (ORM, O/RM, and O/R mapping tool) in computer science is a programming technique for converting data
 //between a relational database and the heap of an object-oriented programming language. 
 //This creates, in effect, a virtual object database that can be used from within the programming language.
-
 //https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping
+
+//why we use sequelize and instantiat the model:
+//The main role of the instantiation model is to map tables in the database to objects in the code, 
+//allowing manipulation of the data as if it were a normal object.
+//It makes code more maintainable, portable, and reduce the complexity of using SQL directly.
 
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('postgres://postgres:password@localhost:5432/capstonedatabase2');
 
-// Importing models
+// Instantiating a model is the same as generating an object that can be used directly to manipulate tables in the database
+//DataTypes is a kind of abstract class in sequelize tool.It used to define data type in the model
 const Category = require('./Category')(sequelize, DataTypes);
-const Product = require('./Product')(sequelize, DataTypes);  /// Initialize the Product model
+const Product = require('./Product')(sequelize, DataTypes);  
 const Review = require('./Review')(sequelize, DataTypes);
-const Order = require('./Order')(sequelize, DataTypes);  /// Initialize the Order model
-const Address = require('./Address')(sequelize, DataTypes);  // Import Address model
-const Customer = require('./Customer')(sequelize, DataTypes);  // Import Customer model
-const OrderDetail = require('./Orders_detail')(sequelize, DataTypes);  // Import OrderDetail model
+const Order = require('./Order')(sequelize, DataTypes);  
+const Address = require('./Address')(sequelize, DataTypes); 
+const Customer = require('./Customer')(sequelize, DataTypes);  
+const OrderDetail = require('./Orders_detail')(sequelize, DataTypes);  
 
 
 

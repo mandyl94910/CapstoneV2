@@ -100,18 +100,16 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
         }
       }]
     });
-    // console.log('Retrieved products:', products);
+    // console.log('Retrieved products:', products); || is Logical OR Operator
     if (!products || products.length === 0) {
       return res.json([]);
       // return res.status(404).send({ message: "No products found for this category" });
     }
-
     res.json(products);  // Send the filtered products as a JSON response
   } catch (error) {
     res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
   }
 };
-
 
 // Function name: getProductById
 // Description: Retrieves a single product by its ID from the cache or the database if not in cache.
@@ -125,11 +123,14 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
 //   It responds with the product data as a JSON response or an error message if retrieval fails.
 const getProductById = async (req, res) => {
   try {
+    //params are the path parameters (or dynamic parameters) in the request path
     const { productId } = req.params;
     // console.log('Product ID:', productId);
     let product = await getCachedProductInfo(productId);
     // console.log('Cached Product:', product);
     if (!product) {
+      //await is used to wait for an asynchronous operation to complete before continuing to execute the code behind it. 
+      //It pauses function execution until an asynchronous operation, such as fetching product information from a database or cache, complete.
       const dbProduct = await Product.findOne({
         where: {
           product_id: productId,
@@ -146,7 +147,6 @@ const getProductById = async (req, res) => {
         console.error("Error caching product:", cacheError); // Logging cache errors
       }
     }
-
     res.json(product);
   } catch (error) {
     console.error("Error retrieving product:", error);
@@ -162,7 +162,6 @@ const getProductById = async (req, res) => {
 const getRecommendedProducts = async (req, res) => {
   try {
     const { minPrice, maxPrice, limit } = req.query; // get query parameters from URL
-
     const products = await Product.findAll({
       where: {
         price: {
@@ -170,7 +169,7 @@ const getRecommendedProducts = async (req, res) => {
         },
         visibility: true,
       },
-      limit: parseInt(limit) || 6, // limit the number of returned products
+      limit: parseInt(limit) || 6, // limit the number of returned products,|| is Logical OR Operator
     }); 
     //console.log('Recommended products:',products);
     res.json(products); // return products
@@ -213,9 +212,9 @@ const changeProductVisibility = async (req, res) => {
 // Functionality:
 //   This function creates a new product entry in the database using details provided in the request body. 
 //   It also handles image upload if an image file is included in the request.
+//uncompleted because the images need to be four
 const addProduct = async (req, res) => {
   const { product_name, product_description, price, quantity, category_id, visibility } = req.body;
-
   try {
       // First, create the product in the database and retrieve the product_id
       const newProduct = await Product.create({
@@ -235,7 +234,6 @@ const addProduct = async (req, res) => {
           const imagePath = `product/${category_id}/${newProduct.product_id}.webp`;
           newProduct.image = imagePath;  // Set the image path
           await newProduct.save();  // Save the updated product information
-
       }
       res.status(200).send({ message: 'Product added successfully!' });
   } catch (error) {
@@ -261,7 +259,6 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
     }
-
     // Find all order details associated with the product
     const orderDetails = await OrderDetail.findAll({
       where: { product_id: productId },
@@ -273,7 +270,7 @@ const deleteProduct = async (req, res) => {
 
      // Check if all associated orders are complete
     const allCompleted = orderDetails.every(detail => detail.Order.status === 'completed');
-
+    //|| is Logical OR Operator
     if (allCompleted || action === 'delete') {
     // Delete all product-related reviews
       await Review.destroy({ where: { product_id: productId } });
@@ -349,7 +346,6 @@ const getTopSellingProducts = async (req, res) => {
       const orderQuantities = product.OrderDetails.map(orderDetail => orderDetail.quantity);
       // Accumulate all the quantity values in the array to get the total sales of the product
       const totalSold = orderQuantities.reduce((sum, quantity) => sum + quantity, 0); // 累加所有的 quantity
-
       return {
         // Convert the product object to JSON format and retain all specified fields.
         ...product.toJSON(),
@@ -359,12 +355,10 @@ const getTopSellingProducts = async (req, res) => {
         sold: totalSold 
       };
     });
-
      // Sort products in descending order based on total sales and select the top four products
     const topSellingProducts = result
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 4);
-
     // Return the list of top-selling products as a JSON response.
     res.json(topSellingProducts);
   } catch (error) {
@@ -387,7 +381,6 @@ const getTotalValue = async (req, res) => {
       // Fetches price and quantity of each product
       attributes: ['price', 'quantity'],
     });
-    
     // Calculates total inventory value
     const totalValue = products.reduce((acc, product) => {
       return acc + product.price * product.quantity;

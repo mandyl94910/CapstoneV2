@@ -1,4 +1,4 @@
-const { Order,Customer,OrderDetail,Product,sequelize } = require('../../../server/models'); 
+const { Order,Customer,OrderDetail,Product } = require('../../../server/models'); 
 
 // Function name: getAllOrders
 // Description: Retrieves all orders with related customer names and product IDs in each order.
@@ -16,7 +16,7 @@ const getAllOrders = async (req, res) => {
         {
           // Retrieves customer name for each order
           model: Customer,
-          attributes: ['customer_name'],  // 获取客户名称
+          attributes: ['customer_name'],  
         },
         {
           model: OrderDetail,
@@ -24,7 +24,7 @@ const getAllOrders = async (req, res) => {
             {
               model: Product,
               // Retrieves product ID for each product in the order
-              attributes: ['product_id']  // 获取产品ID
+              attributes: ['product_id']  
             }
           ]
         }
@@ -38,6 +38,7 @@ const getAllOrders = async (req, res) => {
     //The role of map here is to iterate through the orders array, converting each order object to the 
     //desired format for front-end display without changing the original array of orders.
     const formattedOrders = orders.map(order => {
+      //The map function iterates through each detail in the OrderDetails array and returns a new array with each element being detail.Product.product_id.
         const productIDs = order.OrderDetails.map(detail => detail.Product.product_id).join(', ');
         return {
           order_id: order.id,
@@ -69,7 +70,7 @@ const getTotalSales = async (req, res) => {
     try {
       // Sums up the 'total' values in Order table
       const result = await Order.sum('total');
-      // Returns 0 if there are no orders
+      // Returns 0 if there are no orders，|| is Logical OR Operator
       const totalSales = result || 0; 
       res.json({ totalSales });
     } catch (error) {

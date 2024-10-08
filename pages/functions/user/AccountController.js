@@ -8,7 +8,7 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 require('../../../server/passportConfig')(passport); // Correctly import passportConfig.js
 const redisClient = require('../../../lib/redis'); // Import Redis client
-const { saveSession, getSession,updateSession,deleteSession,incrementLoginAttempts } = require('../../../lib/redisUtils/userOps');
+const { saveSession, getSession, updateSession, deleteSession, incrementLoginAttempts } = require('../../../lib/redisUtils/userOps');
 const { setCache, getCache} = require('../../../lib/redisUtils/cacheOps');
 const bcrypt = require('bcrypt');
 const db = require('../../../server/db');
@@ -17,16 +17,7 @@ const { Customer, Order,sequelize} = require('../../../server/models');
 const { verifyRecaptchaToken } = require('./recaptcha');
 
 
-const app = express();
 
-// Middleware setup
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressSession({ secret: 'mySecretKey', resave: false, saveUninitialized: false }));
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-app.use(cookieParser('mySecretKey'));
-app.use(passport.initialize());
-app.use(passport.session());
 require("../../../server/passportConfig")(passport);  // Initialize Passport for authentication
 
 // Function name: loginFunction
@@ -41,6 +32,7 @@ require("../../../server/passportConfig")(passport);  // Initialize Passport for
 //   after too many failed attempts. It logs in the user on successful authentication and manages session data.
 async function loginFunction(req, res, next) {
   const { recaptchaToken, loginIdentifier, password } = req.body;
+  //|| is Logical OR Operator
   if (!loginIdentifier || !password) {
     return res.status(400).send({ message: "Missing credentials" });
   }
@@ -67,16 +59,14 @@ async function loginFunction(req, res, next) {
               // If login attempt limit is reached, return status code 429 with an error message
               return res.status(429).send({ success: false, message: attemptResult.message });
           }
-          // Otherwise, return status code 400 with a failure message
+          // Otherwise, return status code 400 with a failure message, || is Logical OR Operator
           return res.status(400).send({ success: false, message: info.message || 'Login failed' });
       }
-
       req.logIn(user, async (err) => {
           if (err) {
               console.error(err);
               return res.status(500).send('Login error');
           }
-
           // After successful login, delete previous login attempt records
           await deleteSession(`login_attempts_${loginIdentifier}`);
           // Cache user session data with a 3-hour expiration
@@ -137,7 +127,6 @@ async function getUserInformation(req, res) {
   if (!req.user) {
     return res.status(401).send('Not authenticated');
   }
-
   try {
     const sessionKey = `session_${req.user.customer_id}`;
     const cachedSession = await redisClient.get(sessionKey);
@@ -232,7 +221,6 @@ const getNewUsers = async (req, res) => {
         },
       },
     });
-
     res.json({ newUsers });
   } catch (error) {
     console.error("Error fetching new users:", error);
