@@ -13,6 +13,7 @@ const localStrategy = require('passport-local').Strategy; // Import the local st
 //   It determines whether the loginIdentifier is an email or a username and queries the database accordingly.
 //   Upon finding the user, it compares the hashed password from the database with the provided password.
 //   If the password is correct, it calls done with the user object; otherwise, it returns an authentication failure.
+//learned from https://www.youtube.com/watch?v=WYHQP9lQgD8
 module.exports = function(passport) {
     // Configure passport to use a local strategy, setting the username field to accept 'identifier' which could be either an email or username
     passport.use(

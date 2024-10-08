@@ -1,10 +1,7 @@
 // C:\CPRG306\CapstoneV1\server\index.js
-const axios = require('axios'); 
 const express = require('express');
-const multer = require('multer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs'); 
 const passport = require('passport');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -16,13 +13,16 @@ require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, 
   registerFunction, 
   getUserInformation,
-  getAllUsers } = require('../pages/functions/user/AccountController');
+  getAllUsers,
+  getUserTotalNumber,
+  getNewUsers } = require('../pages/functions/user/AccountController');
 const { getAdminInformation, 
   updateAdminDetails, 
   changeCredentials  } = require('../pages/functions/user/AdminController');
 const { getCategories, 
   getPrimaryCategories,
-  getSubCategories  } = require('../pages/functions/category/CategoriesController');
+  getSubCategories,
+  getCategoriesTotalNumber} = require('../pages/functions/category/CategoriesController');
 const { getAllProducts, 
   getAllProductsForDataTable, 
   getProductsByCategory, 
@@ -31,20 +31,46 @@ const { getAllProducts,
   getProductsByCategoryIncludeSubcategory,
   changeProductVisibility,
   addProduct,
-  deleteProduct} = require('../pages/functions/product/ProductsController');
+  deleteProduct,
+  getProductTotalNumber,
+  getTopSellingProducts,
+  getTotalValue } = require('../pages/functions/product/ProductsController');
+const {getAllOrders,
+    getTotalSales,
+    getOrderTotalNumber} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
 
 
 const app = express();
 
 // Middleware setup
+//Middleware in Express is a function used to process requests and responses, acting between receiving the request and sending the final response.
+// Middleware functions can modify, validate, or process data during a request’s lifecycle. 
+//They play a central role in Express, enabling chained processing of requests, 
+//where each middleware performs specific tasks before passing control to the next one.
+
+//This middleware parses incoming request bodies in JSON format, making the parsed data available on req.body.
 app.use(bodyParser.json());
+//This middleware parses incoming request bodies with URL-encoded data. When { extended: true } is set, like "name=John&age=30"
 app.use(bodyParser.urlencoded({ extended: true }));
+//expressSession manages user sessions by creating a unique session for each user and storing it on the server.
+//High performance because only the sessionID is passed
+//High data consistency, updated in real time
 app.use(expressSession({ secret: 'mySecretKey', resave: false, saveUninitialized: false }));
+//CORS (Cross-Origin Resource Sharing) middleware allows your server to handle requests from different origins.
+//origin: Restricts access to requests coming from http://localhost:3000.
+//credentials: true: Enables cross-origin requests to include credentials, like cookies, with the request.
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+//Enabling you to read and use cookie data on req.cookies.
+//The 'mySecretKey' argument signs cookies to protect against tampering.
 app.use(cookieParser('mySecretKey'));
+//Sets up Passport to manage authentication workflows like logging in and registering users.
+//Passport is an authentication middleware for Node.js applications
 app.use(passport.initialize());
+//Allows Passport to manage persistent login sessions, so users remain logged in even after refreshing or navigating to different pages.
+//Works with expressSession to store user data in the session.
 app.use(passport.session());
+
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
 // Registration route
@@ -101,17 +127,45 @@ app.get('/api/user-admin/datatable', (req, res) => {
   getAllUsers(req, res);
 });
 
+// Route to get order
+app.get('/api/order-admin/datatable', (req, res) => {
+  getAllOrders(req, res);
+});
+
 // Route to get Sub Categories
 app.get('/api/subcategories', getSubCategories);
 
 // Product Image Upload Routing
 app.post('/api/products/add', uploadProductImage.single('image'), async (req, res) => {
-  console.log('Request received to add product');
   await addProduct(req, res);
 });
 
 // Route to delete a product by ID
 app.delete('/api/products-admin/delete/:productId', deleteProduct);
+
+// 获取产品总数量
+app.get('/api/total-products', getProductTotalNumber);
+
+// 获取产品总类目
+app.get('/api/total-categories', getCategoriesTotalNumber);
+
+// 获取产品总价值
+app.get('/api/total-value', getTotalValue);
+
+// 获取用户总数量
+app.get('/api/total-users', getUserTotalNumber);
+
+// 获取一周内增加用户
+app.get('/api/new-users', getNewUsers);
+
+// 获取销售总额
+app.get('/api/total-sales', getTotalSales);
+
+// 获取订单总数量
+app.get('/api/total-orders', getOrderTotalNumber);
+
+// 定义获取销量最高的四个产品的路由
+app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Start the server
 app.listen(3001, () => {

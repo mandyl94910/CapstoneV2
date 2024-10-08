@@ -1,43 +1,10 @@
-import React, { useState } from "react";
-import { useRouter } from "next/router"; // Next.js router for navigation
+
+//C:\CPRG306\CapstoneV2\components\admin\management\OrderManagement.js
+import React, { useState,useEffect  } from "react";
+import { useRouter } from "next/router"; // Import useRouter for navigation
+import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
-
-// Initial order data
-const initialOrderData = [
-  {
-    orderNo: "1000A2T34",
-    productName: "Product 1",
-    price: "$126.44",
-    shipTo: "User1",
-    orderPlaced: "June 29, 2024",
-    status: "Prepared",
-  },
-  {
-    orderNo: "1000A2T35",
-    productName: "Product 2",
-    price: "$98.22",
-    shipTo: "User2",
-    orderPlaced: "July 1, 2024",
-    status: "Delivered",
-  },
-  {
-    orderNo: "1000A2T36",
-    productName: "Product 3",
-    price: "$55.00",
-    shipTo: "User3",
-    orderPlaced: "July 3, 2024",
-    status: "Shipped",
-  },
-  {
-    orderNo: "1000A2T37",
-    productName: "Product 4",
-    price: "$150.00",
-    shipTo: "User4",
-    orderPlaced: "July 5, 2024",
-    status: "Prepared",
-  },
-];
 
 // Order stats information
 const orderStats = [
@@ -59,9 +26,55 @@ const orderStats = [
 ];
 
 const OrderManagement = () => {
-  const [orders, setOrders] = useState(initialOrderData); // State for orders
+  const [orders, setOrders] = useState([]); // State for orders
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  
   const router = useRouter(); // Next.js router for navigation
+  const [orderStats, setOrderStats] = useState({
+    totalSales: "Loading...",
+    totalProducts: "Loading...",
+    totalOrders: "Loading..."
+  });
+
+  // Fetch orders when the component mounts
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const response = await axios.get('http://localhost:3001/api/order-admin/datatable');
+        console.log('Fetched orders:', response.data);
+        setOrders(response.data);  // Update orders state
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+
+    async function fetchOrderStats() {
+      try {
+        const [totalSalesRes, totalProductsRes, totalOrdersRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/total-sales'),
+          axios.get('http://localhost:3001/api/total-products'),
+          axios.get('http://localhost:3001/api/total-orders')
+        ]);
+
+        setOrderStats({
+          totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalOrders: totalOrdersRes.data.totalOrders
+        });
+
+        console.log("Updated orderStats:", {
+          totalSales: `$${totalSalesRes.data.totalSales.toFixed(2)}`,
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalOrders: totalOrdersRes.data.totalOrders
+        });
+      } catch (error) {
+        console.error("Error fetching order stats:", error);
+      }
+    }
+    
+    fetchOrders();  // Call the fetchOrders function when the component mounts
+    fetchOrderStats();
+  }, []);
 
   // Filter orders based on Order No, Product Name, and Ship To
   const filteredOrders = orders.filter((order) => {
@@ -87,6 +100,24 @@ const OrderManagement = () => {
     router.push("/admin/addOrder"); // Redirect to the Add Order page
   };
 
+  const stats = [
+    {
+      title: "Total Sales",
+      value: orderStats.totalSales,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+    {
+      title: "Total Products",
+      value: orderStats.totalProducts,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+    {
+      title: "Total Orders",
+      value: orderStats.totalOrders,
+      description: `Based on ${new Date().toLocaleDateString()}`,
+    },
+  ];
+
   return (
     <div className="border-t-2">
       {/* Container for search bar and DataTable */}
@@ -105,19 +136,20 @@ const OrderManagement = () => {
         {/* Order Data Table */}
         <DataTable
           columns={[
-            "Order No",
-            "Product Name",
-            "Price",
-            "Ship To",
-            "Order Placed",
+            "Order ID",
+            "Product ID",
+            "Total",
+            "Customer Name",
+            "Order Date",
             "Status",
           ]}
-          data={filteredOrders.map((order) => ({
-            orderNo: order.orderNo,
-            productName: order.productName,
-            price: order.price,
-            shipTo: order.shipTo,
-            orderPlaced: order.orderPlaced,
+          data={orders.map((order) => ({
+            orderNo: order.order_id,
+            productID: order.product_id,
+            total: order.total,
+            customerName: order.customer_name,
+            orderDate: new Date(order.order_date).toLocaleDateString(),
+
             status: order.status,
           }))}
           onEdit={handleEdit}
@@ -126,7 +158,7 @@ const OrderManagement = () => {
       </div>
 
       {/* Order Info Cards */}
-      <InfoCards stats={orderStats} />
+      <InfoCards stats={stats} />
     </div>
   );
 };

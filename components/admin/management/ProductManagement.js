@@ -6,9 +6,14 @@ import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState([]); // State for storing product data
+  const [products, setProducts] = useState([]); // Initialized as an empty array, waiting to be populated with data from the API
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
-  const router = useRouter(); // Next.js router
+  const router = useRouter(); // Initialize the Next.js router
+  const [productStats, setProductStats] = useState({
+    totalProducts: "Loading...",
+    totalCategories: "Loading...",
+    totalValue: "Loading..."
+  });
 
   useEffect(() => {
     // Fetch product data when the component mounts
@@ -22,33 +27,50 @@ const ProductManagement = () => {
         console.error("Error fetching products:", error);
       }
     }
+
+    async function fetchProductStats() {
+      try {
+        const [totalProductsRes, totalCategoriesRes, totalValueRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/total-products'),
+          axios.get('http://localhost:3001/api/total-categories'),
+          axios.get('http://localhost:3001/api/total-value')
+        ]);
+
+        setProductStats({
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalCategories: totalCategoriesRes.data.totalCategories,
+          totalValue: `$${totalValueRes.data.totalValue.toFixed(2)}`
+        });
+
+        console.log("Updated productStats:", {
+          totalProducts: totalProductsRes.data.totalProducts,
+          totalCategories: totalCategoriesRes.data.totalCategories,
+          totalValue: `$${totalValueRes.data.totalValue.toFixed(2)}`
+        });
+      } catch (error) {
+        console.error("Error fetching product stats:", error);
+      }
+    }
+
     fetchProducts();
+    fetchProductStats();
   }, []);
 
-  // Filter products based on Product Name and Category
-  const filteredProducts = products.filter((product) => {
-    return (
-      product.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (product.Category &&
-        product.Category.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
 
-  // Product status information
-  const productStats = [
+  const stats = [
     {
       title: "Total Products",
-      value: products.length.toString(),
+      value: productStats.totalProducts,
       description: "Based on current inventory",
     },
     {
       title: "Total Categories",
-      value: "15",
+      value: productStats.totalCategories,
       description: "Categories available",
     },
     {
-      title: "Total Values",
-      value: "$3.2k",
+      title: "Total Value",
+      value: productStats.totalValue,
       description: "Estimated total value",
     },
   ];
@@ -77,7 +99,6 @@ const ProductManagement = () => {
       console.error("Error updating visibility:", error);
     }
   };
-
   // Handle product edit
   const handleEdit = (index) => {
     console.log("Edit product:", index);
@@ -85,12 +106,15 @@ const ProductManagement = () => {
 
   // Handle product deletion
   const handleDelete = async (productId) => {
-    if (confirm("Are you sure you want to delete this product?")) {
+    if (confirm("Are you sure you want to delete this product?")) { 
       try {
-        const response = await axios.delete(
-          `http://localhost:3001/api/products-admin/delete/${productId}`
-        );
-        if (response.data.success) {
+        const response = await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}`); 
+        if (response.data.prompt) {
+          //// If the user chooses to make the product invisible
+          if (confirm(response.data.message)) { 
+            await axios.delete(`http://localhost:3001/api/products-admin/delete/${productId}?action=hide`);
+          }
+        } else if (response.data.success) {
           console.log("Product deleted:", productId);
           await refreshProductList();
         }
@@ -175,7 +199,7 @@ const ProductManagement = () => {
       </div>
 
       {/* Product Info Cards */}
-      <InfoCards stats={productStats} />
+      <InfoCards stats={stats} />
     </div>
   );
 };
