@@ -134,10 +134,10 @@ exports.up = function(knex) {
   
         -- Add foreign key constraints to review table
         ALTER TABLE review
-        ADD CONSTRAINT fk_review_customer FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE CASCADE;
+        ADD CONSTRAINT fk_review_customer FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
   
         ALTER TABLE review
-        ADD CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE CASCADE;
+        ADD CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES product (product_id);
   
         -- Add CHECK constraint for review.rating to ensure it's between 1 and 5
         ALTER TABLE review
@@ -145,7 +145,7 @@ exports.up = function(knex) {
   
         -- Add foreign key constraint to address table
         ALTER TABLE address
-        ADD CONSTRAINT fk_customer_address FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE CASCADE;
+        ADD CONSTRAINT fk_customer_address FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
   
         -- Add foreign key constraints to orders table
         ALTER TABLE orders
