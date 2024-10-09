@@ -44,18 +44,41 @@ const sellerAvatarStorage  = multer.diskStorage({
 // Product image multer configuration
 const productImageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const categoryId = req.body.category_id;  // Get categoryId from the request body
+        const categoryId = req.body.category_id;
         const dir = `./public/images/product/${categoryId}`;
+
+        console.log("Creating directory for category ID:", categoryId, "at", dir);
         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });// Create the directory if it does not exist
-            console.log(`Directory created: ${dir}`);
+            fs.mkdirSync(dir, { recursive: true });
         }
-        cb(null, dir);// Set the destination for uploaded files
+        cb(null, dir);
     },
     filename: (req, file, cb) => {
-        const productId = req.body.product_id;  // productId may be auto-generated, temporarily use a placeholder
-        const filename = `${productId}.webp`;   // Use product_id as the filename
-        cb(null, filename);
+        const categoryId = req.body.category_id;
+        const productId = req.params.productId;  // 从req中获取产品ID
+        // 获取当前文件在同一上传批次中的索引号，此处依赖于上传时客户端的字段设置
+        const fileIndex = req.files ? req.files.length : 0; // 获取当前文件索引，作为文件序号
+        // 按照命名规则构造文件名
+        const filename = `${categoryId}${productId}${fileIndex}.webp`;
+        const filePath = `./public/images/product/${categoryId}/${filename}`;
+
+        // 检查文件是否已存在，存在则删除
+        // 检查文件是否已存在，若存在则删除旧文件
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (!err) {
+            console.log("File already exists. Deleting old file:", filePath);
+            fs.unlink(filePath, (unlinkErr) => {
+                if (unlinkErr) {
+                console.error("Error deleting old file:", unlinkErr);
+                return cb(unlinkErr); // 返回错误，停止操作
+                }
+                console.log("Old file deleted successfully.");
+                cb(null, filename); // 设置新文件的名称
+            });
+            } else {
+            cb(null, filename); // 如果文件不存在，直接设置新文件的名称
+            }
+        });
     }
 });
 

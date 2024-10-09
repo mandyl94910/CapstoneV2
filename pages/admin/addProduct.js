@@ -69,30 +69,53 @@ const AddProduct = () => {
       return;
     }
 
-    const data = new FormData();
-    data.append("product_name", formData.product_name);
-    data.append("product_description", formData.product_description);
-    data.append("price", formData.price);
-    data.append("quantity", formData.quantity);
-    data.append("category_id", formData.category);
-    data.append("visibility", formData.visibility);
-
-    // Append each selected image file
-    formData.images.forEach((image, index) => {
-      data.append(`image${index + 1}`, image);
+    const jsonData = JSON.stringify({
+      product_name: formData.product_name,
+      product_description: formData.product_description,
+      price: formData.price,
+      quantity: formData.quantity,
+      category_id: formData.category,
+      visibility: formData.visibility,
     });
 
     try {
       const response = await fetch("http://localhost:3001/api/products/add", {
         method: "POST",
-        body: data,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonData,
       });
 
       if (response.ok) {
-        router.reload("/admin/product");
+        const product = await response.json();
+        const productId = product.product_id;
+        console.log(productId)
+        const imageData = new FormData();
+        imageData.append('category_id', formData.category);
+        formData.images.forEach((image, index) => {
+            imageData.append('images', image);
+        });
+
+        console.log("Product ID for upload:", productId);
+        console.log("Image data being sent:", imageData);
+
+        const imageResponse = await fetch(`http://localhost:3001/api/products/${productId}/uploadProductImage`, {
+          method: "POST",
+          body: imageData,
+        });
+
+        if (imageResponse.ok) {
+          console.log("Images uploaded successfully");
+          router.push("/admin/product");
+        } else {
+            console.error("Error uploading images");
+        }
+      } else {
+        console.error("Error adding product(1):", response.statusText);
       }
     } catch (error) {
-      console.error("Error adding product:", error);
+      console.error("Error adding product(2):", error);
     }
   };
 

@@ -2,7 +2,9 @@
 const { Product,Category,Review,OrderDetail,Order} = require('../../../server/models');  
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
-  const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
+const path = require('path');
+
 const { uploadProductImages } = require('../imageController'); 
 
 // Function name: getAllProducts
@@ -226,20 +228,42 @@ const addProduct = async (req, res) => {
           visibility,
           folder: category_id  // Use category_id as the folder name
       });
-
-      req.productId = newProduct.product_id;  // Pass the product_id to req for use in multer
-
-      // If there is an uploaded image
-      if (req.file) {
-          const imagePath = `product/${category_id}/${newProduct.product_id}.webp`;
-          newProduct.image = imagePath;  // Set the image path
-          await newProduct.save();  // Save the updated product information
-      }
-      res.status(200).send({ message: 'Product added successfully!' });
+      res.status(201).json({ product_id: newProduct.product_id });
   } catch (error) {
-      res.status(500).send({ message: 'Failed to add product.' });
+    res.status(500).send({ message: 'Failed to create product.', error: error.message });
   }
 };
+
+// 上传产品图片
+async function nameProductImages(req, res) {
+  const { productId } = req.params;
+  const { category_id: categoryId } = req.body;
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).send({ message: 'No images received.' });
+    }
+    // 构造图片路径
+    const imagePaths = req.files.map((file, index) => {
+      const fileIndex = index + 1; // 图片的编号，从1开始
+      const filename = `${categoryId}${productId}${fileIndex}.webp`;
+      return `product/${categoryId}/${filename}`;
+    });
+
+    // 将路径数组转换成字符串，并用逗号分隔
+    const imagePathsString = imagePaths.join(',');
+
+    // 更新数据库中的 image 字段
+    await Product.update(
+      { image: imagePathsString },
+      { where: { product_id: productId } }
+    );
+    console.log("Image paths stored in database:", imagePathsString);
+    res.status(200).send({ message: 'Images uploaded successfully.' });
+  } catch (error) {
+      res.status(500).send({ message: 'Failed to upload images.', error: error.message });
+  }
+}
+
 
 // Function name: deleteProduct
 // Description: Deletes a product by its ID from the database.
@@ -395,4 +419,4 @@ const getTotalValue = async (req, res) => {
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
   getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
-  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue  };
+  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages  };

@@ -34,7 +34,8 @@ const { getAllProducts,
   deleteProduct,
   getProductTotalNumber,
   getTopSellingProducts,
-  getTotalValue } = require('../pages/functions/product/ProductsController');
+  getTotalValue,
+  nameProductImages } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber} = require('../pages/functions/order/orderController');
@@ -144,9 +145,10 @@ app.get('/api/order-admin/datatable', (req, res) => {
 app.get('/api/subcategories', getSubCategories);
 
 // Product Image Upload Routing
-app.post('/api/products/add', uploadProductImage.single('image'), async (req, res) => {
-  await addProduct(req, res);
-});
+app.post('/api/products/add', addProduct);
+
+// POST /api/products/:productId/upload
+app.post('/api/products/:productId/uploadProductImage', uploadProductImage.array('images', 4), nameProductImages);
 
 // Route to delete a product by ID
 app.delete('/api/products-admin/delete/:productId', deleteProduct);
