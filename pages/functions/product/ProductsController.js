@@ -234,7 +234,16 @@ const addProduct = async (req, res) => {
   }
 };
 
-// 上传产品图片
+// Function name: nameProductImages
+// Description: Stores the file paths of uploaded product images in the database after renaming them according to category and product ID.
+// Parameters:
+//   req (object): The HTTP request object containing product ID in parameters and category ID in the request body.
+//   res (object): The HTTP response object used to send success or error responses.
+// Functionality:
+//   This function first checks if images were received in the request. If not, it responds with a 400 status code and a message.
+//   If images are present, it renames each image file by combining the category ID, product ID, and an index number, then constructs the file path.
+//   The function joins the image paths into a single comma-separated string and updates the product's `image` field in the database with this string.
+//   It sends a success response if the paths are stored successfully, or an error response if an issue occurs.
 async function nameProductImages(req, res) {
   const { productId } = req.params;
   const { category_id: categoryId } = req.body;
@@ -242,17 +251,17 @@ async function nameProductImages(req, res) {
     if (!req.files || req.files.length === 0) {
       return res.status(400).send({ message: 'No images received.' });
     }
-    // 构造图片路径
+    // Constructing the image path
     const imagePaths = req.files.map((file, index) => {
-      const fileIndex = index + 1; // 图片的编号，从1开始
+      const fileIndex = index + 1; 
       const filename = `${categoryId}${productId}${fileIndex}.webp`;
       return `product/${categoryId}/${filename}`;
     });
 
-    // 将路径数组转换成字符串，并用逗号分隔
+    // Converts an array of paths into a string, separated by commas
     const imagePathsString = imagePaths.join(',');
 
-    // 更新数据库中的 image 字段
+    // Update the image field in the database
     await Product.update(
       { image: imagePathsString },
       { where: { product_id: productId } }

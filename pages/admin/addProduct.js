@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 const AddProduct = () => {
   const router = useRouter();
@@ -17,33 +18,41 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [validationMessage, setValidationMessage] = useState("");
 
-  // Handle form input changes
+  // Handles changes to the inputs in the form. 
+  //Its purpose is to dynamically update the formData state
   const handleChange = (e) => {
+     // Deconstruct the name and value from the event target.
     const { name, value } = e.target;
+    //Use the setFormData function to update the state of the formData.
     setFormData({
+      //spread syntax
       ...formData,
+      //[key] : value
       [name]: value,
     });
   };
 
   // Fetch categories from the API
+  //Used to perform rendering-independent behavior in function components
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/subcategories");
-        const data = await response.json();
-        setCategories(data);
+        const response = await axios.get("http://localhost:3001/api/subcategories");
+        setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
     };
 
     fetchCategories();
+    //[] is an array of dependencies that control the timing of the useEffect hooks
   }, []);
 
   // Handle image file selection and preview
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
+    //formData.images.length is the number of uploaded images, 
+    //files.length is the number of newly selected files
     if (formData.images.length + files.length > 4) {
       alert("You can only upload a maximum of 4 images."); // Alert user
       return;
@@ -52,7 +61,9 @@ const AddProduct = () => {
     // Update formData with new images
     const updatedImages = [...formData.images, ...files].slice(0, 4); // Limit to 4 images
     setFormData({
+      //keep others data
       ...formData,
+      //only change images
       images: updatedImages,
     });
 
@@ -63,13 +74,15 @@ const AddProduct = () => {
 
   // Handle form submission
   const handleSubmit = async (e) => {
+    //stop Page Refresh or Jump
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
-
-    const jsonData = JSON.stringify({
+    //Converting data to JSON format improves standardization, 
+    //compatibility, clarity of data structure and transmission efficiency.
+    const jsonData = ({
       product_name: formData.product_name,
       product_description: formData.product_description,
       price: formData.price,
@@ -79,41 +92,46 @@ const AddProduct = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:3001/api/products/add", {
-        method: "POST",
+      //get is used to require data, and post is used to submit data
+      const response = await axios.post("http://localhost:3001/api/products/add", jsonData, {
+        //Allows the server to parse the data correctly
         headers: {
+          //application/json: JSON format data for API data transfer.
           "Content-Type": "application/json",
         },
-        body: jsonData,
       });
-
-      if (response.ok) {
-        const product = await response.json();
+      //Only the 2xx status code indicates that the request was successful and the server returned the expected result.
+      if (response.status >= 200 && response.status < 300) {
+        const product = response.data;
         const productId = product.product_id;
+
         console.log(productId)
+
         const imageData = new FormData();
         imageData.append('category_id', formData.category);
-        formData.images.forEach((image, index) => {
+        formData.images.forEach((image) => {
             imageData.append('images', image);
         });
 
-        console.log("Product ID for upload:", productId);
-        console.log("Image data being sent:", imageData);
+        const imageResponse = await axios.post(
+          `http://localhost:3001/api/products/${productId}/uploadProductImage`,
+          imageData,
+          {
+            headers: {
+              //multipart/form-data: multipart data, used for form data transfer, especially when uploading files.
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-        const imageResponse = await fetch(`http://localhost:3001/api/products/${productId}/uploadProductImage`, {
-          method: "POST",
-          body: imageData,
-        });
-
-        if (imageResponse.ok) {
+        if (imageResponse.status >= 200 && imageResponse.status < 300) {
           console.log("Images uploaded successfully");
           router.push("/admin/product");
         } else {
             console.error("Error uploading images");
         }
-      } else {
-        console.error("Error adding product(1):", response.statusText);
-      }
+
+      } 
     } catch (error) {
       console.error("Error adding product(2):", error);
     }

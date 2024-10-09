@@ -153,16 +153,16 @@ app.post('/api/products/:productId/uploadProductImage', uploadProductImage.array
 // Route to delete a product by ID
 app.delete('/api/products-admin/delete/:productId', deleteProduct);
 
-// 获取产品总数量
+// Get the total number of products
 app.get('/api/total-products', getProductTotalNumber);
 
-// 获取产品总类目
+// Get the total number of product categories
 app.get('/api/total-categories', getCategoriesTotalNumber);
 
-// 获取产品总价值
+// Capture the total value of the product
 app.get('/api/total-value', getTotalValue);
 
-// 获取用户总数量
+// Get the total number of users
 app.get('/api/total-users', getUserTotalNumber);
 
 // 获取一周内增加用户

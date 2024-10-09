@@ -1,39 +1,31 @@
 // C:\proj309\CapstoneV2\pages\functions\imageController.js
 const multer = require('multer');
+//File reading, writing, deleting, modifying, checking for existence
 const fs = require('fs');
-const path = require('path');
 const adminId = 1;
 
 //followings are from <chatgpt>
 //Multer is a middleware usually used for uploading files. 
-//It parses the request for multipart/form-data data, 
-//which is a common encoding type used when uploading files.
 //Storage Management: It provides a variety of storage options, 
 //including in-memory storage and disk storage. 
 //You can choose to store uploaded files in the server's memory or directly to disk.
+
 //We'll use multer to store photos, etc. for now. In the future we plan to use cloud storage.
 //Configuring multer storage
-// Define the storage configuration
+
+// Define the custom storage configuration
 const sellerAvatarStorage  = multer.diskStorage({
-    //This initializes the storage engine for Multer, 
-    //specifically defining how and where to store the uploaded files. 
-    //It uses the diskStorage method to store files on the disk.
+    //define the directory of file
     destination: (req, file, cb) => {
-        //Used to determine the directory where the uploaded file is saved. 
-      //Contains the “HTTP request object req”, the “uploaded file object file”, and the callback function “cb”.  
         const dir = './public/images/admin';
         //If the directory does not exist, it will be created next.
         if (!fs.existsSync(dir)) {
             //The mkdirSync() method synchronizes the creation of the directory
             fs.mkdirSync(dir, { recursive: true });
         }
-        //Passes the destination directory dir as the second 
-    //argument, and null as the first argument to indicate that 
-    //there is no error.Multer uses this callback to indicate 
-    //that the file should be saved to the specified directory.
         cb(null, dir);
     },
-    //Decide how uploaded files should be named
+    //custom name the fileby admin id
     filename: (req, file, cb) => {
         const filename = `${adminId}.webp`;
         console.log(`File will be saved as: ${filename}`);
@@ -47,42 +39,46 @@ const productImageStorage = multer.diskStorage({
         const categoryId = req.body.category_id;
         const dir = `./public/images/product/${categoryId}`;
 
-        console.log("Creating directory for category ID:", categoryId, "at", dir);
         if (!fs.existsSync(dir)) {
+            //If the parent directory also does not exist, recursively create all directories.
             fs.mkdirSync(dir, { recursive: true });
         }
+        //callback:asynchronous return
         cb(null, dir);
     },
     filename: (req, file, cb) => {
         const categoryId = req.body.category_id;
-        const productId = req.params.productId;  // 从req中获取产品ID
-        // 获取当前文件在同一上传批次中的索引号，此处依赖于上传时客户端的字段设置
-        const fileIndex = req.files ? req.files.length : 0; // 获取当前文件索引，作为文件序号
-        // 按照命名规则构造文件名
+        const productId = req.params.productId;  
+        //check if req.files exist otherwise set it to 0
+        const fileIndex = req.files ? req.files.length : 0; 
+        // Construct filenames according to naming conventions
         const filename = `${categoryId}${productId}${fileIndex}.webp`;
         const filePath = `./public/images/product/${categoryId}/${filename}`;
 
-        // 检查文件是否已存在，存在则删除
-        // 检查文件是否已存在，若存在则删除旧文件
+        // Check if the file already exists and delete the old one if it does
+        //if filepath exists err=null, go through the if branch, delet existing one and name it
+        //if file path doesnt exists, go through the esle branch, directly name the file
+        //F_OK check if the file exits
         fs.access(filePath, fs.constants.F_OK, (err) => {
             if (!err) {
             console.log("File already exists. Deleting old file:", filePath);
+            //delete the file
             fs.unlink(filePath, (unlinkErr) => {
                 if (unlinkErr) {
                 console.error("Error deleting old file:", unlinkErr);
-                return cb(unlinkErr); // 返回错误，停止操作
+                return cb(unlinkErr); // Returns an error and stops the operation
                 }
                 console.log("Old file deleted successfully.");
-                cb(null, filename); // 设置新文件的名称
+                cb(null, filename); // Setting the name of the new file
             });
             } else {
-            cb(null, filename); // 如果文件不存在，直接设置新文件的名称
+            cb(null, filename); // If the file does not exist, set the name of the new file directly
             }
         });
     }
 });
 
-// Export multer configured with the custom storage engine
+// Exporting a multer instance configured with a custom storage engine
 const uploadSellerAvatar  = multer({ storage: sellerAvatarStorage  });
 const uploadProductImage = multer({ storage: productImageStorage });
 
