@@ -2,30 +2,31 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { FaTrash } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
 
-  // 从localStorage中获取购物车数据
+  // read cart data from localStorage
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
     setCart(cartItems);
   }, []);
 
-  // 更新购物车数据到localStorage
+  // update cart items to localStorage
   const updateCart = (updatedCart) => {
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
   
 
-  // 修改产品数量
+  // when user click minus or plus for an item
   const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity < 1) return; // 防止数量小于1
+    if (newQuantity < 1) return; 
     const updatedCart = cart.map((item) =>
       item.product_id === id ? { ...item, quantity: newQuantity } : item
     );
-    updateCart(updatedCart); // 更新购物车和localStorage
+    updateCart(updatedCart); // update localStorage
   };
 
   // 移除产品
@@ -34,7 +35,7 @@ export default function CartPage() {
     updateCart(updatedCart); // 更新购物车和localStorage
   };
 
-  // 计算总价格
+  // calculate the total price of items in shopping cart
   const calculateTotalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -42,7 +43,6 @@ export default function CartPage() {
   return (
     <div>
       <Header />
-
       <div className="container mx-auto my-8 px-16">
         <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
         <div className="bg-white p-4 border shadow-md rounded-lg">
@@ -57,25 +57,26 @@ export default function CartPage() {
                     <h2 className="font-semibold">{item.product_name}</h2>
                     <p>{item.description}</p>
 
-                    {/* 数量操作 */}
+                    {/* set quantity */}
                     <div className="flex items-center mb-4">
                       <button
                         onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}
-                        className="w-12 h-12 border-2 border-gray-300 text-gray-800 rounded-l-lg text-3xl"
+                        className={`h-10 px-3 ${item.quantity <= 1? ("text-gray-300"):("text-gray-800")} border-2 border-gray-300 rounded-l-lg`}
+                        disabled={item.quantity <= 1}
                       >
-                        -
+                        <FaMinus/>
                       </button>
                       <input
                         type="text"
                         value={item.quantity}
                         readOnly
-                        className="w-12 h-12 text-center border-2 border-gray-300"
+                        className="w-10 h-10 text-center border-y-2 border-gray-300"
                       />
                       <button
                         onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
-                        className="w-12 h-12 border-2 border-gray-300 text-gray-800 rounded-r-lg text-3xl"
+                        className="h-10 px-3 border-2 border-gray-300 text-gray-800 rounded-r-lg"
                       >
-                        +
+                        <FaPlus/>
                       </button>
                     </div>
                   </div>
