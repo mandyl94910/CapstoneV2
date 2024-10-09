@@ -102,46 +102,46 @@ CREATE TABLE orders_detail (
 
 ---------------------------------------------------------------------------------------------------
 
--- Create trigger function
-CREATE OR REPLACE FUNCTION calculate_tax_based_on_province() 
-RETURNS TRIGGER AS $$
-DECLARE
-    province_code VARCHAR(2);
-    tax_rate NUMERIC(5, 3);
-BEGIN
-    -- Get the province code from the address table
-    SELECT province INTO province_code FROM address WHERE id = NEW.address_id;
+-- -- Create trigger function
+-- CREATE OR REPLACE FUNCTION calculate_tax_based_on_province() 
+-- RETURNS TRIGGER AS $$
+-- DECLARE
+--     province_code VARCHAR(2);
+--     tax_rate NUMERIC(5, 3);
+-- BEGIN
+--     -- Get the province code from the address table
+--     SELECT province INTO province_code FROM address WHERE id = NEW.address_id;
     
-    -- Set the tax rate based on the province code
-    CASE province_code
-        WHEN 'AB' THEN tax_rate := 0.05;
-        WHEN 'SK' THEN tax_rate := 0.11;
-        WHEN 'BC' THEN tax_rate := 0.12;
-        WHEN 'MB' THEN tax_rate := 0.12;
-        WHEN 'ON' THEN tax_rate := 0.13;
-        WHEN 'QC' THEN tax_rate := 0.14975;
-        WHEN 'NB' THEN tax_rate := 0.15;
-        WHEN 'NS' THEN tax_rate := 0.15;
-        WHEN 'PE' THEN tax_rate := 0.15;
-        WHEN 'NL' THEN tax_rate := 0.15;
-        WHEN 'NT' THEN tax_rate := 0.05;
-        WHEN 'YT' THEN tax_rate := 0.05;
-        WHEN 'NU' THEN tax_rate := 0.05;
-        ELSE tax_rate := 0.05;  -- Default tax rate if province not found
-    END CASE;
+--     -- Set the tax rate based on the province code
+--     CASE province_code
+--         WHEN 'AB' THEN tax_rate := 0.05;
+--         WHEN 'SK' THEN tax_rate := 0.11;
+--         WHEN 'BC' THEN tax_rate := 0.12;
+--         WHEN 'MB' THEN tax_rate := 0.12;
+--         WHEN 'ON' THEN tax_rate := 0.13;
+--         WHEN 'QC' THEN tax_rate := 0.14975;
+--         WHEN 'NB' THEN tax_rate := 0.15;
+--         WHEN 'NS' THEN tax_rate := 0.15;
+--         WHEN 'PE' THEN tax_rate := 0.15;
+--         WHEN 'NL' THEN tax_rate := 0.15;
+--         WHEN 'NT' THEN tax_rate := 0.05;
+--         WHEN 'YT' THEN tax_rate := 0.05;
+--         WHEN 'NU' THEN tax_rate := 0.05;
+--         ELSE tax_rate := 0.05;  -- Default tax rate if province not found
+--     END CASE;
     
-    -- Calculate total_tax based on total and tax_rate
-    NEW.total_tax := NEW.total + (NEW.total * tax_rate);
+--     -- Calculate total_tax based on total and tax_rate
+--     NEW.total_tax := NEW.total + (NEW.total * tax_rate);
     
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
--- Create trigger to automatically calculate total_tax when inserting or updating orders
-CREATE TRIGGER set_total_tax_based_on_province
-BEFORE INSERT OR UPDATE ON orders
-FOR EACH ROW
-EXECUTE FUNCTION calculate_tax_based_on_province();
+-- -- Create trigger to automatically calculate total_tax when inserting or updating orders
+-- CREATE TRIGGER set_total_tax_based_on_province
+-- BEFORE INSERT OR UPDATE ON orders
+-- FOR EACH ROW
+-- EXECUTE FUNCTION calculate_tax_based_on_province();
 
 
 ---------------------------------------------------------------------------------------------------
@@ -155,28 +155,15 @@ ADD CONSTRAINT fk_subcategory FOREIGN KEY (sub_for) REFERENCES category (id);
 ALTER TABLE product
 ADD CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES category (id);
 
--- Add constraints to customer table
-ALTER TABLE customer 
-ADD CONSTRAINT customer_name_check 
-CHECK (LENGTH(customer_name) >= 2 AND customer_name ~ '^[A-Za-z0-9]+$' AND customer_name ~ '[A-Za-z]');
-
-ALTER TABLE customer 
-ADD CONSTRAINT email_format_check 
-CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$');
-
-ALTER TABLE customer 
-ADD CONSTRAINT phone_check 
-CHECK (phone ~ '^[0-9]{10}$');
-
 ALTER TABLE admin 
 ADD CONSTRAINT check_title CHECK (title IN ('Admin', 'Super Admin'));
 
 -- Add foreign key constraints to review table
 ALTER TABLE review
-ADD CONSTRAINT fk_review_customer FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_review_customer FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
 
 ALTER TABLE review
-ADD CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES product (product_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES product (product_id);
 
 -- Add CHECK constraint for review.rating to ensure it's between 1 and 5
 ALTER TABLE review
@@ -184,7 +171,7 @@ ADD CONSTRAINT check_review_rating CHECK (rating >= 1 AND rating <= 5);
 
 -- Add foreign key constraint to address table
 ALTER TABLE address
-ADD CONSTRAINT fk_customer_address FOREIGN KEY (customer_id) REFERENCES customer (customer_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_customer_address FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
 
 -- Add foreign key constraints to orders table
 ALTER TABLE orders
@@ -196,9 +183,6 @@ ADD CONSTRAINT fk_orders_address FOREIGN KEY (address_id) REFERENCES address (id
 -- Add foreign key constraints to orders_detail table
 ALTER TABLE orders_detail
 ADD CONSTRAINT fk_orders_detail_order FOREIGN KEY (order_id) REFERENCES orders (id);
-
-ALTER TABLE orders_detail
-ADD CONSTRAINT fk_orders_detail_product FOREIGN KEY (product_id) REFERENCES product (product_id);
 
 -- Add unique constraint to ensure only one default address per customer
 CREATE UNIQUE INDEX unique_default_address ON address (customer_id) WHERE is_default = TRUE;

@@ -41,6 +41,7 @@ const {getAllOrders,
 const searchProductsByName = require('../pages/functions/product/search');
 const getReviewByProductId = require('../pages/functions/product/review');
 const getAddresses = require('../pages/functions/user/address');
+const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
 
 
 const app = express();
@@ -174,6 +175,9 @@ app.get('/api/total-orders', getOrderTotalNumber);
 
 // 定义获取销量最高的四个产品的路由
 app.get('/api/top-selling-products', getTopSellingProducts);
+
+// Sales report route
+app.get('/api/sales-report', getSalesReportData);
 
 // Start the server
 app.listen(3001, () => {

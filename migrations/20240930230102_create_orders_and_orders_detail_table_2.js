@@ -220,3 +220,4 @@ exports.down = function(knex) {
         DROP INDEX IF EXISTS unique_default_address;
       `);
   };
+S
