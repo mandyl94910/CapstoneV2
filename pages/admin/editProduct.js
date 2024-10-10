@@ -48,13 +48,13 @@ const fetchProductDetails = async (productId ) => {
     console.log('Fetched product data:', response.data);
     const product = response.data;
 
-    const basePath = 'http://localhost:3001/images/'; // 服务器图片基路径
+    const basePath = 'http://localhost:3001/images/';
     let imagePaths = product.image ? product.image.split(',').map(path => path.trim()) : [];
-    const imageUrls = imagePaths.map(path => basePath + path);
-    console.log('basePath is :',basePath)
-    console.log('product.image is :',product.image)
-    console.log('imagePaths is :',imagePaths)
-    console.log('imgUrls is :',imageUrls)
+
+    // 生成图片预览 URL
+    const imagePreviews = imagePaths.map(path => basePath + path);
+    setImagePreviews(imagePreviews); // 用于预览
+
     setFormData({
     product_name: product.product_name,
     product_description: product.product_description,
@@ -62,10 +62,8 @@ const fetchProductDetails = async (productId ) => {
     quantity: product.quantity,
     category: product.category_id,
     visibility: product.visibility,
-    images: imageUrls,
+    images: imagePaths,
     });
-    // 处理图片预览逻辑（如果有图片的URL可用）
-    setImagePreviews(imageUrls);
     } catch (error) {
     console.error('Error fetching product details:', error);
     }
@@ -138,14 +136,23 @@ const handleImageDelete = (index) => {
     updateform.append('category_id', formData.category);
     updateform.append('visibility', formData.visibility);
 
-    formData.images.forEach((image) => {
-        if (image instanceof File) {
-            updateform.append('images', image);
-            console.log('File added:', image.name); // 确认文件被添加
-        } else {
-            console.log('Not a file:', image); // 如果不是文件对象，打印这个信息
-        }
-    });
+    let hasNewImages = formData.images.some(image => image instanceof File);
+    if (hasNewImages) {
+      formData.images.forEach((image) => {
+          if (image instanceof File) {
+              updateform.append('images', image);
+              console.log('File added:', image.name); // 确认文件被添加
+          } else {
+              console.log('Not a file:', image); // 如果不是文件对象，打印这个信息
+          }
+      });
+    }else {
+      // Use old images from imagePreviews if no new files were added
+        formData.images.forEach((imagePath) => {
+        updateform.append('images', imagePath);
+        console.log('use old image path:', imagePath);
+      });
+    }
 
 
     try {
@@ -195,7 +202,7 @@ const handleImageDelete = (index) => {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-1/3"
       >
-        <h2 className="text-xl font-bold mb-4">Add New Product</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
         {/* Image Upload */}
         <div className="mb-4">
@@ -332,7 +339,7 @@ const handleImageDelete = (index) => {
             type="submit"
             className="bg-blue-500 text-white py-2 px-6 rounded"
           >
-            Add Product
+            Save Changes
           </button>
           <button
             type="button"
