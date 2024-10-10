@@ -67,7 +67,7 @@ const ProductPage = () => {
 
     localStorage.setItem('cart', JSON.stringify(cart)); 
     alert('Product added to cart!');
-    //router.push('/cart');
+    router.push('/cart');
   };
 
 

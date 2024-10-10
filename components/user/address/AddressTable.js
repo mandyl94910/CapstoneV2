@@ -51,7 +51,6 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                     ))}
                 </tbody>
             </table>
-            {/* <div style={{ height: '150vh' }}> </div> */}
         </>
     );
 };

@@ -162,7 +162,7 @@ const ProductManagement = () => {
             type="text"
             value={searchQuery} // Set input value to the searchQuery state
             onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery state on input change
-            placeholder="Search by Product Name or Category"
+            placeholder="🔍 Search by Product Name or Category"
             className="border p-2 rounded w-full"
           />
         </div>
