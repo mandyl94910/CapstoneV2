@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from 'next/link'; 
 import Image from 'next/image'; 
 import { useAuth } from "../../hooks/useAuth";
 import SearchBar from '../common/SearchBar';
 import { useRouter } from "next/router";
+import { FaCartShopping } from "react-icons/fa6";
 
 
 
@@ -12,6 +13,30 @@ function Header() {
 
   const { user, onLogout } = useAuth();
   const router = useRouter();
+  const [cartQuantity, setCartQuantity] = useState(0);
+
+
+  /** 
+   * helped by chatGPT
+   * prompt: how can I display the number of item in shopping cart to a badge of the cart icon on header 
+   */ 
+  // Fetch cart data from localStorage when header is mounted
+  useEffect(() => {
+    const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    // Calculate the total quantity of products in the cart
+    const totalQuantity = cartItems.reduce((sum, item) => sum + 1, 0);
+    setCartQuantity(totalQuantity);
+  }, []);
+
+  const handleCartClick = () => {
+    // if already on the cart page, refresh the page
+    if (router.pathname === '/cart') {
+      window.location.reload();
+    } else {
+      // otherwise, navigate to the cart page
+      router.push('/cart');
+    }
+  };
 
 
   return (
@@ -58,9 +83,19 @@ function Header() {
         <div className="relative">
           <SearchBar />
         </div>
-        <Link href='/cart'>
-          <FaShoppingCart className="text-2xl cursor-pointer hover:text-blue-600" /> {/* Increase size of the cart icon */}
-        </Link>
+
+        <div className="relative">
+          <FaCartShopping 
+          className="text-2xl cursor-pointer hover:text-blue-600 text-gray-700"
+          onClick={handleCartClick}
+          /> 
+          {cartQuantity > 0 && (
+            <span className="absolute -top-2 -right-2 bg-blue-600 border-white border-2 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              {cartQuantity}
+            </span>
+          )}
+        </div>
+
       
         {user ? (
           <div className="flex items-center space-x-4 pr-16">
