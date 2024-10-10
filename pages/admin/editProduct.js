@@ -51,9 +51,8 @@ const fetchProductDetails = async (productId ) => {
     const basePath = 'http://localhost:3001/images/';
     let imagePaths = product.image ? product.image.split(',').map(path => path.trim()) : [];
 
-    // 生成图片预览 URL
     const imagePreviews = imagePaths.map(path => basePath + path);
-    setImagePreviews(imagePreviews); // 用于预览
+    setImagePreviews(imagePreviews); 
 
     setFormData({
     product_name: product.product_name,
@@ -79,14 +78,12 @@ const fetchCategories = async () => {
 };
 
 const handleImageDelete = (index) => {
-    // 更新 formData 中的 images 数组
     const updatedImages = formData.images.filter((_, i) => i !== index);
     setFormData({
       ...formData,
       images: updatedImages
     });
-  
-    // 更新预览数组
+
     const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
     setImagePreviews(updatedPreviews);
   };
@@ -121,13 +118,11 @@ const handleImageDelete = (index) => {
     //stop Page Refresh or Jump
     e.preventDefault();
 
-    console.log('Current form data:', formData); // 打印当前表单数据
+    console.log('Current form data:', formData); 
     if (!validateForm()) {
       return;
     }
 
-
-    // 使用FormData处理文件上传
     const updateform = new FormData();
     updateform.append('product_name', formData.product_name);
     updateform.append('product_description', formData.product_description);
@@ -141,9 +136,9 @@ const handleImageDelete = (index) => {
       formData.images.forEach((image) => {
           if (image instanceof File) {
               updateform.append('images', image);
-              console.log('File added:', image.name); // 确认文件被添加
+              console.log('File added:', image.name); 
           } else {
-              console.log('Not a file:', image); // 如果不是文件对象，打印这个信息
+              console.log('Not a file:', image); // 
           }
       });
     }else {
@@ -159,7 +154,7 @@ const handleImageDelete = (index) => {
         const response = await axios.put(`http://localhost:3001/api/products/${productId}`, updateform, {
             headers: { "Content-Type": "multipart/form-data" },
         });
-        router.push("/admin/product"); // 跳转到产品列表页面
+        router.push("/admin/product"); 
     } catch (error) {
         console.error("Error updating product:", error);
     }
@@ -227,7 +222,7 @@ const handleImageDelete = (index) => {
                     className="w-20 h-12 object-cover border border-gray-300 rounded"
                   />
                   <button type="button" onClick={(e) => {
-                    e.preventDefault(); // 防止任何默认表单提交行为
+                    e.preventDefault(); 
                     handleImageDelete(index);
                     }} className="delete-button">
                     delete

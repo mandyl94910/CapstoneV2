@@ -121,9 +121,9 @@ const ProductManagement = () => {
   const handleEdit = (productId) => {
     router.push({
       pathname: '/admin/editProduct',
-      query: { productId: productId }, // 传递产品 ID
+      query: { productId: productId }, 
     }).then(() => {
-      setLastUpdated(Date.now()); // 若需要在编辑后更新，可以在这里调用
+      setLastUpdated(Date.now()); 
     });
   };
 

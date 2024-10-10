@@ -279,7 +279,6 @@ const updateProductById = async (req, res) => {
       const { productId } = req.params;
       const updates = req.body;
 
-      // 对图片路径进行处理或转换
       if (req.files) {
         const imagePaths = req.files.map((file, index) => `product/${updates.category_id}/${updates.category_id}${productId}${index + 1}.webp`);
         updates.image = imagePaths.join(',');  
