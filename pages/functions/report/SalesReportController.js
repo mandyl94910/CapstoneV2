@@ -1,6 +1,7 @@
 const { Order } = require('../../../server/models');
-const { Sequelize, Op } = require('sequelize'); // Add Op for conditions
+const { Sequelize, Op } = require('sequelize'); // Add Op = operators for conditions
 
+//asynchronous function
 const getSalesReportData = async (req, res) => {
     const { period } = req.query; // Period can be 'weekly', 'monthly', 'yearly'
     const now = new Date(); // Current date
@@ -33,6 +34,11 @@ const getSalesReportData = async (req, res) => {
         };
     }
 
+    // SELECT DATE_TRUNC('month', order_date) AS period, SUM(total) AS total_sales
+    // FROM orders
+    // GROUP BY period
+    // ORDER BY period;
+    
     try {
         let groupByFormat;
         if (period === 'weekly') {

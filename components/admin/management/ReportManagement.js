@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
+
+// Chart as ChartJS:
+// Chart is the core class of the chart.js library, responsible for creating and managing chart instances.
+// The as keyword renames Chart to ChartJS in this context to avoid potential naming conflicts with other Chart variables or classes in the project.
+// 2. CategoryScale:
+// CategoryScale is a component used for categorical axes in chart.js, typically for the X-axis. It handles categorical data (such as months, years, or product names) instead of numerical data.
+// For example, if your X-axis shows categories like "January", "February", etc., CategoryScale is used.
+// 3. LinearScale:
+// LinearScale is a component used for creating linear scales, typically for the Y-axis. It is used to represent continuous data, such as sales, temperature, or scores.
+// For example, if your Y-axis shows sales amounts or product quantities, LinearScale generates a linear scale from the minimum to maximum values.
+// 4. PointElement:
+// PointElement defines the appearance of data points in line or scatter charts. It controls the shape, size, and color of the points displayed on the chart.
+// For example, the circular data points in a line chart are managed by PointElement.
+// 5. LineElement:
+// LineElement is responsible for drawing the lines in a line chart. It controls the appearance of the lines connecting data points, such as their color, width, and smoothness.
+// 6. Title:
+// Title is used to add a title to the chart. It allows you to display a heading or description at the top of the chart.
+// 7. Tooltip:
+// Tooltip is the component that manages the tooltips that appear when hovering over data points on the chart. It provides additional information about a data point when a user hovers over it.
+// 8. Legend:
+// Legend is responsible for displaying the legend on the chart, which helps users understand the different datasets by labeling them with corresponding colors or markers.
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,8 +44,8 @@ import {
 */
 
 // Register Chart.js components
-ChartJS.register(
-  CategoryScale,
+ChartJS.register( // The ChartJS.register method is used to register the components from the chart.js library that you want to use in your application.    
+  CategoryScale,  // By registering only the required components, you reduce the size of the final bundle and optimize performance, as chart.js follows a modular design.
   LinearScale,
   PointElement,
   LineElement,
@@ -55,8 +77,10 @@ const ReportManagement = () => {
   // Function to format the chart data based on the fetched sales data
   const getChartData = () => {
     // Map the sales data to chart labels (periods) and values (total sales)
+    // Maps each element of the salesData array (a sales record) to a chart X-axis label
     const labels = salesData.map((item) => {
       const periodDate = new Date(item.period);
+      //conditional judgment, if the period is yearly, only show the year
       return period === "yearly"
         ? periodDate.getFullYear()  // If yearly, just show the year
         : periodDate.toLocaleDateString();  // Otherwise, show full date
@@ -89,7 +113,7 @@ const ReportManagement = () => {
         callbacks: {
           // Custom callback for tooltip to show both sales data and order count
           label: function (tooltipItem) {
-            const datasetLabel = tooltipItem.dataset.label || '';
+            const datasetLabel = tooltipItem.dataset.label || '';//falsy values are replaced with empty string
             const value = tooltipItem.raw;
             return `${datasetLabel}: ${value}`;
           },
