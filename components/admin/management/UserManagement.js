@@ -66,17 +66,17 @@ const UserManagement = () => {
     {
       title: "Total Users",
       value: userStats.totalUsers,
-      description: `Based on ${new Date().toLocaleDateString()}`,
+      description: "Based on the Data from 2023-05-06",
     },
     {
       title: "New Users",
       value: userStats.newUsers,
-      description: `Based on ${new Date().toLocaleDateString()}`,
+      description: `Based on ${new Date().toLocaleDateString("en-CA")}`,
     },
     {
       title: "Withdrawal Users",
       value: userStats.withdrawalUsers,
-      description: "Based on 28 June 2024",
+      description: `Based on ${new Date().toLocaleDateString("en-CA")}`,
     },
   ];
 
@@ -101,7 +101,7 @@ const UserManagement = () => {
             type="text"
             value={searchQuery} // Bind input value to searchQuery state
             onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on user input
-            placeholder="Search by Name or Email" // Search criteria for users
+            placeholder="🔍 Search by Name or Email" // Search criteria for users
             className="border p-2 rounded w-full"
           />
         </div>
