@@ -39,21 +39,18 @@ const ProductPage = () => {
   // when product updated, set image path of the product
   useEffect(() => {
     if (product && product.image) {
-      setSelectedImage(product.image);
+      const imagesArray = product.image.split(',');
+      setSelectedImage(imagesArray[0]); // 主图设为第一张
     }
   }, [product]);
 
-  // get other images from the same directory of the product, requiring the structure of pictures well-organized
-  // the default image with path .webp without number at the end, while others start from 1,2,3
-  const generateImagePaths = (image) => {
-    // remove .webp at the end of the original path
-    const basePath = image.replace('.webp', '');
-
-    // generate new image array
-    const imagePaths = [1, 2, 3].map((number) =>`${basePath}${number}.webp`);
-    const paths = [image, ...imagePaths];
-    return paths;
-  } 
+  // 获取所有图片（四张）
+  const getAllImages = () => {
+    if (product && product.image) {
+      return product.image.split(','); // 返回图片数组
+    }
+    return [];
+  };
 
   const addToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -98,14 +95,13 @@ const ProductPage = () => {
                 className="w-full object-cover rounded-lg" />
             <div className="flex mt-4 space-x-4">
               {/* small images */}
-              {generateImagePaths(product.image).map((image,index) =>  
+              {getAllImages().map((image, index) =>  
                 <img 
                   key={index}  
-                  src={`/images/${image}`}
-                  // src={`/images/${image}`} 
+                  src={`/images/${image}`} 
                   alt={`Small view ${index + 1}`}
                   className={`w-16 h-16 object-cover border-2 rounded cursor-pointer ${selectedImage === image ? 'border-blue-500' : ''}`}
-                  onClick={ () => setSelectedImage(image)}
+                  onClick={() => setSelectedImage(image)}
                 />
               )}
             </div>

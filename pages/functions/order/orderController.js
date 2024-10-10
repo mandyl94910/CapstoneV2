@@ -20,26 +20,28 @@ const getAllOrders = async (req, res) => {
         },
         {
           model: OrderDetail,
-          include: [
-            {
-              model: Product,
-              // Retrieves product ID for each product in the order
-              attributes: ['product_name']  
-            }
-          ]
+          attributes: ['product_id'], 
         }
       ],
        // Retrieves order ID, total price, date, and status
       attributes: ['id', 'total', 'order_date', 'status'],  
       raw: false
     });
+    const products = await Product.findAll({
+      attributes: ['product_id', 'product_name']
+    });
+    
+    const productMap = products.reduce((map, product) => {
+      map[product.product_id] = product.product_name;
+      return map;
+    }, {});
 
     // Format the returned data to concatenate product IDs into a single string for each order
     //The role of map here is to iterate through the orders array, converting each order object to the 
     //desired format for front-end display without changing the original array of orders.
     const formattedOrders = orders.map(order => {
       //The map function iterates through each detail in the OrderDetails array and returns a new array with each element being detail.Product.product_id.
-      const productNames = order.OrderDetails.map(detail => detail.Product.product_name).join(', ');
+      const productNames = order.OrderDetails.map(detail => productMap[detail.product_id]).join(', ');
         return {
           order_id: order.id,
           // If the order contains multiple products, splice into a string

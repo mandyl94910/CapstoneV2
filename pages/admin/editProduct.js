@@ -18,35 +18,76 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [validationMessage, setValidationMessage] = useState("");
 
+  const { productId } = router.query;
+
   // Handles changes to the inputs in the form. 
   //Its purpose is to dynamically update the formData state
   const handleChange = (e) => {
-     // Deconstruct the name and value from the event target.
     const { name, value } = e.target;
-    //Use the setFormData function to update the state of the formData.
-    setFormData({
-      //spread syntax
-      ...formData,
-      //[key] : value
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
+
 
   // Fetch categories from the API
   //Used to perform rendering-independent behavior in function components
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/api/subcategories");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    };
+    if (productId) {
+      fetchProductDetails(productId);
+      fetchCategories();
+    }
+  }, [productId]);
+    
+    
+    
+const fetchProductDetails = async (productId ) => {
+    try {
+    const response = await axios.get(`http://localhost:3001/api/products/${productId}`);
+    console.log('Fetched product data:', response.data);
+    const product = response.data;
 
-    fetchCategories();
-    //[] is an array of dependencies that control the timing of the useEffect hooks
-  }, []);
+    const basePath = 'http://localhost:3001/images/';
+    let imagePaths = product.image ? product.image.split(',').map(path => path.trim()) : [];
+
+    const imagePreviews = imagePaths.map(path => basePath + path);
+    setImagePreviews(imagePreviews); 
+
+    setFormData({
+    product_name: product.product_name,
+    product_description: product.product_description,
+    price: product.price,
+    quantity: product.quantity,
+    category: product.category_id,
+    visibility: product.visibility,
+    images: imagePaths,
+    });
+    } catch (error) {
+    console.error('Error fetching product details:', error);
+    }
+};
+
+const fetchCategories = async () => {
+    try {
+    const response = await axios.get("http://localhost:3001/api/subcategories");
+    setCategories(response.data);
+    } catch (error) {
+    console.error("Failed to fetch categories", error);
+    }
+};
+
+const handleImageDelete = (index) => {
+    const updatedImages = formData.images.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      images: updatedImages
+    });
+
+    const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
+    setImagePreviews(updatedPreviews);
+  };
+
 
   // Handle image file selection and preview
   const handleImageChange = (e) => {
@@ -77,63 +118,45 @@ const AddProduct = () => {
     //stop Page Refresh or Jump
     e.preventDefault();
 
+    console.log('Current form data:', formData); 
     if (!validateForm()) {
       return;
     }
-    //Converting data to JSON format improves standardization, 
-    //compatibility, clarity of data structure and transmission efficiency.
-    const jsonData = ({
-      product_name: formData.product_name,
-      product_description: formData.product_description,
-      price: formData.price,
-      quantity: formData.quantity,
-      category_id: formData.category,
-      visibility: formData.visibility,
-    });
+
+    const updateform = new FormData();
+    updateform.append('product_name', formData.product_name);
+    updateform.append('product_description', formData.product_description);
+    updateform.append('price', formData.price);
+    updateform.append('quantity', formData.quantity);
+    updateform.append('category_id', formData.category);
+    updateform.append('visibility', formData.visibility);
+
+    let hasNewImages = formData.images.some(image => image instanceof File);
+    if (hasNewImages) {
+      formData.images.forEach((image) => {
+          if (image instanceof File) {
+              updateform.append('images', image);
+              console.log('File added:', image.name); 
+          } else {
+              console.log('Not a file:', image); // 
+          }
+      });
+    }else {
+      // Use old images from imagePreviews if no new files were added
+        formData.images.forEach((imagePath) => {
+        updateform.append('images', imagePath);
+        console.log('use old image path:', imagePath);
+      });
+    }
+
 
     try {
-      //get is used to require data, and post is used to submit data
-      const response = await axios.post("http://localhost:3001/api/products/add", jsonData, {
-        //Allows the server to parse the data correctly
-        headers: {
-          //application/json: JSON format data for API data transfer.
-          "Content-Type": "application/json",
-        },
-      });
-      //Only the 2xx status code indicates that the request was successful and the server returned the expected result.
-      if (response.status >= 200 && response.status < 300) {
-        const product = response.data;
-        const productId = product.product_id;
-
-        console.log(productId)
-
-        const imageData = new FormData();
-        imageData.append('category_id', formData.category);
-        formData.images.forEach((image) => {
-            imageData.append('images', image);
+        const response = await axios.put(`http://localhost:3001/api/products/${productId}`, updateform, {
+            headers: { "Content-Type": "multipart/form-data" },
         });
-
-        const imageResponse = await axios.post(
-          `http://localhost:3001/api/products/${productId}/uploadProductImage`,
-          imageData,
-          {
-            headers: {
-              //multipart/form-data: multipart data, used for form data transfer, especially when uploading files.
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        if (imageResponse.status >= 200 && imageResponse.status < 300) {
-          console.log("Images uploaded successfully");
-          router.push("/admin/product");
-        } else {
-            console.error("Error uploading images");
-        }
-
-      } 
+        router.push("/admin/product"); 
     } catch (error) {
-      console.error("Error adding product(2):", error);
+        console.error("Error updating product:", error);
     }
   };
 
@@ -174,7 +197,7 @@ const AddProduct = () => {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-1/3"
       >
-        <h2 className="text-xl font-bold mb-4">Add New Product</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
         {/* Image Upload */}
         <div className="mb-4">
@@ -193,10 +216,17 @@ const AddProduct = () => {
               {imagePreviews.map((preview, index) => (
                 <div key={index} className="relative">
                   <img
+                    key={index}
                     src={preview}
                     alt={`Product Preview ${index + 1}`}
                     className="w-20 h-12 object-cover border border-gray-300 rounded"
                   />
+                  <button type="button" onClick={(e) => {
+                    e.preventDefault(); 
+                    handleImageDelete(index);
+                    }} className="delete-button">
+                    delete
+                  </button>
                 </div>
               ))}
             </div>
@@ -304,7 +334,7 @@ const AddProduct = () => {
             type="submit"
             className="bg-blue-500 text-white py-2 px-6 rounded"
           >
-            Add Product
+            Save Changes
           </button>
           <button
             type="button"

@@ -3,14 +3,14 @@ import Link from 'next/link';
 
 // Define the ProductCard component that takes a product object as a prop
 export default function ProductCard({ product }) {
-
+    const imagePath = product.image ? product.image.split(',')[0] : ''; // 获取第一张图片路径
     // Render the product card with an image and details
     return (
         <div className="w-56 h-auto border rounded-lg shadow-md p-4">
             {/* Link to the product detail page using product ID */}
             <Link href={`/product/${product.product_id}`}>
                 <img
-                    src={`/images/${product.image}`}  // Construct the path to the image
+                    src={`/images/${imagePath}`}  // Construct the path to the image
                     alt={product.product_name}  // Use the product name as alt text for the image
                     className="w-48 h-48 object-cover mb-4"
                     onError={(e) => {

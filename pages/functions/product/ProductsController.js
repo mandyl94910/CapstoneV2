@@ -2,7 +2,9 @@
 const { Product,Category,Review,OrderDetail,Order} = require('../../../server/models');  
 const { getCachedProductInfo, 
   cacheProductInfo } = require('../../../lib/redisUtils');
-  const { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
+const path = require('path');
+
 const { uploadProductImages } = require('../imageController'); 
 
 // Function name: getAllProducts
@@ -126,27 +128,28 @@ const getProductById = async (req, res) => {
     //params are the path parameters (or dynamic parameters) in the request path
     const { productId } = req.params;
     // console.log('Product ID:', productId);
-    let product = await getCachedProductInfo(productId);
+    // let product = await getCachedProductInfo(productId);
     // console.log('Cached Product:', product);
-    if (!product) {
+    // if (!product) {
       //await is used to wait for an asynchronous operation to complete before continuing to execute the code behind it. 
       //It pauses function execution until an asynchronous operation, such as fetching product information from a database or cache, complete.
       const dbProduct = await Product.findOne({
         where: {
           product_id: productId,
-          visibility: true
         }
       });
       if (!dbProduct) {
         return res.status(404).send({ message: "Product not found" });
       }
+      console.log('product information from backend is :',dbProduct)
       product = dbProduct.toJSON();
       try {
         await cacheProductInfo(productId, product); // Trying to cache product information
       } catch (cacheError) {
         console.error("Error caching product:", cacheError); // Logging cache errors
       }
-    }
+    // }
+    
     res.json(product);
   } catch (error) {
     console.error("Error retrieving product:", error);
@@ -226,20 +229,72 @@ const addProduct = async (req, res) => {
           visibility,
           folder: category_id  // Use category_id as the folder name
       });
-
-      req.productId = newProduct.product_id;  // Pass the product_id to req for use in multer
-
-      // If there is an uploaded image
-      if (req.file) {
-          const imagePath = `product/${category_id}/${newProduct.product_id}.webp`;
-          newProduct.image = imagePath;  // Set the image path
-          await newProduct.save();  // Save the updated product information
-      }
-      res.status(200).send({ message: 'Product added successfully!' });
+      res.status(201).json({ product_id: newProduct.product_id });
   } catch (error) {
-      res.status(500).send({ message: 'Failed to add product.' });
+    res.status(500).send({ message: 'Failed to create product.', error: error.message });
   }
 };
+
+// Function name: nameProductImages
+// Description: Stores the file paths of uploaded product images in the database after renaming them according to category and product ID.
+// Parameters:
+//   req (object): The HTTP request object containing product ID in parameters and category ID in the request body.
+//   res (object): The HTTP response object used to send success or error responses.
+// Functionality:
+//   This function first checks if images were received in the request. If not, it responds with a 400 status code and a message.
+//   If images are present, it renames each image file by combining the category ID, product ID, and an index number, then constructs the file path.
+//   The function joins the image paths into a single comma-separated string and updates the product's `image` field in the database with this string.
+//   It sends a success response if the paths are stored successfully, or an error response if an issue occurs.
+async function nameProductImages(req, res) {
+  const { productId } = req.params;
+  const { category_id: categoryId } = req.body;
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).send({ message: 'No images received.' });
+    }
+    // Constructing the image path
+    const imagePaths = req.files.map((file, index) => {
+      const fileIndex = index + 1; 
+      const filename = `${categoryId}${productId}${fileIndex}.webp`;
+      return `product/${categoryId}/${filename}`;
+    });
+
+    // Converts an array of paths into a string, separated by commas
+    const imagePathsString = imagePaths.join(',');
+
+    // Update the image field in the database
+    await Product.update(
+      { image: imagePathsString },
+      { where: { product_id: productId } }
+    );
+    console.log("Image paths stored in database:", imagePathsString);
+    res.status(200).send({ message: 'Images uploaded successfully.' });
+  } catch (error) {
+      res.status(500).send({ message: 'Failed to upload images.', error: error.message });
+  }
+}
+
+const updateProductById = async (req, res) => {
+  try {
+      const { productId } = req.params;
+      const updates = req.body;
+
+      if (req.files) {
+        const imagePaths = req.files.map((file, index) => `product/${updates.category_id}/${updates.category_id}${productId}${index + 1}.webp`);
+        updates.image = imagePaths.join(',');  
+    }
+
+      await Product.update(updates, {
+          where: { product_id: productId }
+      });
+
+      res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).send({ message: 'Error updating product' });
+  }
+};
+
 
 // Function name: deleteProduct
 // Description: Deletes a product by its ID from the database.
@@ -395,4 +450,4 @@ const getTotalValue = async (req, res) => {
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
   getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
-  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue  };
+  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages,updateProductById  };

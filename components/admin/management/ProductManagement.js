@@ -14,6 +14,7 @@ const ProductManagement = () => {
     totalCategories: "Loading...",
     totalValue: "Loading...",
   });
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
 
   // Fetch product data and stats when the component mounts
   useEffect(() => {
@@ -50,7 +51,11 @@ const ProductManagement = () => {
 
     fetchProducts(); // Fetch the product data
     fetchProductStats(); // Fetch the product stats
-  }, []);
+  }, [lastUpdated]);
+
+  const updateLastUpdated = () => {
+    setLastUpdated(Date.now());
+  };
 
   // Check if `products` is an array before filtering
   const filteredProducts = Array.isArray(products)
@@ -113,8 +118,13 @@ const ProductManagement = () => {
   };
 
   // Edit product function (currently a placeholder)
-  const handleEdit = (index) => {
-    console.log("Edit product:", index);
+  const handleEdit = (productId) => {
+    router.push({
+      pathname: '/admin/editProduct',
+      query: { productId: productId }, 
+    }).then(() => {
+      setLastUpdated(Date.now()); 
+    });
   };
 
   // Delete product function
@@ -126,7 +136,7 @@ const ProductManagement = () => {
         );
         if (response.data.success) {
           console.log("Product deleted:", productId);
-          await refreshProductList(); // Refresh the product list after deletion
+          setLastUpdated(Date.now()); // Refresh the product list after deletion
         }
       } catch (error) {
         console.error("Error deleting product:", error);

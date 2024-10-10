@@ -57,9 +57,8 @@ Order.belongsTo(Customer, { foreignKey: 'customer_id' });  // Reverse associatio
 Order.hasMany(OrderDetail, { foreignKey: 'order_id', onDelete: 'CASCADE' });  // Multiple order details for one order
 OrderDetail.belongsTo(Order, { foreignKey: 'order_id' });  // Order details belong to one order
 
-Product.hasMany(OrderDetail, { foreignKey: 'product_id', onDelete: 'CASCADE'});  //  Product Related Order Details
+Product.hasMany(OrderDetail, { foreignKey: 'product_id'});  //  Product Related Order Details
 OrderDetail.belongsTo(Product, { foreignKey: 'product_id' });  // Order details associated with a product
-
 
 const db = {
   Category,

@@ -34,7 +34,9 @@ const { getAllProducts,
   deleteProduct,
   getProductTotalNumber,
   getTopSellingProducts,
-  getTotalValue } = require('../pages/functions/product/ProductsController');
+  getTotalValue,
+  nameProductImages,
+  updateProductById } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber} = require('../pages/functions/order/orderController');
@@ -74,6 +76,8 @@ app.use(passport.initialize());
 //Allows Passport to manage persistent login sessions, so users remain logged in even after refreshing or navigating to different pages.
 //Works with expressSession to store user data in the session.
 app.use(passport.session());
+
+app.use('/images', express.static('public/images'));
 
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
@@ -149,23 +153,33 @@ app.get('/api/order-admin/datatable', (req, res) => {
 app.get('/api/subcategories', getSubCategories);
 
 // Product Image Upload Routing
-app.post('/api/products/add', uploadProductImage.single('image'), async (req, res) => {
-  await addProduct(req, res);
-});
+app.post('/api/products/add', addProduct);
+
+// Product update Routing
+app.put('/api/products/:productId', 
+  uploadProductImage.array('images', 4), 
+  function(req, res, next) {
+    console.log('Files after upload:', req.files);
+    next();
+  },
+  updateProductById);
+
+// POST /api/products/:productId/upload
+app.post('/api/products/:productId/uploadProductImage', uploadProductImage.array('images', 4), nameProductImages);
 
 // Route to delete a product by ID
 app.delete('/api/products-admin/delete/:productId', deleteProduct);
 
-// 获取产品总数量
+// Get the total number of products
 app.get('/api/total-products', getProductTotalNumber);
 
-// 获取产品总类目
+// Get the total number of product categories
 app.get('/api/total-categories', getCategoriesTotalNumber);
 
-// 获取产品总价值
+// Capture the total value of the product
 app.get('/api/total-value', getTotalValue);
 
-// 获取用户总数量
+// Get the total number of users
 app.get('/api/total-users', getUserTotalNumber);
 
 // 获取一周内增加用户
