@@ -89,17 +89,17 @@ const OrderManagement = () => {
     {
       title: "Total Sales",
       value: orderStats.totalSales,
-      description: `Based on ${new Date().toLocaleDateString()}`,
+      description: `Based on ${new Date().toLocaleDateString("en-CA")}`,
     },
     {
       title: "Total Products",
       value: orderStats.totalProducts,
-      description: `Based on ${new Date().toLocaleDateString()}`,
+      description: `Based on ${new Date().toLocaleDateString("en-CA")}`,
     },
     {
       title: "Total Orders",
       value: orderStats.totalOrders,
-      description: `Based on ${new Date().toLocaleDateString()}`,
+      description: `Based on ${new Date().toLocaleDateString("en-CA")}`,
     },
   ];
 
@@ -114,7 +114,7 @@ const OrderManagement = () => {
             type="text"
             value={searchQuery} // Bind input value to searchQuery state
             onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on user input
-            placeholder="Search by Order No, Product ID, or Customer Name"
+            placeholder="🔍 Search by Order No, Product ID, or Customer Name"
             className="border p-2 rounded w-full"
           />
         </div>
