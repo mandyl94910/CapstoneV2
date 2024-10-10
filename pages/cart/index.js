@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
+import CategoryHomeGrid from '../../components/homepage/CategoryHomeGrid';
 import { FaTrash } from 'react-icons/fa';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
+/**
+ * helped by chatGPT
+ * prompt: How can I use to restore items that I want to put to shopping cart and display them in the page
+ * 
+ */
 export default function CartPage() {
   const [cart, setCart] = useState([]);
 
@@ -13,7 +19,7 @@ export default function CartPage() {
     setCart(cartItems);
   }, []);
 
-  // update cart items to localStorage
+  // update cart items and localStorage
   const updateCart = (updatedCart) => {
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
@@ -29,10 +35,10 @@ export default function CartPage() {
     updateCart(updatedCart); // update localStorage
   };
 
-  // 移除产品
+  // remove item from cart
   const handleRemoveProduct = (id) => {
     const updatedCart = cart.filter((item) => item.product_id !== id);
-    updateCart(updatedCart); // 更新购物车和localStorage
+    updateCart(updatedCart); // update cart and localStorage
   };
 
   // calculate the total price of items in shopping cart
@@ -45,55 +51,67 @@ export default function CartPage() {
       <Header />
       <div className="container mx-auto my-8 px-16">
         <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
-        <div className="bg-white p-4 border shadow-md rounded-lg">
+        <div className="bg-white p-6 border shadow-md rounded-lg">
           {cart.length === 0 ? (
-            <p>Your cart is empty</p>
+            <div className='py-12 text-center'>
+              <p className='text-xl font-bold mb-12'>Your cart is empty. Explore now.</p>
+              <CategoryHomeGrid />
+            </div>
           ) : (
             <>
               {cart.map((item, index) => (
-                <div key={index} className="flex items-center justify-between mb-4">
-                  <img src={`/images/${item.image}`} alt={item.product_name} className="w-16 h-16 rounded" />
-                  <div className="flex-1 px-4">
-                    <h2 className="font-semibold">{item.product_name}</h2>
-                    <p>{item.description}</p>
+                <>
+                  <div key={index} className="flex items-center justify-between mb-6">
+                    <div className='flex items-center'>
+                      <img src={`/images/${item.image}`} alt={item.product_name} className="w-24 h-24 rounded" />
+                      <div className="flex flex-col px-4">
+                        <h2 className="font-semibold">{item.product_name}</h2>
+                        <p className='text-gray-500 mb-2'>{item.product_description}</p>
+                      </div>
+                    </div>
 
-                    {/* set quantity */}
-                    <div className="flex items-center mb-4">
+                    
+                    <div className='flex justify-between items-center w-64'>
+                      {/* set quantity */}
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}
+                          className={`h-8 px-2 ${item.quantity <= 1? ("text-gray-300"):("text-gray-800")} border-2 border-gray-300 rounded-l-lg`}
+                          disabled={item.quantity <= 1}
+                        >
+                          <FaMinus/>
+                        </button>
+                        <input
+                          type="text"
+                          value={item.quantity}
+                          readOnly
+                          className="w-8 h-8 text-center border-y-2 border-gray-300"
+                        />
+                        <button
+                          onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
+                          className="h-8 px-2 border-2 border-gray-300 text-gray-800 rounded-r-lg"
+                        >
+                          <FaPlus/>
+                        </button>
+                      </div>
+                      {/* remove button */}
                       <button
-                        onClick={() => handleQuantityChange(item.product_id, item.quantity - 1)}
-                        className={`h-10 px-3 ${item.quantity <= 1? ("text-gray-300"):("text-gray-800")} border-2 border-gray-300 rounded-l-lg`}
-                        disabled={item.quantity <= 1}
-                      >
-                        <FaMinus/>
+                        onClick={() => handleRemoveProduct(item.product_id)}
+                        className="text-gray-500 hover:text-red-600"
+                      ><FaTrash />
                       </button>
-                      <input
-                        type="text"
-                        value={item.quantity}
-                        readOnly
-                        className="w-10 h-10 text-center border-y-2 border-gray-300"
-                      />
-                      <button
-                        onClick={() => handleQuantityChange(item.product_id, item.quantity + 1)}
-                        className="h-10 px-3 border-2 border-gray-300 text-gray-800 rounded-r-lg"
-                      >
-                        <FaPlus/>
-                      </button>
+                      {/* total price for one item */}
+                      <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
-                  {/* 移除按钮 */}
-                  <button
-                    onClick={() => handleRemoveProduct(item.product_id)}
-                    className="text-gray-500 hover:text-red-600 px-16"
-                  ><FaTrash />
-                  </button>
-                  {/* 显示总价 */}
-                  <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
+                  <hr className='mb-4'/>
+                </>
+
+                
               ))}
 
-              {/* 总价格和结账按钮 */}
-              <hr/>
-              <div className="flex justify-between mt-4">
+              {/* total price for the cart and checkout */}
+              <div className="flex justify-end mt-4  space-x-2">
                 <p className="font-bold">Total:</p>
                 <p className="font-bold">${calculateTotalPrice().toFixed(2)}</p>
               </div>

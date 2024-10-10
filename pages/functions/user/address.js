@@ -1,6 +1,11 @@
 const {Address, Customer} = require('../../../server/models');
 
 // Get all addresses for customer
+/**
+ * 
+ * @param {*} req  client request
+ * @param {*} res  server response
+ */
 const getAddresses = async (req, res) => {
     const { customerId } = req.params;
     try {
@@ -14,6 +19,7 @@ const getAddresses = async (req, res) => {
             attributes:['customer_name', 'phone'],
         }
       })
+      // return data in json format
       res.status(200).json(addresses);
     } catch (error) {
         console.error('Error fetching addresses:', error);

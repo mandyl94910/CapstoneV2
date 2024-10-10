@@ -11,11 +11,17 @@ import Sidebar from "../../../components/user/Sidebar";
 import Link from "next/link";
 import { FaAngleLeft } from "react-icons/fa6";
 
+/**
+ * helped with chatGPT
+ * prompt: How can I create a popup for edit/add new address, 
+ * and it can be closed by click cancel or close button on the right top
+ * 
+ */
 export default function Address() {
     const [addresses, setAddresses] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const [selectedAddressId, setSelectedAddressId] = useState(null); // for checking it is a new address or just need to be edit
     const [formData, setFormData] = useState({
         street: "",
         city: "",
@@ -52,6 +58,8 @@ export default function Address() {
             city: address.city,
             province: address.province,
             postal: address.postal,
+            // because there is no customer name and phone on address table currently, 
+            // so temporary using those data from customer table
             customer_name: address.Customer.customer_name,
             phone: address.Customer.phone,
             is_default: address.is_default
@@ -93,16 +101,17 @@ export default function Address() {
 
     const handleSubmit = async () => {
         if (selectedAddressId) {
-            // edit
+            // edit api hasn't done yet
             await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
         } else {
-            // add
+            // add api hasn't done yet
             await axios.post(`http://localhost:3001/api/addresses`, formData);
         }
         setShowEditModal(false); 
     };
 
     const confirmDelete = async () => {
+        // delete api hasn't done yet
         await axios.delete(`http://localhost:3001/api/addresses/${selectedAddressId}`);
         setShowDeleteModal(false);
     };
@@ -131,7 +140,7 @@ export default function Address() {
 
                 <AddressTable addresses={addresses} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
 
-                {/* Edit Modal*/}
+                {/* Edit/add Modal*/}
                 <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
                     <h2 className="text-lg font-semibold mb-4">{selectedAddressId ? "Edit Address" : "Add new Address"}</h2>
                     <AddressForm 
