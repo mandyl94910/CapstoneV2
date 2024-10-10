@@ -35,7 +35,8 @@ const { getAllProducts,
   getProductTotalNumber,
   getTopSellingProducts,
   getTotalValue,
-  nameProductImages } = require('../pages/functions/product/ProductsController');
+  nameProductImages,
+  updateProductById } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber} = require('../pages/functions/order/orderController');
@@ -73,6 +74,8 @@ app.use(passport.initialize());
 //Allows Passport to manage persistent login sessions, so users remain logged in even after refreshing or navigating to different pages.
 //Works with expressSession to store user data in the session.
 app.use(passport.session());
+
+app.use('/images', express.static('public/images'));
 
 require("./passportConfig")(passport);  // Initialize Passport for authentication
 
@@ -146,6 +149,15 @@ app.get('/api/subcategories', getSubCategories);
 
 // Product Image Upload Routing
 app.post('/api/products/add', addProduct);
+
+// Product update Routing
+app.put('/api/products/:productId', 
+  uploadProductImage.array('images', 4), 
+  function(req, res, next) {
+    console.log('Files after upload:', req.files);
+    next();
+  },
+  updateProductById);
 
 // POST /api/products/:productId/upload
 app.post('/api/products/:productId/uploadProductImage', uploadProductImage.array('images', 4), nameProductImages);

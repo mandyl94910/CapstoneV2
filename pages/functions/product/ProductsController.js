@@ -128,27 +128,28 @@ const getProductById = async (req, res) => {
     //params are the path parameters (or dynamic parameters) in the request path
     const { productId } = req.params;
     // console.log('Product ID:', productId);
-    let product = await getCachedProductInfo(productId);
+    // let product = await getCachedProductInfo(productId);
     // console.log('Cached Product:', product);
-    if (!product) {
+    // if (!product) {
       //await is used to wait for an asynchronous operation to complete before continuing to execute the code behind it. 
       //It pauses function execution until an asynchronous operation, such as fetching product information from a database or cache, complete.
       const dbProduct = await Product.findOne({
         where: {
           product_id: productId,
-          visibility: true
         }
       });
       if (!dbProduct) {
         return res.status(404).send({ message: "Product not found" });
       }
+      console.log('product information from backend is :',dbProduct)
       product = dbProduct.toJSON();
       try {
         await cacheProductInfo(productId, product); // Trying to cache product information
       } catch (cacheError) {
         console.error("Error caching product:", cacheError); // Logging cache errors
       }
-    }
+    // }
+    
     res.json(product);
   } catch (error) {
     console.error("Error retrieving product:", error);
@@ -272,6 +273,28 @@ async function nameProductImages(req, res) {
       res.status(500).send({ message: 'Failed to upload images.', error: error.message });
   }
 }
+
+const updateProductById = async (req, res) => {
+  try {
+      const { productId } = req.params;
+      const updates = req.body;
+
+      // 对图片路径进行处理或转换
+      if (req.files) {
+        const imagePaths = req.files.map((file, index) => `product/${updates.category_id}/${updates.category_id}${productId}${index + 1}.webp`);
+        updates.image = imagePaths.join(',');  
+    }
+
+      await Product.update(updates, {
+          where: { product_id: productId }
+      });
+
+      res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).send({ message: 'Error updating product' });
+  }
+};
 
 
 // Function name: deleteProduct
@@ -428,4 +451,4 @@ const getTotalValue = async (req, res) => {
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
   getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
-  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages  };
+  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages,updateProductById  };
