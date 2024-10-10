@@ -107,52 +107,6 @@ exports.up = function(knex) {
             quantity INT NOT NULL DEFAULT 1  
         );
 
-        ---------------------------------------------------------------------------------------------------
-
-        -- -- Create trigger function
-        -- CREATE OR REPLACE FUNCTION calculate_tax_based_on_province() 
-        -- RETURNS TRIGGER AS $$
-        -- DECLARE
-        --     province_code VARCHAR(2);
-        --     tax_rate NUMERIC(5, 3);
-        -- BEGIN
-        --     -- Get the province code from the address table
-        --     SELECT province INTO province_code FROM address WHERE id = NEW.address_id;
-            
-        --     -- Set the tax rate based on the province code
-        --     CASE province_code
-        --         WHEN 'AB' THEN tax_rate := 0.05;
-        --         WHEN 'SK' THEN tax_rate := 0.11;
-        --         WHEN 'BC' THEN tax_rate := 0.12;
-        --         WHEN 'MB' THEN tax_rate := 0.12;
-        --         WHEN 'ON' THEN tax_rate := 0.13;
-        --         WHEN 'QC' THEN tax_rate := 0.14975;
-        --         WHEN 'NB' THEN tax_rate := 0.15;
-        --         WHEN 'NS' THEN tax_rate := 0.15;
-        --         WHEN 'PE' THEN tax_rate := 0.15;
-        --         WHEN 'NL' THEN tax_rate := 0.15;
-        --         WHEN 'NT' THEN tax_rate := 0.05;
-        --         WHEN 'YT' THEN tax_rate := 0.05;
-        --         WHEN 'NU' THEN tax_rate := 0.05;
-        --         ELSE tax_rate := 0.05;  -- Default tax rate if province not found
-        --     END CASE;
-            
-        --     -- Calculate total_tax based on total and tax_rate
-        --     NEW.total_tax := NEW.total + (NEW.total * tax_rate);
-            
-        --     RETURN NEW;
-        -- END;
-        -- $$ LANGUAGE plpgsql;
-
-        -- -- Create trigger to automatically calculate total_tax when inserting or updating orders
-        -- CREATE TRIGGER set_total_tax_based_on_province
-        -- BEFORE INSERT OR UPDATE ON orders
-        -- FOR EACH ROW
-        -- EXECUTE FUNCTION calculate_tax_based_on_province();
-
-
-        ---------------------------------------------------------------------------------------------------
-
         -- Add foreign key constraints
         -- Add self-referencing foreign key to category table
         ALTER TABLE category
@@ -195,6 +149,8 @@ exports.up = function(knex) {
         CREATE UNIQUE INDEX unique_default_address ON address (customer_id) WHERE is_default = TRUE;
 
 
+
+
       `);
   };
 
@@ -205,9 +161,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return knex.schema
       .raw(`
-        DROP TRIGGER IF EXISTS set_total_tax_based_on_province ON orders;
-        DROP FUNCTION IF EXISTS calculate_tax_based_on_province;
-  
         DROP TABLE IF EXISTS orders_detail CASCADE;
         DROP TABLE IF EXISTS review CASCADE;
         DROP TABLE IF EXISTS address CASCADE;
@@ -220,4 +173,3 @@ exports.down = function(knex) {
         DROP INDEX IF EXISTS unique_default_address;
       `);
   };
-S
