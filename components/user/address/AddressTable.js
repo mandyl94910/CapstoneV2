@@ -7,7 +7,7 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
             <table className="w-full border border-gray-300">
                 <thead>
                     <tr className="h-12 w-full bg-blue-100 text-left">
-                        <th className="px-6">Consignee</th>
+                        <th className="px-6">Name</th>
                         <th className="px-6">Phone</th>
                         <th className="px-6">Street</th>
                         <th className="px-6">City</th>
@@ -22,8 +22,10 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                         <tr key={address.id} 
                             className={`h-14 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
                         >
-                            <td className="px-6">{address.Customer.customer_name}</td>
-                            <td className="px-6">{address.Customer.phone}</td>
+                            {/* <td className="px-6">{address.first_name} {address.last_name}</td> */}
+                            <td className="px-6">Chunxia Huang</td>
+                            {/* <td className="px-6">{address.phone}</td> */}
+                            <td className="px-6">11111111111</td>
                             <td className="px-6">{address.street}</td>
                             <td className="px-6">{address.city}</td>
                             <td className="px-6">{address.province}</td>

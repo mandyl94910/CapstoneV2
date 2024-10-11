@@ -23,18 +23,21 @@ export default function Address() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState(null); // for checking it is a new address or just need to be edit
     const [formData, setFormData] = useState({
+        first_name: "",
+        last_name: "",
+        phone: "",
         street: "",
         city: "",
         province: "",
         postal: "",
-        customer_name: "",
-        phone: "",
+        country: "Canada",
         is_default: false
     });
 
     const router = useRouter();
     const { id } = router.query;
     const customerId = parseInt(id, 10);
+
 
     useEffect(() => {
         if (customerId) {
@@ -48,20 +51,24 @@ export default function Address() {
             };
             fetchAddresses();
         }
-    }, [customerId]);
+    }, [customerId, addresses]);
 
     // when click edit icon
     const handleEditClick = (address) => {
         setSelectedAddressId(address.id);
         setFormData({
+            // first_name: address.first_name,
+            // last_name: address.last_name,
+            // phone: address.phone,
             street: address.street,
             city: address.city,
             province: address.province,
             postal: address.postal,
             // because there is no customer name and phone on address table currently, 
             // so temporary using those data from customer table
-            customer_name: address.Customer.customer_name,
-            phone: address.Customer.phone,
+            // customer_name: address.Customer.customer_name,
+            // phone: address.Customer.phone,
+            country: address.country,
             is_default: address.is_default
         });
         setShowEditModal(true);
@@ -71,12 +78,14 @@ export default function Address() {
     const handleAddClick = () => {
         setSelectedAddressId(null); 
         setFormData({
+            first_name: "",
+            last_name: "",
+            phone: "",
             street: "",
             city: "",
             province: "",
             postal: "",
-            customer_name: "",
-            phone: "",
+            country: "Canada",
             is_default: false
         });
         setShowEditModal(true); 
@@ -88,18 +97,23 @@ export default function Address() {
         setShowDeleteModal(true);
     };
 
-    // update value or checked state that user changed
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            // if type is checkbox update the checked state
-            // if not update the value for the field
-            [name]: type === "checkbox" ? checked : value
-        });
-    };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        //stop Page Refresh or Jump
+        e.preventDefault();
+
+        console.log(customerId);
+
+        // incase submit the form without customerId
+        if (isNaN(customerId)) {
+            console.error('Invalid customer ID');
+            return; // 防止提交没有 customer_id 的表单
+        }
+        const addressData = {
+            ...formData,
+            customer_id: customerId,
+        };
+        console.log('addressData test',addressData);
         try {
             if (selectedAddressId) {
                 // edit api hasn't done yet
@@ -112,8 +126,12 @@ export default function Address() {
                     )
                 );
             } else {
-                // add api hasn't done yet
-                const response = await axios.post(`http://localhost:3001/api/addresses`, formData);
+                const response = await axios.post(`http://localhost:3001/api/address/add`, addressData, {
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        }
+                });
+                console.log('addresses from api', response.data);
                 setAddresses((prevAddresses) => [...prevAddresses, response.data]);
             }
             setShowEditModal(false); 
@@ -173,7 +191,8 @@ export default function Address() {
                     <h2 className="text-lg font-semibold mb-4">{selectedAddressId ? "Edit Address" : "Add new Address"}</h2>
                     <AddressForm 
                         formData={formData}
-                        handleChange={handleChange}
+                        setFormData={setFormData}
+                        // handleChange={handleChange}
                         handleSubmit={handleSubmit}
                         onCancel={() => setShowEditModal(false)}
                     />

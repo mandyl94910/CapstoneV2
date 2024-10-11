@@ -113,8 +113,12 @@ const login = () => {
         // check if code is running in the browser/client-side, 
         // because window object only exists in the browser
         if (typeof window !== 'undefined') {
-          //store user info in local storage in key value pair
-          localStorage.setItem('user', JSON.stringify(res.data));
+          try {
+            //store user info in local storage in key value pair
+            localStorage.setItem('user', JSON.stringify(res.data));
+          } catch (error) {
+            console.error('Unable to store user info in localStorage:', error);
+          }
         } 
         router.push('/'); // go to the home page if get user
     })

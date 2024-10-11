@@ -14,10 +14,10 @@ const getAddresses = async (req, res) => {
         where: {
             customer_id: customerId,
         },
-        include: {
-            model: Customer,
-            attributes:['customer_name', 'phone'],
-        }
+        // include: {
+        //     model: Customer,
+        //     attributes:['customer_name', 'phone'],
+        // }
       })
       // return data in json format
       res.status(200).json(addresses);
@@ -55,4 +55,44 @@ const getAddresses = async (req, res) => {
     }
   }
 
-  module.exports = {getAddresses, deleteAddress};
+  // Add a new address
+  /**
+   * 
+   */
+  const addAddress = async (req, res) => {
+    const { street, city, province, postal, country, is_default, customer_id } = req.body;
+
+    // check if all fields are filled
+    if (!street || !city || !postal || !country || !customer_id) {
+        return res.status(400).send({ message: 'Missing required fields' });
+    }
+
+    try {
+        // using Sequelize create a new row and insert into database
+        const newAddress = await Address.create({
+            street,
+            city,
+            province,
+            postal,
+            country,
+            is_default,
+            customer_id
+        });
+
+        // return the new address after inserting into database successfully
+        return res.status(201).json({
+            message: 'Address added successfully',
+            data: newAddress
+        });
+
+    } catch (error) {
+        console.error('Error adding address to database:', error);
+        return res.status(500).send({ message: 'Failed to add address.', error: error.message });
+    }
+  };
+
+
+
+
+
+  module.exports = {getAddresses, deleteAddress, addAddress};
