@@ -43,7 +43,7 @@ const {getAllOrders,
 const searchProductsByName = require('../pages/functions/product/search');
 const getReviewByProductId = require('../pages/functions/product/review');
 
-const { getAddresses, deleteAddress, addAddress } = require('../pages/functions/user/AddressController');
+const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
 
 
@@ -92,6 +92,9 @@ app.get('/api/getUser', getUserInformation);
 
 // Get addresses by customer id
 app.get('/api/addresses/:customerId', getAddresses);
+
+// Update address by address id
+app.put('/api/addresses/:addressId', updateAddress);
 
 // Delete address by address id
 app.delete('/api/address/delete/:addressId', deleteAddress);

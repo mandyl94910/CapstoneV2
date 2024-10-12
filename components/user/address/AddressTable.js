@@ -23,9 +23,9 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                             className={`h-14 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
                         >
                             {/* <td className="px-6">{address.first_name} {address.last_name}</td> */}
-                            <td className="px-6">Chunxia Huang</td>
+                            <td className="px-6">hardcode name</td>
                             {/* <td className="px-6">{address.phone}</td> */}
-                            <td className="px-6">11111111111</td>
+                            <td className="px-6">hardcode phone</td>
                             <td className="px-6">{address.street}</td>
                             <td className="px-6">{address.city}</td>
                             <td className="px-6">{address.province}</td>
@@ -46,7 +46,7 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                                 {address.is_default ? (
                                 <span className="bg-blue-300 rounded-md px-2 py-1 text-blue-800 font-bold">Default</span>
                                 ) : (
-                                <button onClick={() => handleSetDefault(address.id)}>Set to default</button>
+                                <p>N/A</p>
                                 )}
                             </td>
                         </tr>

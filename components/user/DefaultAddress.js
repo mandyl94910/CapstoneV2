@@ -88,8 +88,8 @@ const DefaultAddress = ({ customer_id }) => {
                     <h3 className="font-bold">Default Shipping Address:</h3>
                     <FaAngleRight />
                     </div>
-                    <p>Name: {defaultAddress.first_name} {defaultAddress.last_name}</p>
-                    <p>Phone: {defaultAddress.phone}</p>
+                    <p>Name: hardcode name {defaultAddress.first_name} {defaultAddress.last_name}</p>
+                    <p>Phone: hardcode phone {defaultAddress.phone}</p>
                     <p className="text-gray-700">
                     {defaultAddress.street}, {defaultAddress.city}, {defaultAddress.province}, {defaultAddress.postal}, {defaultAddress.country}
                     </p>

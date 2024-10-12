@@ -3,7 +3,6 @@ import Header from "../../components/common/Header";
 import { useAuth } from "../../hooks/useAuth";
 import Sidebar from "../../components/user/Sidebar";
 import RecommendedProducts from "../../components/common/RecommendedProducts";
-import { FaAngleRight, FaEdit } from "react-icons/fa6";
 import Link from "next/link";
 import DefaultAddress from "../../components/user/DefaultAddress";
 
@@ -11,7 +10,7 @@ import DefaultAddress from "../../components/user/DefaultAddress";
 
 export default function UserProfile() {
 
-    const { user, onLogout } = useAuth();
+    const { user } = useAuth();
 
     const [stats, setStats] = useState({
     pendingPayment: 0,

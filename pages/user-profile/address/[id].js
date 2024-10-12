@@ -7,9 +7,9 @@ import AddressTable from "../../../components/user/address/AddressTable";
 import Modal from "../../../components/user/address/Modal"; 
 import { useRouter } from "next/router";
 import Footer from "../../../components/common/Footer";
-import Sidebar from "../../../components/user/Sidebar";
 import Link from "next/link";
 import { FaAngleLeft } from "react-icons/fa6";
+import { useAuth } from "../../../hooks/useAuth";
 
 /**
  * helped with chatGPT
@@ -17,7 +17,8 @@ import { FaAngleLeft } from "react-icons/fa6";
  * and it can be closed by click cancel or close button on the right top
  * 
  */
-export default function Address() {
+function Address() {
+    const { user } = useAuth();
     const [addresses, setAddresses] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -102,23 +103,22 @@ export default function Address() {
         //stop Page Refresh or Jump
         e.preventDefault();
 
-        console.log(customerId);
-
         // incase submit the form without customerId
         if (isNaN(customerId)) {
             console.error('Invalid customer ID');
-            return; // 防止提交没有 customer_id 的表单
+            return; 
         }
         const addressData = {
             ...formData,
             customer_id: customerId,
         };
-        console.log('addressData test',addressData);
+
         try {
             if (selectedAddressId) {
-                // edit api hasn't done yet
+                // update the address
                 const response = await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
-            
+                console.log('Address updated:', response.data);
+
                 setAddresses((prevAddresses) =>
                     prevAddresses.map((address) =>
                         // if id is the same as selectedId, update the address, if not keep the same
@@ -126,13 +126,13 @@ export default function Address() {
                     )
                 );
             } else {
+                // add a new address
                 const response = await axios.post(`http://localhost:3001/api/address/add`, addressData, {
                     headers: {
                         'Content-Type': 'application/json', 
                         }
                 });
-                console.log('addresses from api', response.data);
-                setAddresses((prevAddresses) => [...prevAddresses, response.data]);
+                setAddresses([...addresses, response.data]);
             }
             setShowEditModal(false); 
         } catch (error) {
@@ -141,27 +141,42 @@ export default function Address() {
         
     };
 
-    const confirmDelete = async () => {
+    const confirmDelete = async (selectedAddressId) => {
         if (!selectedAddressId) {
             console.error('Address ID is missing.');
             return;
           }
 
         try {
-            // delete api hasn't done yet
-            //await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
+            // delete address
+            const response = await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
             
-            // update addresses array after deleting
-            setAddresses((prevAddresses) => 
-                prevAddresses.filter(address => address.id !== selectedAddressId)
-            );
-            setShowDeleteModal(false);
+            if (response.data.success) {
+                 // update addresses array after deleting
+                setAddresses((prevAddresses) => 
+                    prevAddresses.filter(address => address.id !== selectedAddressId)
+                );
+                setShowDeleteModal(false);
+            } else {
+                console.error('Failed to delete address: ', response.data.message);
+            }
+           
         } catch (error) {
             console.error('Error deleting address:', error);
         }
         
     };
 
+
+
+    if (!user){
+        return(
+            <div>
+                <p>Please login to view this page.</p>
+            </div>
+        );
+    }
+    
     return (
         <>
             <Header />
@@ -218,7 +233,7 @@ export default function Address() {
                                 </button>
                                 <button 
                                     className="bg-red-500 text-white px-7 py-2 rounded-lg hover:bg-red-600"
-                                    onClick={confirmDelete}
+                                    onClick={() => confirmDelete(selectedAddressId)}
                                 >
                                     Delete
                                 </button>
@@ -231,3 +246,7 @@ export default function Address() {
         </>
     );
 }
+
+
+
+export default Address;

@@ -28,10 +28,16 @@ const getAddresses = async (req, res) => {
   };
 
   // Delete an address based on address Id
+  /**
+   * Helped by chatGPT
+   * prompt: How can I delete an address from database with a specific addressId
+   * @param {*} req   client request
+   * @param {*} res   server response
+   * @returns 
+   */
   const deleteAddress = async (req, res) => {
+    // This variable name comes from the placeholder in api path
     const { addressId } = req.params;
-    console.log('Type of addressId:', typeof addressId); 
-    console.log('Received request to delete address with ID:', addressId);
 
     try {
       const address = await Address.findOne({
@@ -57,7 +63,11 @@ const getAddresses = async (req, res) => {
 
   // Add a new address
   /**
-   * 
+   * Helped by chatGPT
+   * prompt: How can I add an address and restore it to database
+   * @param {*} req   client request
+   * @param {*} res   server response
+   * @returns  the address being added
    */
   const addAddress = async (req, res) => {
     const { street, city, province, postal, country, is_default, customer_id } = req.body;
@@ -82,7 +92,7 @@ const getAddresses = async (req, res) => {
         // return the new address after inserting into database successfully
         return res.status(201).json({
             message: 'Address added successfully',
-            data: newAddress
+            newAddress
         });
 
     } catch (error) {
@@ -91,8 +101,50 @@ const getAddresses = async (req, res) => {
     }
   };
 
+  // Update address by address ID
+  /**
+   * Helped by chatGPT
+   * prompt: How can I edit an address according to its id
+   * @param {*} req   client request
+   * @param {*} res   server response
+   * @returns  the address being added
+   */
+  const updateAddress = async (req, res) => {
+    const { addressId } = req.params;
+    const { street, city, province, postal, country, is_default } = req.body;
+  
+    try {
+      const address = await Address.findOne({
+        where: {
+          id: addressId,
+        },
+      });
+
+      if (!address){
+        return res.status(404).json({ success: false, 
+          message: 'Address not found' });
+      }
+
+      // update address with new data
+      await address.update({
+        street,
+        city,
+        province,
+        postal,
+        country,
+        is_default,
+      });
+
+      res.status(200).json({ success: true, 
+        message: 'Address updated successfully', 
+        address });
+    } catch (error) {
+      console.error('Error updating address:', error);
+      res.status(500).send({ message: 'Failed to update address.', 
+        error: error.message });
+    }
+  
+  }
 
 
-
-
-  module.exports = {getAddresses, deleteAddress, addAddress};
+  module.exports = {getAddresses, deleteAddress, addAddress, updateAddress};
