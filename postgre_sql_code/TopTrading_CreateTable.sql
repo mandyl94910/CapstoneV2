@@ -13,10 +13,11 @@ CREATE TABLE customer (
     customer_id SERIAL PRIMARY KEY,  
     customer_name VARCHAR(255) NOT NULL,  
     password VARCHAR(255) NOT NULL,  
-    email VARCHAR(255) UNIQUE NOT NULL,  
+    email VARCHAR(255) NOT NULL,  
     phone VARCHAR(10) NOT NULL,  
     birthday DATE,  
-    register_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  
+    register_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    image VARCHAR(255)
 );
 
 -- Create category table
@@ -69,6 +70,9 @@ CREATE TABLE review (
 CREATE TABLE address (
     id SERIAL PRIMARY KEY,  -- Auto-incrementing primary key
     customer_id INT NOT NULL,  -- Foreign key references customer table
+    first_name VARCHAR(255) NOT NULL,  -- First name column
+    last_name VARCHAR(255) NOT NULL,  -- Last name column
+    phone VARCHAR(15) NOT NULL,  -- Phone number column
     street VARCHAR(255) NOT NULL,  -- Street column
     city VARCHAR(255) NOT NULL,  -- City column
     province VARCHAR(255) NOT NULL,  -- Province column
@@ -89,7 +93,8 @@ CREATE TABLE orders (
     ship_date TIMESTAMPTZ,  -- Shipping date
     shipping_method VARCHAR(255),  -- Shipping method
     tracking_number VARCHAR(255),  -- Shipping tracking number
-    complete_date TIMESTAMPTZ  -- Order completion date
+    complete_date TIMESTAMPTZ,  -- Order completion date
+    address_data JSONB  -- JSONB column to store the full address as JSON
 );
 
 -- Create orders_detail table
@@ -97,54 +102,11 @@ CREATE TABLE orders_detail (
     id SERIAL PRIMARY KEY,            
     order_id INT NOT NULL,            
     product_id INT NOT NULL,          
-    quantity INT NOT NULL DEFAULT 1  
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1
 );
 
----------------------------------------------------------------------------------------------------
-
--- -- Create trigger function
--- CREATE OR REPLACE FUNCTION calculate_tax_based_on_province() 
--- RETURNS TRIGGER AS $$
--- DECLARE
---     province_code VARCHAR(2);
---     tax_rate NUMERIC(5, 3);
--- BEGIN
---     -- Get the province code from the address table
---     SELECT province INTO province_code FROM address WHERE id = NEW.address_id;
-    
---     -- Set the tax rate based on the province code
---     CASE province_code
---         WHEN 'AB' THEN tax_rate := 0.05;
---         WHEN 'SK' THEN tax_rate := 0.11;
---         WHEN 'BC' THEN tax_rate := 0.12;
---         WHEN 'MB' THEN tax_rate := 0.12;
---         WHEN 'ON' THEN tax_rate := 0.13;
---         WHEN 'QC' THEN tax_rate := 0.14975;
---         WHEN 'NB' THEN tax_rate := 0.15;
---         WHEN 'NS' THEN tax_rate := 0.15;
---         WHEN 'PE' THEN tax_rate := 0.15;
---         WHEN 'NL' THEN tax_rate := 0.15;
---         WHEN 'NT' THEN tax_rate := 0.05;
---         WHEN 'YT' THEN tax_rate := 0.05;
---         WHEN 'NU' THEN tax_rate := 0.05;
---         ELSE tax_rate := 0.05;  -- Default tax rate if province not found
---     END CASE;
-    
---     -- Calculate total_tax based on total and tax_rate
---     NEW.total_tax := NEW.total + (NEW.total * tax_rate);
-    
---     RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- -- Create trigger to automatically calculate total_tax when inserting or updating orders
--- CREATE TRIGGER set_total_tax_based_on_province
--- BEFORE INSERT OR UPDATE ON orders
--- FOR EACH ROW
--- EXECUTE FUNCTION calculate_tax_based_on_province();
-
-
----------------------------------------------------------------------------------------------------
 
 -- Add foreign key constraints
 -- Add self-referencing foreign key to category table

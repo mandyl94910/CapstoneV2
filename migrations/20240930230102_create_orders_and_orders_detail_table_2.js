@@ -20,10 +20,11 @@ exports.up = function(knex) {
             customer_id SERIAL PRIMARY KEY,  
             customer_name VARCHAR(255) NOT NULL,  
             password VARCHAR(255) NOT NULL,  
-            email VARCHAR(255) UNIQUE NOT NULL,  
+            email VARCHAR(255) NOT NULL,  
             phone VARCHAR(10) NOT NULL,  
             birthday DATE,  
-            register_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  
+            register_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            image VARCHAR(255)
         );
 
         -- Create category table
@@ -76,6 +77,9 @@ exports.up = function(knex) {
         CREATE TABLE address (
             id SERIAL PRIMARY KEY,  -- Auto-incrementing primary key
             customer_id INT NOT NULL,  -- Foreign key references customer table
+            first_name VARCHAR(255) NOT NULL,  -- First name column
+            last_name VARCHAR(255) NOT NULL,  -- Last name column
+            phone VARCHAR(15) NOT NULL,  -- Phone number column
             street VARCHAR(255) NOT NULL,  -- Street column
             city VARCHAR(255) NOT NULL,  -- City column
             province VARCHAR(255) NOT NULL,  -- Province column
@@ -104,8 +108,11 @@ exports.up = function(knex) {
             id SERIAL PRIMARY KEY,            
             order_id INT NOT NULL,            
             product_id INT NOT NULL,          
-            quantity INT NOT NULL DEFAULT 1  
+            name VARCHAR(255) NOT NULL,
+            price DECIMAL(10, 2) NOT NULL,
+            quantity INT NOT NULL DEFAULT 1
         );
+
 
         -- Add foreign key constraints
         -- Add self-referencing foreign key to category table
@@ -147,6 +154,8 @@ exports.up = function(knex) {
 
         -- Add unique constraint to ensure only one default address per customer
         CREATE UNIQUE INDEX unique_default_address ON address (customer_id) WHERE is_default = TRUE;
+
+
 
 
 
