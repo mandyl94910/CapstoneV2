@@ -255,8 +255,8 @@ async function nameProductImages(req, res) {
     // Constructing the image path
     const imagePaths = req.files.map((file, index) => {
       const fileIndex = index + 1; 
-      const filename = `${categoryId}${productId}${fileIndex}.webp`;
-      return `product/${categoryId}/${filename}`;
+      const filename = `${fileIndex}.webp`;
+      return `product/${categoryId}/${productId}/${filename}`;
     });
 
     // Converts an array of paths into a string, separated by commas
@@ -267,7 +267,6 @@ async function nameProductImages(req, res) {
       { image: imagePathsString },
       { where: { product_id: productId } }
     );
-    console.log("Image paths stored in database:", imagePathsString);
     res.status(200).send({ message: 'Images uploaded successfully.' });
   } catch (error) {
       res.status(500).send({ message: 'Failed to upload images.', error: error.message });
@@ -276,22 +275,20 @@ async function nameProductImages(req, res) {
 
 const updateProductById = async (req, res) => {
   try {
-      const { productId } = req.params;
-      const updates = req.body;
+    const { productId } = req.params;
+    const updates = req.body;
 
-      if (req.files) {
-        const imagePaths = req.files.map((file, index) => `product/${updates.category_id}/${updates.category_id}${productId}${index + 1}.webp`);
-        updates.image = imagePaths.join(',');  
-    }
+    // 如果存在 image 字段，将其删除，以便忽略图片路径的更改
+    delete updates.image;
 
-      await Product.update(updates, {
-          where: { product_id: productId }
-      });
+    await Product.update(updates, {
+      where: { product_id: productId }
+    });
 
-      res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
+    res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
   } catch (error) {
-      console.error('Error updating product:', error);
-      res.status(500).send({ message: 'Error updating product' });
+    console.error('Error updating product:', error);
+    res.status(500).send({ message: 'Error updating product' });
   }
 };
 

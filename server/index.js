@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 const events = require('events');
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 
-const { uploadSellerAvatar,uploadProductImage } = require('../pages/functions/imageController');
+const { uploadSellerAvatar,uploadProductImage,updateProductImage } = require('../pages/functions/imageController');
 require('./passportConfig')(passport); // Correctly import passportConfig.js
 const { loginFunction, 
   registerFunction, 
@@ -157,7 +157,7 @@ app.post('/api/products/add', addProduct);
 
 // Product update Routing
 app.put('/api/products/:productId', 
-  uploadProductImage.array('images', 4), 
+  updateProductImage.array('images', 4), 
   function(req, res, next) {
     console.log('Files after upload:', req.files);
     next();

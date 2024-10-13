@@ -49,9 +49,17 @@ const ProductManagement = () => {
       }
     }
 
-    fetchProducts(); // Fetch the product data
-    fetchProductStats(); // Fetch the product stats
-  }, [lastUpdated]);
+    if (router.query.refresh) {
+      fetchProducts();
+      fetchProductStats();
+
+      // 清除查询参数，以免页面重载时重复触发刷新
+      router.replace("/admin/product", undefined, { shallow: true });
+    } else {
+      fetchProducts();
+      fetchProductStats();
+    }
+  }, [router.query.refresh]);
 
   const updateLastUpdated = () => {
     setLastUpdated(Date.now());
