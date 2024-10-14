@@ -97,7 +97,7 @@ async function registerFunction(req, res) {
     }
 
     //Password hashing
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // const hashedPassword = bcrypt.hashSync(password, 10);
     const query = "SELECT customer_name, email FROM customer WHERE customer_name = $1 OR email = $2";
     const result = await db.query(query, [username, email]);
     if (result.rows.length > 0) {
@@ -105,7 +105,7 @@ async function registerFunction(req, res) {
     }
 
     const insertQuery = "INSERT INTO customer (customer_name, password, email, phone) VALUES ($1, $2, $3, $4)";
-    await db.query(insertQuery, [username, hashedPassword, email, phone]);
+    await db.query(insertQuery, [username, password, email, phone]);
     res.send({ message: "User created" });
   } catch (error) {
     console.error('Registration error:', error);

@@ -53,79 +53,77 @@ INSERT INTO category (id, name, sub_for, image) VALUES (29, 'Printers', 8, 'cate
 INSERT INTO category (id, name, sub_for, image) VALUES (30, 'Scanners', 8, 'category/scanners.webp');
 INSERT INTO category (id, name, sub_for, image) VALUES (31, 'Fax Machines', 8, 'category/fax_machines.webp');
 
---------------------------------------------------------------------------------
-
--- Insert product data
-
+----------------------------------------------------------------------------
 -- Smartphones (folder 9)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 9, 50, 9, 'product/9/example.webp', TRUE);
+VALUES ('Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 9, 50, 9, 'product/9/1/1.webp,product/9/1/2.webp,product/9/1/3.webp,product/9/1/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 9, 40, 9, 'product/9/example.webp', TRUE);
+VALUES ('Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 9, 40, 9, 'product/9/2/1.webp,product/9/2/2.webp,product/9/2/3.webp,product/9/2/4.webp', TRUE);
 
 -- Phone Cases (folder 10)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Phone Case A', 19.99, 'Durable and stylish phone case.', 10, 200, 10, 'product/10/example.webp', TRUE);
+VALUES ('Phone Case A', 19.99, 'Durable and stylish phone case.', 10, 200, 10, 'product/10/3/1.webp,product/10/3/2.webp,product/10/3/3.webp,product/10/3/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 10, 150, 10, 'product/10/example.webp', TRUE);
+VALUES ('Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 10, 150, 10, 'product/10/4/1.webp,product/10/4/2.webp,product/10/4/3.webp,product/10/4/4.webp', TRUE);
 
 -- Headphones (folder 11)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 11, 100, 11, 'product/11/example.webp', TRUE);
+VALUES ('Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 11, 100, 11, 'product/11/5/1.webp,product/11/5/2.webp,product/11/5/3.webp,product/11/5/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 11, 300, 11, 'product/11/example.webp', TRUE);
+VALUES ('In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 11, 300, 11, 'product/11/6/1.webp,product/11/6/2.webp,product/11/6/3.webp,product/11/6/4.webp', TRUE);
 
 -- Laptops (folder 13)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 13, 30, 13, 'product/13/example.webp', TRUE);
+VALUES ('Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 13, 30, 13, 'product/13/7/1.webp,product/13/7/2.webp,product/13/7/3.webp,product/13/7/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 13, 25, 13, 'product/13/example.webp', TRUE);
+VALUES ('Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 13, 25, 13, 'product/13/8/1.webp,product/13/8/2.webp,product/13/8/3.webp,product/13/8/4.webp', TRUE);
 
 -- Keyboards (folder 15)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 15, 120, 15, 'product/15/example.webp', TRUE);
+VALUES ('Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 15, 120, 15, 'product/15/9/1.webp,product/15/9/2.webp,product/15/9/3.webp,product/15/9/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 15, 80, 15, 'product/15/example.webp', TRUE);
+VALUES ('Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 15, 80, 15, 'product/15/10/1.webp,product/15/10/2.webp,product/15/10/3.webp,product/15/10/4.webp', TRUE);
 
 -- Monitors (folder 17)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 17, 60, 17, 'product/17/example.webp', TRUE);
+VALUES ('4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 17, 60, 17, 'product/17/11/1.webp,product/17/11/2.webp,product/17/11/3.webp,product/17/11/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 17, 45, 17, 'product/17/example.webp', TRUE);
+VALUES ('Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 17, 45, 17, 'product/17/12/1.webp,product/17/12/2.webp,product/17/12/3.webp,product/17/12/4.webp', TRUE);
 
 -- Televisions (folder 18)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 18, 40, 18, 'product/18/example.webp', TRUE);
+VALUES ('Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 18, 40, 18, 'product/18/13/1.webp,product/18/13/2.webp,product/18/13/3.webp,product/18/13/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 18, 20, 18, 'product/18/example.webp', TRUE);
+VALUES ('OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 18, 20, 18, 'product/18/14/1.webp,product/18/14/2.webp,product/18/14/3.webp,product/18/14/4.webp', TRUE);
 
 -- Gaming Consoles (folder 21)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Next-Gen Console X', 499.99, 'A next-generation gaming console.', 21, 100, 21, 'product/21/example.webp', TRUE);
+VALUES ('Next-Gen Console X', 499.99, 'A next-generation gaming console.', 21, 100, 21, 'product/21/15/1.webp,product/21/15/2.webp,product/21/15/3.webp,product/21/15/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 21, 120, 21, 'product/21/example.webp', TRUE);
+VALUES ('Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 21, 120, 21, 'product/21/16/1.webp,product/21/16/2.webp,product/21/16/3.webp,product/21/16/4.webp', TRUE);
 
 -- Cameras (folder 24)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 24, 35, 24, 'product/24/example.webp', TRUE);
+VALUES ('DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 24, 35, 24, 'product/24/17/1.webp,product/24/17/2.webp,product/24/17/3.webp,product/24/17/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 24, 25, 24, 'product/24/example.webp', TRUE);
+VALUES ('Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 24, 25, 24, 'product/24/18/1.webp,product/24/18/2.webp,product/24/18/3.webp,product/24/18/4.webp', TRUE);
 
 -- Smartwatches (folder 27)
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 27, 90, 27, 'product/27/example.webp', TRUE);
+VALUES ('Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 27, 90, 27, 'product/27/19/1.webp,product/27/19/2.webp,product/27/19/3.webp,product/27/19/4.webp', TRUE);
 
 INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-VALUES ('Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 27, 120, 27, 'product/27/example.webp', TRUE);
+VALUES ('Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 27, 120, 27, 'product/27/20/1.webp,product/27/20/2.webp,product/27/20/3.webp,product/27/20/4.webp', TRUE);
+
 
 ----------------------------------------------------------------------------------
 
@@ -209,73 +207,123 @@ VALUES
 (50, 'Landon', 'Scott', '7778889999', '717 Main St', 'Windsor', 'QC', 'L6Y 1N2', 'Canada', FALSE),
 (50, 'Caleb', 'Taylor', '8889990000', '394 St. Clair Ave', 'London', 'NS', 'T2P 3N4', 'Canada', TRUE);
 
-
------------------------------------------------------------------------------------
-
--- -- Insert 20 order records with customer_id and address_id ranging from 1 to 20, and status being 'pending', 'shipped', 'completed' or 'cancelled'
-
-INSERT INTO orders (customer_id, address_id, total, total_tax, status, order_date, ship_date, shipping_method, tracking_number, complete_date) 
-VALUES (5, 10, 1054.73, 1107.47, 'completed', '2023-09-03 08:22:12', '2023-09-05 11:22:12', 'UPS', '123456789', '2023-09-20 14:30:00'),
-(20, 15, 576.89, 605.73, 'completed', '2023-09-05 14:45:55', '2023-09-07 10:25:20', 'FedEx', '234567891', '2023-09-22 13:15:10'),
+-- Insert order records without address_data
+INSERT INTO orders (customer_id, address_id, total, total_tax, status, order_date, ship_date, shipping_method, tracking_number, complete_date)
+VALUES
+(5, 10, 1719.97, 1805.97, 'completed', '2023-09-03 08:22:12', '2023-09-05 11:22:12', 'UPS', '123456789', '2023-09-20 14:30:00'),
+(20, 15, 1379.98, 1448.98, 'completed', '2023-09-05 14:45:55', '2023-09-07 10:25:20', 'FedEx', '234567891', '2023-09-22 13:15:10'),
 (8, 23, 1300.40, 1365.42, 'shipped', '2023-09-07 12:10:15', '2023-09-09 16:12:50', 'DHL', '345678912', NULL),
 (12, 6, 1845.32, 1937.59, 'completed', '2023-09-10 09:23:55', '2023-09-13 11:18:45', 'UPS', '456789123', '2023-09-29 15:45:00'),
-(9, 18, 450.50, 472.03, 'pending', '2023-09-12 16:05:42', NULL, NULL, NULL, NULL),
-(11, 30, 975.21, 1023.97, 'completed', '2023-09-15 18:25:33', '2023-09-18 13:15:22', 'FedEx', '567891234', '2023-10-03 10:00:00'),
+(9, 18, 1799.98, 1889.98, 'pending', '2023-09-12 16:05:42', NULL, NULL, NULL, NULL),
+(11, 30, 239.97, 251.97, 'completed', '2023-09-15 18:25:33', '2023-09-18 13:15:22', 'FedEx', '567891234', '2023-10-03 10:00:00'),
 (16, 40, 1500.75, 1575.79, 'completed', '2023-09-18 15:12:21', '2023-09-21 09:14:12', 'DHL', '678912345', '2023-10-05 12:45:15'),
 (13, 5, 620.88, 651.92, 'shipped', '2023-09-20 10:35:11', '2023-09-23 08:22:33', 'UPS', '789123456', NULL),
 (6, 25, 2300.65, 2415.68, 'completed', '2023-09-22 09:47:03', '2023-09-25 10:17:49', 'FedEx', '891234567', '2023-10-15 11:30:00'),
-(18, 9, 1120.14, 1176.15, 'pending', '2023-09-25 13:20:45', NULL, NULL, NULL, NULL),
-(21, 31, 750.36, 787.88, 'completed', '2023-09-28 08:32:22', '2023-09-30 14:50:10', 'DHL', '123459876', '2023-10-18 09:20:00'),
-(15, 12, 900.49, 945.51, 'shipped', '2023-09-30 16:10:35', '2023-10-02 12:22:19', 'UPS', '234567894', NULL),
+(18, 9, 1299.99, 1364.99, 'pending', '2023-09-25 13:20:45', NULL, NULL, NULL, NULL),
+(21, 31, 99.98, 104.98, 'completed', '2023-09-28 08:32:22', '2023-09-30 14:50:10', 'DHL', '123459876', '2023-10-18 09:20:00'),
+(15, 12, 399.99, 419.99, 'shipped', '2023-09-30 16:10:35', '2023-10-02 12:22:19', 'UPS', '234567894', NULL),
 (3, 19, 1350.22, 1417.73, 'completed', '2023-10-03 10:22:14', '2023-10-06 08:45:12', 'FedEx', '345679123', '2023-10-25 14:45:00'),
-(22, 8, 525.67, 551.95, 'shipped', '2023-10-06 09:50:01', '2023-10-08 12:20:23', 'DHL', '456798123', NULL),
-(14, 11, 1875.38, 1968.15, 'completed', '2023-10-09 17:12:55', '2023-10-12 11:15:10', 'UPS', '567894321', '2023-10-28 11:30:00'),
-(17, 13, 650.25, 682.76, 'completed', '2023-10-12 12:35:40', '2023-10-15 09:20:15', 'FedEx', '678912398', '2023-11-01 10:45:15'),
-(25, 27, 1180.44, 1239.46, 'completed', '2023-10-14 11:10:25', '2023-10-17 10:25:30', 'DHL', '789123489', '2023-11-05 12:15:10'),
-(24, 36, 975.11, 1023.87, 'shipped', '2023-10-17 16:45:09', '2023-10-19 14:22:55', 'UPS', '891234970', NULL),
+(22, 8, 399.99, 419.99, 'shipped', '2023-10-06 09:50:01', '2023-10-08 12:20:23', 'DHL', '456798123', NULL),
+(14, 11, 799.98, 839.98, 'completed', '2023-10-09 17:12:55', '2023-10-12 11:15:10', 'UPS', '567894321', '2023-10-28 11:30:00'),
+(17, 13, 99.99, 104.99, 'completed', '2023-10-12 12:35:40', '2023-10-15 09:20:15', 'FedEx', '678912398', '2023-11-01 10:45:15'),
+(25, 27, 149.99, 157.49, 'completed', '2023-10-14 11:10:25', '2023-10-17 10:25:30', 'DHL', '789123489', '2023-11-05 12:15:10'),
+(24, 36, 149.99, 157.49, 'shipped', '2023-10-17 16:45:09', '2023-10-19 14:22:55', 'UPS', '891234970', NULL),
 (4, 21, 1345.75, 1412.03, 'completed', '2023-10-20 14:05:17', '2023-10-23 10:35:00', 'FedEx', '123478912', '2023-11-12 11:15:00'),
-(28, 7, 890.88, 935.42, 'pending', '2023-10-22 10:55:31', NULL, NULL, NULL, NULL),
-(30, 16, 2100.99, 2206.04, 'completed', '2023-10-25 18:23:10', '2023-10-28 12:50:50', 'DHL', '234578912', '2023-11-15 12:45:20'),
-(19, 24, 600.15, 630.16, 'shipped', '2023-10-28 11:35:18', '2023-10-30 14:12:40', 'UPS', '345678912', NULL),
-(7, 14, 1150.67, 1208.21, 'completed', '2023-10-30 09:05:14', '2023-11-02 10:55:12', 'FedEx', '456789123', '2023-11-18 13:15:10'),
-(26, 20, 730.44, 766.96, 'completed', '2023-11-01 12:47:22', '2023-11-04 15:32:40', 'DHL', '567891234', '2023-11-21 10:45:00'),
-(1, 28, 1870.25, 1963.76, 'shipped', '2023-11-03 10:23:44', '2023-11-06 14:10:33', 'UPS', '678912345', NULL),
-(23, 17, 490.80, 515.34, 'completed', '2023-11-05 15:11:55', '2023-11-08 11:45:18', 'FedEx', '789123456', '2023-11-30 12:45:25'),
-(2, 4, 870.36, 913.88, 'pending', '2023-11-08 09:22:33', NULL, NULL, NULL, NULL),
-(10, 35, 1410.45, 1480.97, 'completed', '2023-11-10 12:45:00', '2023-11-13 10:30:22', 'DHL', '891234567', '2023-12-03 14:45:10');
+(28, 7, 199.99, 209.99, 'pending', '2023-10-22 10:55:31', NULL, NULL, NULL, NULL);
 
+-- Randomly Update address_id in orders Table Based on customer_id
+UPDATE orders
+SET address_id = (
+    -- Select a random address ID for the corresponding customer
+    SELECT a.id
+    FROM address a
+    WHERE a.customer_id = orders.customer_id
+    ORDER BY RANDOM()  -- Randomly order the matching addresses
+    LIMIT 1            -- Pick one random address
+)
+WHERE EXISTS (
+    -- Ensure that there are addresses for the given customer in the address table
+    SELECT 1
+    FROM address a
+    WHERE a.customer_id = orders.customer_id
+);
 
--- -- Insert order details for each of the orders, product_id is limited to 1-20
+-- Update orders table to populate address_data based on address table
+UPDATE orders
+SET address_data = (
+    SELECT json_build_object(
+        'first_name', a.first_name,
+        'last_name', a.last_name,
+        'phone', a.phone,
+        'street', a.street,
+        'city', a.city,
+        'province', a.province,
+        'postal', a.postal,
+        'country', a.country
+    )
+    FROM address a
+    WHERE a.id = orders.address_id
+    AND a.is_default = TRUE
+);
 
--- INSERT INTO orders_detail (order_id, product_id, quantity)
--- VALUES (1, 1, 2),
---        (2, 2, 1),
---        (3, 3, 1),
---        (4, 4, 1),
---        (5, 5, 1),
---        (6, 6, 3),
---        (7, 7, 1),
---        (8, 8, 1),
---        (9, 9, 1),
---        (10, 10, 2),
---        (11, 11, 2),
---        (12, 12, 1),
---        (13, 13, 1),
---        (14, 14, 1),
---        (15, 15, 1),
---        (16, 16, 1),
---        (17, 17, 1),
---        (18, 18, 1),
---        (19, 19, 1),
---        (20, 20, 2),
---        (1, 2, 1),
---        (2, 3, 2),
---        (3, 4, 3),
---        (4, 5, 1),
---        (5, 6, 1),
---        (6, 7, 2),
---        (7, 8, 1),
---        (8, 9, 1),
---        (9, 10, 1),
---        (10, 11, 1);
+-- Corrected orders_detail data with order_id values not exceeding 28
+INSERT INTO orders_detail (order_id, product_id, name, price, quantity)
+VALUES
+(1, 1, 'Smartphone X1', 699.99, 2),
+(1, 3, 'Phone Case A', 19.99, 1),
+(2, 5, 'Laptop Pro 15', 1299.99, 1),
+(2, 7, 'Mechanical Keyboard', 79.99, 1),
+(3, 11, 'Smart TV 55"', 599.99, 1),
+(4, 13, 'DSLR Camera A1', 899.99, 1),
+(5, 9, '4K Monitor', 299.99, 1),
+(5, 5, 'Laptop Pro 15', 1299.99, 1),
+(6, 17, 'Next-Gen Console X', 499.99, 1),
+(7, 10, 'Ultrawide Monitor', 399.99, 1),
+(8, 18, 'VR Devices', 499.99, 1),
+(9, 13, 'DSLR Camera A1', 899.99, 2),
+(10, 4, 'Phone Case B', 15.99, 3),
+(11, 7, 'Mechanical Keyboard', 79.99, 2),
+(12, 6, 'Gaming Laptop Z1', 1599.99, 1),
+(13, 2, 'Smartphone Y1', 799.99, 1),
+(14, 16, 'Gaming Console Y', 399.99, 2),
+(15, 19, 'Printers', 199.99, 1),
+(16, 8, 'Wireless Headphones', 89.99, 1),
+(17, 20, 'Scanners', 99.99, 1),
+(18, 5, 'Laptop Pro 15', 1299.99, 1),
+(19, 14, 'Smartwatch Pro', 199.99, 2),
+(20, 15, 'Lenses', 299.99, 1);
 
+-- Update the orders_detail table with the correct name and price based on the product_id from the product table
+UPDATE orders_detail
+SET 
+    name = product.product_name,
+    price = product.price
+FROM product
+WHERE orders_detail.product_id = product.product_id;
+
+-- Update orders with total based on orders_detail
+UPDATE orders
+SET total = (
+    SELECT SUM(price * quantity)
+    FROM orders_detail
+    WHERE orders_detail.order_id = orders.id
+)
+WHERE EXISTS (
+    SELECT 1
+    FROM orders_detail
+    WHERE orders_detail.order_id = orders.id
+);
+
+-- Update orders with total_tax based on province
+UPDATE orders
+SET total_tax = total * (
+    CASE 
+        WHEN (address_data->>'province') = 'AB' THEN 0.05  -- Alberta
+        WHEN (address_data->>'province') = 'ON' THEN 0.13  -- Ontario
+        WHEN (address_data->>'province') = 'BC' THEN 0.12  -- British Columbia
+        WHEN (address_data->>'province') = 'QC' THEN 0.15  -- Quebec
+        WHEN (address_data->>'province') = 'NS' THEN 0.15  -- Nova Scotia
+        ELSE 0.05  -- Default 5% tax for other provinces
+    END
+)
+WHERE total IS NOT NULL;
