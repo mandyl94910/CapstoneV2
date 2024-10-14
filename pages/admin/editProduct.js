@@ -18,6 +18,7 @@ const AddProduct = () => {
   const [imagePreviews, setImagePreviews] = useState([null, null, null, null]); // Array for image previews per slot
   const [categories, setCategories] = useState([]);
   const [validationMessage, setValidationMessage] = useState("");
+  const [displayedCategoryName, setdisplayedCategoryName] = useState("");
 
   const { productId } = router.query;
 
@@ -37,7 +38,6 @@ const AddProduct = () => {
   useEffect(() => {
     if (productId) {
       fetchProductDetails(productId);
-      fetchCategories();
     }
   }, [productId]);
     
@@ -47,6 +47,11 @@ const fetchProductDetails = async (productId ) => {
     try {
     const response = await axios.get(`http://localhost:3001/api/products/${productId}`);
     const product = response.data;
+
+    // Assuming there's a route in your backend to fetch category by ID
+    const categoryResponse = await axios.get(`http://localhost:3001/api/categories/${product.category_id}`);
+    const categoryObj = categoryResponse.data;
+    setdisplayedCategoryName(categoryObj.name)
 
     const timestamp = new Date().getTime();
     const basePath = `/images/product/${product.category_id}/${product.product_id}/`;
@@ -62,18 +67,12 @@ const fetchProductDetails = async (productId ) => {
     category: product.category_id,
     visibility: product.visibility,
     images: imagePaths,
+
+    
     });
+    console.log('product category is:',categoryObj.name)
     } catch (error) {
     console.error('Error fetching product details:', error);
-    }
-};
-
-const fetchCategories = async () => {
-    try {
-    const response = await axios.get("http://localhost:3001/api/subcategories");
-    setCategories(response.data);
-    } catch (error) {
-    console.error("Failed to fetch categories", error);
     }
 };
 
@@ -209,7 +208,7 @@ const handleImageDelete = (index) => {
         {/* Image Upload */}
         <div className="flex justify-between items-center mb-4">
           {[0, 1, 2, 3].map((index) => (
-            <div key={index} className="flex flex-col items-center space-y-2">
+            <div key={index} className="flex flex-col items-center space-y-2 relative">
               <label className="text-gray-700">Image {index + 1}</label>
               <input
                 type="file"
@@ -218,18 +217,19 @@ const handleImageDelete = (index) => {
                 className="w-full p-2 border rounded"
               />
               {imagePreviews[index] && (
-                <div className="flex flex-col items-center space-y-2">
+                <div className="relative">
                   <img
                     src={imagePreviews[index]}
                     alt={`Product Preview ${index + 1}`}
-                    className="w-20 h-20 object-cover border border-gray-300 rounded"
+                    className="w-20 h-20 object-cover rounded"
                   />
                   <button
                     type="button"
                     onClick={() => handleImageDelete(index)}
-                    className="text-red-500 hover:text-red-700 text-sm"
+                    className="absolute top-0 right-0 text-black hover:text-gray-700 font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                    style={{ background: 'rgba(255, 255, 255, 0.6)', margin: '4px' }}
                   >
-                    Delete
+                    &times;  {/* This is a Unicode multiplication sign used as a close icon */}
                   </button>
                 </div>
               )}
@@ -293,24 +293,14 @@ const handleImageDelete = (index) => {
 
         {/* Category */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Category</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select one category</option>
-            {categories.length > 0 ? (
-              categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))
-            ) : (
-              <option>Loading categories...</option>
-            )}
-          </select>
+            <label className="block text-gray-700 mb-2">Category</label>
+            <input
+                type="text"
+                name="category"
+                value={displayedCategoryName}
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100" // 使用灰色背景表示不可编辑
+            />
         </div>
 
         {/* Visibility */}

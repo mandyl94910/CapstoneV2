@@ -22,7 +22,8 @@ const { getAdminInformation,
 const { getCategories, 
   getPrimaryCategories,
   getSubCategories,
-  getCategoriesTotalNumber} = require('../pages/functions/category/CategoriesController');
+  getCategoriesTotalNumber,
+  getCategoryById} = require('../pages/functions/category/CategoriesController');
 const { getAllProducts, 
   getAllProductsForDataTable, 
   getProductsByCategory, 
@@ -196,6 +197,9 @@ app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Sales report route
 app.get('/api/sales-report', getSalesReportData);
+
+// Route to get a category by ID
+app.get('/api/categories/:id', getCategoryById);
 
 // Start the server
 app.listen(3001, () => {
