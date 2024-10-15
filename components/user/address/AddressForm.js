@@ -2,6 +2,11 @@
 
 const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
 
+    /**
+     * Helped by chatGPT
+     * Prompt: How to get the data updated for the form
+     * @param {*} e 
+     */
     // update value or checked state
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
