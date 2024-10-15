@@ -1,5 +1,16 @@
+// useState is a React hook that allows functional components to have and manage state 
+// by returning a state variable and a function to update it. 
+// useEffect is another hook that lets you handle side effects like data fetching, 
+// subscriptions, or manually updating the DOM after a component renders. 
+// The useEffect hook can be triggered conditionally based on dependencies, 
+// ensuring effects only run when specific state values change. Together, 
+// these hooks enable dynamic, stateful, and side-effect-driven behavior 
+// in functional components without needing to convert them into class components.
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
+// Axios is a popular JavaScript library used to make HTTP requests from the browser or 
+// Node.js. It is often used in React and other frontend frameworks to interact with APIs 
+// by sending requests (like GET, POST, PUT, DELETE) and handling responses.
 import axios from "axios";
 
 // Chart as ChartJS:

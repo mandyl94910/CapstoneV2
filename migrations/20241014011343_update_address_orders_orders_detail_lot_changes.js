@@ -1,3 +1,7 @@
+//Command: npx knex migrate:rollback
+//         npx knex migrate:latest
+//         npx knex seed:run
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -100,7 +104,8 @@ exports.up = function(knex) {
             ship_date TIMESTAMPTZ,  -- Shipping date
             shipping_method VARCHAR(255),  -- Shipping method
             tracking_number VARCHAR(255),  -- Shipping tracking number
-            complete_date TIMESTAMPTZ  -- Order completion date
+            complete_date TIMESTAMPTZ,  -- Order completion date
+            address_data JSONB  -- JSONB column to store the full address as JSON
         );
 
         -- Create orders_detail table
@@ -154,10 +159,6 @@ exports.up = function(knex) {
 
         -- Add unique constraint to ensure only one default address per customer
         CREATE UNIQUE INDEX unique_default_address ON address (customer_id) WHERE is_default = TRUE;
-
-
-
-
 
 
       `);
