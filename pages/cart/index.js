@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Header from "../../components/common/Header";
-import Footer from "../../components/common/Footer";
-import CategoryHomeGrid from "../../components/homepage/CategoryHomeGrid";
-import { FaTrash } from "react-icons/fa";
-import { FaMinus, FaPlus } from "react-icons/fa6";
+import React, { useState, useEffect } from 'react';
+import Header from '../../components/common/Header';
+import Footer from '../../components/common/Footer';
+import CategoryHomeGrid from '../../components/homepage/CategoryHomeGrid';
+import { FaTrash } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
+import Link from 'next/link';
 
 /**
  * helped by chatGPT
@@ -62,16 +63,14 @@ export default function CartPage() {
             <>
               {cart.map((item, index) => (
                 <>
-                  <div
-                    key={index}
-                    className="flex items-center justify-between mb-6"
-                  >
-                    <div className="flex items-center">
-                      <img
-                        src={`/images/${item.image}`}
-                        alt={item.product_name}
-                        className="w-24 h-24 rounded"
-                      />
+                  <div key={index} className="flex items-center justify-between mb-6">
+                    <div className='flex items-center'>
+                      <Link  href={`/product/${item.product_id}`}>
+                        <img 
+                          src={`/images/${item.image}`} 
+                          alt={item.product_name} 
+                          className="w-24 h-24 rounded" />
+                      </Link>
                       <div className="flex flex-col px-4">
                         <h2 className="font-semibold">{item.product_name}</h2>
                         <p className="text-gray-500 mb-2">

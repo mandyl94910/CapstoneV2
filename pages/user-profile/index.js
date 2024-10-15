@@ -3,14 +3,14 @@ import Header from "../../components/common/Header";
 import { useAuth } from "../../hooks/useAuth";
 import Sidebar from "../../components/user/Sidebar";
 import RecommendedProducts from "../../components/common/RecommendedProducts";
-import { FaAngleRight, FaEdit } from "react-icons/fa6";
 import Link from "next/link";
+import DefaultAddress from "../../components/user/DefaultAddress";
 
 
 
 export default function UserProfile() {
 
-    const { user, onLogout } = useAuth();
+    const { user } = useAuth();
 
     const [stats, setStats] = useState({
     pendingPayment: 0,
@@ -19,11 +19,11 @@ export default function UserProfile() {
     returns: 0,
     });
 
-
+    
     if (!user){
         return(
             <div>
-                <p>Loading...</p>
+                <p>Please login to view this page.</p>
             </div>
         );
     }
@@ -72,7 +72,8 @@ export default function UserProfile() {
                         {/* Shipping Address */}
                         {/* <Link href={`/user-profile/address/${user.customer_id}`}> */}
                         {/* hardcode here to point to the customer having addresses */}
-                        <Link href="/user-profile/address/1">
+                        <DefaultAddress customer_id={user.customer_id}/>
+                        {/* <Link href="/user-profile/address/1">
                             <div className="bg-blue-100 p-4 rounded-md mb-6">
                                 <div className="flex justify-between">
                                     <h3 className="font-bold">Default Shipping Address:</h3>
@@ -83,8 +84,8 @@ export default function UserProfile() {
                                 <p>Phone: {user.phone}</p>
                                 <p className="text-gray-700">{user.address} 786 14 Street NW, Calgary, AB {user.postcal}E39 5H2</p>
                             </div>
-                        </Link>
-                        
+                        </Link> */}
+                       
 
                         {/* My Logistics */}
                         <h3 className="font-bold mb-4">Track order</h3>

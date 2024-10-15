@@ -7,9 +7,9 @@ import AddressTable from "../../../components/user/address/AddressTable";
 import Modal from "../../../components/user/address/Modal"; 
 import { useRouter } from "next/router";
 import Footer from "../../../components/common/Footer";
-import Sidebar from "../../../components/user/Sidebar";
 import Link from "next/link";
 import { FaAngleLeft } from "react-icons/fa6";
+import { useAuth } from "../../../hooks/useAuth";
 
 /**
  * helped with chatGPT
@@ -17,24 +17,28 @@ import { FaAngleLeft } from "react-icons/fa6";
  * and it can be closed by click cancel or close button on the right top
  * 
  */
-export default function Address() {
+function Address() {
+    const { user } = useAuth();
     const [addresses, setAddresses] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState(null); // for checking it is a new address or just need to be edit
     const [formData, setFormData] = useState({
+        first_name: "",
+        last_name: "",
+        phone: "",
         street: "",
         city: "",
         province: "",
         postal: "",
-        customer_name: "",
-        phone: "",
+        country: "Canada",
         is_default: false
     });
 
     const router = useRouter();
     const { id } = router.query;
     const customerId = parseInt(id, 10);
+
 
     useEffect(() => {
         if (customerId) {
@@ -48,20 +52,24 @@ export default function Address() {
             };
             fetchAddresses();
         }
-    }, [customerId]);
+    }, [customerId, addresses]);
 
     // when click edit icon
     const handleEditClick = (address) => {
         setSelectedAddressId(address.id);
         setFormData({
+            // first_name: address.first_name,
+            // last_name: address.last_name,
+            // phone: address.phone,
             street: address.street,
             city: address.city,
             province: address.province,
             postal: address.postal,
             // because there is no customer name and phone on address table currently, 
             // so temporary using those data from customer table
-            customer_name: address.Customer.customer_name,
-            phone: address.Customer.phone,
+            // customer_name: address.Customer.customer_name,
+            // phone: address.Customer.phone,
+            country: address.country,
             is_default: address.is_default
         });
         setShowEditModal(true);
@@ -71,12 +79,14 @@ export default function Address() {
     const handleAddClick = () => {
         setSelectedAddressId(null); 
         setFormData({
+            first_name: "",
+            last_name: "",
+            phone: "",
             street: "",
             city: "",
             province: "",
             postal: "",
-            customer_name: "",
-            phone: "",
+            country: "Canada",
             is_default: false
         });
         setShowEditModal(true); 
@@ -88,23 +98,27 @@ export default function Address() {
         setShowDeleteModal(true);
     };
 
-    // update value or checked state that user changed
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            // if type is checkbox update the checked state
-            // if not update the value for the field
-            [name]: type === "checkbox" ? checked : value
-        });
-    };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        //stop Page Refresh or Jump
+        e.preventDefault();
+
+        // incase submit the form without customerId
+        if (isNaN(customerId)) {
+            console.error('Invalid customer ID');
+            return; 
+        }
+        const addressData = {
+            ...formData,
+            customer_id: customerId,
+        };
+
         try {
             if (selectedAddressId) {
-                // edit api hasn't done yet
+                // update the address
                 const response = await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
-            
+                console.log('Address updated:', response.data);
+
                 setAddresses((prevAddresses) =>
                     prevAddresses.map((address) =>
                         // if id is the same as selectedId, update the address, if not keep the same
@@ -112,9 +126,13 @@ export default function Address() {
                     )
                 );
             } else {
-                // add api hasn't done yet
-                const response = await axios.post(`http://localhost:3001/api/addresses`, formData);
-                setAddresses((prevAddresses) => [...prevAddresses, response.data]);
+                // add a new address
+                const response = await axios.post(`http://localhost:3001/api/address/add`, addressData, {
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        }
+                });
+                setAddresses([...addresses, response.data]);
             }
             setShowEditModal(false); 
         } catch (error) {
@@ -123,27 +141,42 @@ export default function Address() {
         
     };
 
-    const confirmDelete = async () => {
+    const confirmDelete = async (selectedAddressId) => {
         if (!selectedAddressId) {
             console.error('Address ID is missing.');
             return;
           }
 
         try {
-            // delete api hasn't done yet
-            //await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
+            // delete address
+            const response = await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
             
-            // update addresses array after deleting
-            setAddresses((prevAddresses) => 
-                prevAddresses.filter(address => address.id !== selectedAddressId)
-            );
-            setShowDeleteModal(false);
+            if (response.data.success) {
+                 // update addresses array after deleting
+                setAddresses((prevAddresses) => 
+                    prevAddresses.filter(address => address.id !== selectedAddressId)
+                );
+                setShowDeleteModal(false);
+            } else {
+                console.error('Failed to delete address: ', response.data.message);
+            }
+           
         } catch (error) {
             console.error('Error deleting address:', error);
         }
         
     };
 
+
+
+    if (!user){
+        return(
+            <div>
+                <p>Please login to view this page.</p>
+            </div>
+        );
+    }
+    
     return (
         <>
             <Header />
@@ -173,7 +206,8 @@ export default function Address() {
                     <h2 className="text-lg font-semibold mb-4">{selectedAddressId ? "Edit Address" : "Add new Address"}</h2>
                     <AddressForm 
                         formData={formData}
-                        handleChange={handleChange}
+                        setFormData={setFormData}
+                        // handleChange={handleChange}
                         handleSubmit={handleSubmit}
                         onCancel={() => setShowEditModal(false)}
                     />
@@ -199,7 +233,7 @@ export default function Address() {
                                 </button>
                                 <button 
                                     className="bg-red-500 text-white px-7 py-2 rounded-lg hover:bg-red-600"
-                                    onClick={confirmDelete}
+                                    onClick={() => confirmDelete(selectedAddressId)}
                                 >
                                     Delete
                                 </button>
@@ -212,3 +246,7 @@ export default function Address() {
         </>
     );
 }
+
+
+
+export default Address;
