@@ -41,7 +41,7 @@ const productImageStorage = multer.diskStorage({
         const dir = `./public/images/product/${categoryId}/${productId}`;
 
         if (!fs.existsSync(dir)) {
-            //If the parent directory also does not exist, recursively create all directories.
+            //mkdirSync means that if the parent directory also does not exist, recursively create all directories.
             fs.mkdirSync(dir, { recursive: true });
         }
         //callback:asynchronous return
@@ -70,7 +70,8 @@ const productImageStorage = multer.diskStorage({
                 return cb(unlinkErr); // Returns an error and stops the operation
                 }
                 console.log("Old file deleted successfully.");
-                cb(null, filename); // Setting the name of the new file
+                //call back function. null means theres no error and return the filename
+                cb(null, filename); 
             });
             } else {
             cb(null, filename); // If the file does not exist, set the name of the new file directly
