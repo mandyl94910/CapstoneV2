@@ -3,13 +3,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 const CheckoutNav = () => {
-  const router = useRouter(); // 현재 페이지 경로를 확인하기 위한 useRouter 훅
+  const router = useRouter(); // useRouter hook to check the current page path
 
-  // 경로에 따라 스타일을 적용하는 함수
+  // Function to apply styles based on the path
   const getLinkClass = (path) => {
     return router.pathname === path
-      ? "text-gray-400 hover:underline" // 현재 페이지인 경우 회색
-      : "hover:underline"; // 다른 페이지는 기본 스타일
+      ? "text-indigo-600 font-semibold underline" // Highlight the current page
+      : "hover:underline"; // Default style for other pages
   };
 
   return (
@@ -19,15 +19,24 @@ const CheckoutNav = () => {
           Cart
         </Link>
         <span>&gt;</span>
-        <Link href="/info" className={getLinkClass("/info")}>
+        <Link
+          href="/checkout/checkoutPage"
+          className={getLinkClass("/checkout/checkoutPage")}
+        >
           Info
         </Link>
         <span>&gt;</span>
-        <Link href="/shipping" className={getLinkClass("/shipping")}>
+        <Link
+          href="/checkout/shippingPage"
+          className={getLinkClass("/checkout/shippingPage")}
+        >
           Shipping
         </Link>
         <span>&gt;</span>
-        <Link href="/payment" className={getLinkClass("/payment")}>
+        <Link
+          href="/checkout/payment"
+          className={getLinkClass("/checkout/payment")}
+        >
           Payment
         </Link>
       </nav>
