@@ -1,4 +1,13 @@
 const { Order } = require('../../../server/models');
+// Sequelize provides a wide range of operators for query conditions, like:
+
+// Op.eq: Equal (=)
+// Op.ne: Not equal (!=)
+// Op.gte: Greater than or equal (>=)
+// Op.lte: Less than or equal (<=)
+// Op.in: Check if a value is in a list
+// Op.or: Logical OR condition
+// Op.and: Logical AND condition
 const { Sequelize, Op } = require('sequelize'); // Add Op = operators for conditions
 
 //asynchronous function
@@ -38,6 +47,22 @@ const getSalesReportData = async (req, res) => {
     // FROM orders
     // GROUP BY period
     // ORDER BY period;
+
+
+    //     -- Assuming the period is 'weekly'
+    // SELECT
+    //     DATE_TRUNC('week', order_date) AS period,         -- Truncate the order date to the start of the week
+    //     SUM(total) AS total_sales,                        -- Sum up the total sales for each week
+    //     COUNT(id) AS order_count                          -- Count the number of orders for each week
+    // FROM
+    //     orders                                            -- Assuming the table name is 'orders'
+    // WHERE
+    //     order_date >= '2023-09-01'                        -- Filter orders starting from one month ago
+    // GROUP BY
+    //     DATE_TRUNC('week', order_date)                    -- Group by the truncated week
+    // ORDER BY
+    //     period ASC;                                       -- Order the results in ascending order by period
+
     
     try {
         let groupByFormat;
