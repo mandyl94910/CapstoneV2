@@ -14,9 +14,11 @@ const AddProduct = () => {
     images: [], // Array to store multiple images
   });
 
-  const [imagePreviews, setImagePreviews] = useState([]); // Array for image previews
+  const [imageSlots, setImageSlots] = useState([null, null, null, null]); // Array to manage image files per slot
+  const [imagePreviews, setImagePreviews] = useState([null, null, null, null]); // Array for image previews per slot
   const [categories, setCategories] = useState([]);
   const [validationMessage, setValidationMessage] = useState("");
+  const [displayedCategoryName, setdisplayedCategoryName] = useState("");
 
   const { productId } = router.query;
 
@@ -36,7 +38,6 @@ const AddProduct = () => {
   useEffect(() => {
     if (productId) {
       fetchProductDetails(productId);
-      fetchCategories();
     }
   }, [productId]);
     
@@ -45,15 +46,19 @@ const AddProduct = () => {
 const fetchProductDetails = async (productId ) => {
     try {
     const response = await axios.get(`http://localhost:3001/api/products/${productId}`);
-    console.log('Fetched product data:', response.data);
     const product = response.data;
 
-    const basePath = 'http://localhost:3001/images/';
-    let imagePaths = product.image ? product.image.split(',').map(path => path.trim()) : [];
+    // Assuming there's a route in your backend to fetch category by ID
+    const categoryResponse = await axios.get(`http://localhost:3001/api/categories/${product.category_id}`);
+    const categoryObj = categoryResponse.data;
+    setdisplayedCategoryName(categoryObj.name)
 
-    const imagePreviews = imagePaths.map(path => basePath + path);
-    setImagePreviews(imagePreviews); 
-
+    const timestamp = new Date().getTime();
+    const basePath = `/images/product/${product.category_id}/${product.product_id}/`;
+    const imagePaths = [1, 2, 3, 4].map((num) => `${basePath}${num}.webp?ts=${timestamp}`);
+  
+    setImagePreviews(imagePaths);
+    setImageSlots(imagePaths);
     setFormData({
     product_name: product.product_name,
     product_description: product.product_description,
@@ -62,55 +67,54 @@ const fetchProductDetails = async (productId ) => {
     category: product.category_id,
     visibility: product.visibility,
     images: imagePaths,
+
+    
     });
+    console.log('product category is:',categoryObj.name)
     } catch (error) {
     console.error('Error fetching product details:', error);
     }
 };
 
-const fetchCategories = async () => {
-    try {
-    const response = await axios.get("http://localhost:3001/api/subcategories");
-    setCategories(response.data);
-    } catch (error) {
-    console.error("Failed to fetch categories", error);
-    }
-};
-
 const handleImageDelete = (index) => {
-    const updatedImages = formData.images.filter((_, i) => i !== index);
-    setFormData({
-      ...formData,
-      images: updatedImages
-    });
+  const updatedSlots = [...imageSlots];
+  const updatedPreviews = [...imagePreviews];
 
-    const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
-    setImagePreviews(updatedPreviews);
+  updatedSlots[index] = null; // 清除特定槽位的图片文件
+  if (imagePreviews[index] && imagePreviews[index].startsWith("blob:")) {
+    URL.revokeObjectURL(imagePreviews[index]);
+  }
+  updatedPreviews[index] = null; // 清除预览图
+
+  setImageSlots(updatedSlots);
+  setImagePreviews(updatedPreviews);
   };
 
 
   // Handle image file selection and preview
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    //formData.images.length is the number of uploaded images, 
-    //files.length is the number of newly selected files
-    if (formData.images.length + files.length > 4) {
-      alert("You can only upload a maximum of 4 images."); // Alert user
-      return;
+  const handleImageChange = (e,index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const updatedSlots = [...imageSlots];
+    updatedSlots[index] = file;
+
+    const updatedPreviews = [...imagePreviews];
+    updatedPreviews[index] = URL.createObjectURL(file);
+
+    // 释放旧的 URL，避免内存泄漏
+    if (imagePreviews[index] && imagePreviews[index].startsWith("blob:")) {
+      URL.revokeObjectURL(imagePreviews[index]);
     }
 
-    // Update formData with new images
-    const updatedImages = [...formData.images, ...files].slice(0, 4); // Limit to 4 images
-    setFormData({
-      //keep others data
-      ...formData,
-      //only change images
-      images: updatedImages,
-    });
+    setImageSlots(updatedSlots);
+    setImagePreviews(updatedPreviews);
 
-    // Generate previews for each image
-    const previews = updatedImages.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+  //   // 向formData添加卡槽索引信息
+  //   setFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     slotIndex: index + 1, // 加1使其与文件名对应（1.webp, 2.webp, etc.）
+  // }));
   };
 
   // Handle form submission
@@ -118,7 +122,6 @@ const handleImageDelete = (index) => {
     //stop Page Refresh or Jump
     e.preventDefault();
 
-    console.log('Current form data:', formData); 
     if (!validateForm()) {
       return;
     }
@@ -131,35 +134,38 @@ const handleImageDelete = (index) => {
     updateform.append('category_id', formData.category);
     updateform.append('visibility', formData.visibility);
 
-    let hasNewImages = formData.images.some(image => image instanceof File);
-    if (hasNewImages) {
-      formData.images.forEach((image) => {
-          if (image instanceof File) {
-              updateform.append('images', image);
-              console.log('File added:', image.name); 
-          } else {
-              console.log('Not a file:', image); // 
-          }
-      });
-    }else {
-      // Use old images from imagePreviews if no new files were added
-        formData.images.forEach((imagePath) => {
-        updateform.append('images', imagePath);
-        console.log('use old image path:', imagePath);
-      });
-    }
+    imageSlots.forEach((image,index) => {
+      if (image instanceof File) {
+        console.log(`Appending image at slotIndex ${index}: ${image.name}`); // 日志：添加的图片和索引
+        updateform.append("images", image, (index+1).toString() + '-' + image.name); // 如果是文件则直接添加
 
-
+      } else if (image) {
+        // Check if it's an existing URL and needs to be sent as a URL
+        console.log(`Appending existing image URL at slotIndex ${index}: ${image}`); 
+        updateform.append(`imageUrls[${index}]`, image); // Append existing image URLs
+      }
+    });
+    
     try {
+        printFormData(updateform);
         const response = await axios.put(`http://localhost:3001/api/products/${productId}`, updateform, {
             headers: { "Content-Type": "multipart/form-data" },
         });
-        router.push("/admin/product"); 
+        router.push({pathname: "/admin/product",
+          query: { refresh: true },}); 
     } catch (error) {
         console.error("Error updating product:", error);
     }
-  };
+    };
 
+
+    // 函数用于打印 FormData 中的所有数据
+  const printFormData = (formData) => {
+    console.log('Printing FormData contents:');
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+  };
   // Handle cancel button (navigates back to product management page)
   const handleCancel = () => {
     router.push("/admin/product");
@@ -183,7 +189,7 @@ const handleImageDelete = (index) => {
       setValidationMessage("Please select a category.");
       return false;
     }
-    if (formData.images.length === 0) {
+    if (imageSlots.every((slot) => slot === null)) {
       setValidationMessage("Please upload at least one product image.");
       return false;
     }
@@ -195,42 +201,40 @@ const handleImageDelete = (index) => {
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-1/3"
+        className="bg-white p-6 rounded shadow-md w-2/5"
       >
         <h2 className="text-xl font-bold mb-4">Edit Product</h2>
 
         {/* Image Upload */}
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">
-            Upload Images (Max: 4)
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            className="w-full p-2 border rounded"
-          />
-          {imagePreviews.length > 0 && (
-            <div className="mt-4 flex space-x-2">
-              {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative">
+        <div className="flex justify-between items-center mb-4">
+          {[0, 1, 2, 3].map((index) => (
+            <div key={index} className="flex flex-col items-center space-y-2 relative">
+              <label className="text-gray-700">Image {index + 1}</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, index)}
+                className="w-full p-2 border rounded"
+              />
+              {imagePreviews[index] && (
+                <div className="relative">
                   <img
-                    key={index}
-                    src={preview}
+                    src={imagePreviews[index]}
                     alt={`Product Preview ${index + 1}`}
-                    className="w-20 h-12 object-cover border border-gray-300 rounded"
+                    className="w-20 h-20 object-cover rounded"
                   />
-                  <button type="button" onClick={(e) => {
-                    e.preventDefault(); 
-                    handleImageDelete(index);
-                    }} className="delete-button">
-                    delete
+                  <button
+                    type="button"
+                    onClick={() => handleImageDelete(index)}
+                    className="absolute top-0 right-0 text-black hover:text-gray-700 font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                    style={{ background: 'rgba(255, 255, 255, 0.6)', margin: '4px' }}
+                  >
+                    &times;  {/* This is a Unicode multiplication sign used as a close icon */}
                   </button>
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          ))}
         </div>
 
         {/* Product Name */}
@@ -289,24 +293,14 @@ const handleImageDelete = (index) => {
 
         {/* Category */}
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Category</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Select one category</option>
-            {categories.length > 0 ? (
-              categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))
-            ) : (
-              <option>Loading categories...</option>
-            )}
-          </select>
+            <label className="block text-gray-700 mb-2">Category</label>
+            <input
+                type="text"
+                name="category"
+                value={displayedCategoryName}
+                readOnly
+                className="w-full p-2 border rounded bg-gray-100" // 使用灰色背景表示不可编辑
+            />
         </div>
 
         {/* Visibility */}

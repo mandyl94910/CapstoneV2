@@ -97,5 +97,20 @@ const getCategoriesTotalNumber = async (req, res) => {
   }
 };
 
+// Fetch category by ID
+const getCategoryById = async (req, res) => {
+  try {
+      const category = await Category.findByPk(req.params.id);
+      if (category) {
+          res.json({ name: category.name });
+      } else {
+          res.status(404).send('Category not found');
+      }
+  } catch (error) {
+      console.error('Error fetching category:', error);
+      res.status(500).send('Server error');
+  }
+};
+
 // Export the getCategories function
-module.exports = { getCategories, getPrimaryCategories,getSubCategories,getCategoriesTotalNumber };
+module.exports = { getCategories, getPrimaryCategories,getSubCategories,getCategoriesTotalNumber,getCategoryById };

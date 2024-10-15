@@ -25,7 +25,7 @@ const AddProduct = () => {
     const { name, value } = e.target;
     //Use the setFormData function to update the state of the formData.
     setFormData({
-      //spread syntax
+      //spread syntax means copy every elements in formData here in setFormData
       ...formData,
       //[key] : value
       [name]: value,
@@ -50,6 +50,7 @@ const AddProduct = () => {
 
   // Handle image file selection and preview
   const handleImageChange = (e) => {
+    //e.target.files means catch the changes of files inputing 
     const files = Array.from(e.target.files);
     //formData.images.length is the number of uploaded images, 
     //files.length is the number of newly selected files
