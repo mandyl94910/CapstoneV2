@@ -67,9 +67,10 @@ export default function CartPage() {
                     <div className='flex items-center'>
                       <Link  href={`/product/${item.product_id}`}>
                         <img 
-                          src={`/images/${item.image}`} 
+                          // now the images of product have been updated to multiple pictures  
+                          src={`/images/${item.image.split(',')[0]}`} 
                           alt={item.product_name} 
-                          className="w-24 h-24 rounded" />
+                          className="w-24 h-24 object-cover rounded" />
                       </Link>
                       <div className="flex flex-col px-4">
                         <h2 className="font-semibold">{item.product_name}</h2>

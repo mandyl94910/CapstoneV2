@@ -58,17 +58,13 @@ function Address() {
     const handleEditClick = (address) => {
         setSelectedAddressId(address.id);
         setFormData({
-            // first_name: address.first_name,
-            // last_name: address.last_name,
-            // phone: address.phone,
+            first_name: address.first_name,
+            last_name: address.last_name,
+            phone: address.phone,
             street: address.street,
             city: address.city,
             province: address.province,
             postal: address.postal,
-            // because there is no customer name and phone on address table currently, 
-            // so temporary using those data from customer table
-            // customer_name: address.Customer.customer_name,
-            // phone: address.Customer.phone,
             country: address.country,
             is_default: address.is_default
         });

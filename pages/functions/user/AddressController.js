@@ -70,16 +70,19 @@ const getAddresses = async (req, res) => {
    * @returns  the address being added
    */
   const addAddress = async (req, res) => {
-    const { street, city, province, postal, country, is_default, customer_id } = req.body;
+    const { first_name, last_name, phone, street, city, province, postal, country, is_default, customer_id } = req.body;
 
     // check if all fields are filled
-    if (!street || !city || !postal || !country || !customer_id) {
+    if (!first_name || !last_name || !phone || !street || !city || !province || !postal || !country || !customer_id) {
         return res.status(400).send({ message: 'Missing required fields' });
     }
 
     try {
         // using Sequelize create a new row and insert into database
         const newAddress = await Address.create({
+            first_name,
+            last_name,
+            phone,
             street,
             city,
             province,
@@ -111,7 +114,7 @@ const getAddresses = async (req, res) => {
    */
   const updateAddress = async (req, res) => {
     const { addressId } = req.params;
-    const { street, city, province, postal, country, is_default } = req.body;
+    const { first_name, last_name, phone, street, city, province, postal, country, is_default } = req.body;
   
     try {
       const address = await Address.findOne({
@@ -127,6 +130,9 @@ const getAddresses = async (req, res) => {
 
       // update address with new data
       await address.update({
+        first_name,
+        last_name,
+        phone,
         street,
         city,
         province,

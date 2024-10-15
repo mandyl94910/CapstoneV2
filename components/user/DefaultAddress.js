@@ -85,11 +85,13 @@ const DefaultAddress = ({ customer_id }) => {
             <Link href={`/user-profile/address/${customer_id}`}>
                 <div className="bg-blue-100 p-4 rounded-md mb-6">
                     <div className="flex justify-between">
-                    <h3 className="font-bold">Default Shipping Address:</h3>
-                    <FaAngleRight />
+                        <h3 className="font-bold">Default Shipping Address:</h3>
+                        <FaAngleRight />
                     </div>
-                    <p>Name: hardcode name {defaultAddress.first_name} {defaultAddress.last_name}</p>
-                    <p>Phone: hardcode phone {defaultAddress.phone}</p>
+                    <hr className="border-gray-500 m-1"/>
+                    <hr className="text-gray-700"/>
+                    <p className="text-gray-900 font-bold">{defaultAddress.first_name} {defaultAddress.last_name}</p>
+                    <p className="text-gray-700">{defaultAddress.phone}</p>
                     <p className="text-gray-700">
                     {defaultAddress.street}, {defaultAddress.city}, {defaultAddress.province}, {defaultAddress.postal}, {defaultAddress.country}
                     </p>
