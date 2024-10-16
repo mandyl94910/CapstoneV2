@@ -1,5 +1,6 @@
 //C:\CPRG306\CapstoneV2\server\passportConfig.js
 const db = require('./db');  // Import the database connection module for database operations
+//hash password function
 const bcrypt = require('bcrypt'); // Import bcrypt for password hashing comparison
 const localStrategy = require('passport-local').Strategy; // Import the local strategy from passport-local for username/password authentication
 
@@ -21,6 +22,7 @@ module.exports = function(passport) {
           const queryByUsername = "SELECT * FROM customer WHERE customer_name = $1";
           const queryByEmail = "SELECT * FROM customer WHERE email = $1";
           const isEmail = loginIdentifier.includes('@');
+          //isEmail is a bollean. it select a different query method based on the value of isEmail.
           const query = isEmail ? queryByEmail : queryByUsername;
       
           db.query(query, [loginIdentifier], (err, result) => {
@@ -59,6 +61,7 @@ module.exports = function(passport) {
 //   done (function): A callback function that returns the execution to Passport with parameters for errors or successful result.
 // Functionality:
 //   This function takes the user object, extracts the customer_id, and stores it in the session. This helps in reducing the session data size and improves performance.
+//Serialization is the process of converting a data structure or object into a format that can be stored or transmitted
     passport.serializeUser((user, done) => {
         done(null, user.customer_id);
     });
@@ -70,6 +73,7 @@ module.exports = function(passport) {
 //   done (function): A callback function that returns the execution to Passport with parameters for errors or successful user data retrieval.
 // Functionality:
 //   This function queries the database to find the user by the serialized customer_id. If found, it returns the full user object; otherwise, it reports an error indicating the user was not found.
+//Deserialization is the process of reducing data in this format to its original object or data structure.
     passport.deserializeUser((id, done) => {
         const query = "SELECT * FROM customer WHERE customer_id = $1"; // Query to fetch the user based on ID
         db.query(query, [id], (err, result) => {

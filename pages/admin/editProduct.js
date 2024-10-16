@@ -14,9 +14,9 @@ const AddProduct = () => {
     images: [], // Array to store multiple images
   });
 
+  //need slots variables to mark changes of the slot
   const [imageSlots, setImageSlots] = useState([null, null, null, null]); // Array to manage image files per slot
   const [imagePreviews, setImagePreviews] = useState([null, null, null, null]); // Array for image previews per slot
-  const [categories, setCategories] = useState([]);
   const [validationMessage, setValidationMessage] = useState("");
   const [displayedCategoryName, setdisplayedCategoryName] = useState("");
 
@@ -27,7 +27,9 @@ const AddProduct = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
+      //spread syntax means copy every elements in formData here in setFormData
       ...prev,
+      //[key] : value
       [name]: value,
     }));
   };
@@ -53,8 +55,10 @@ const fetchProductDetails = async (productId ) => {
     const categoryObj = categoryResponse.data;
     setdisplayedCategoryName(categoryObj.name)
 
+    //retrieves the current timestamp. Date() is an object and getTime() is a function.
     const timestamp = new Date().getTime();
     const basePath = `/images/product/${product.category_id}/${product.product_id}/`;
+    //ts is used to preventing Browser Cache Problems, cus the image preview need to be displayed in real time
     const imagePaths = [1, 2, 3, 4].map((num) => `${basePath}${num}.webp?ts=${timestamp}`);
   
     setImagePreviews(imagePaths);
@@ -80,11 +84,13 @@ const handleImageDelete = (index) => {
   const updatedSlots = [...imageSlots];
   const updatedPreviews = [...imagePreviews];
 
-  updatedSlots[index] = null; // 清除特定槽位的图片文件
+  //// Clear the picture file for a specific slot
+  updatedSlots[index] = null; 
+  //URLs beginning with “blob:” are temporary object URLs. remove them after deletion to release the ram.
   if (imagePreviews[index] && imagePreviews[index].startsWith("blob:")) {
     URL.revokeObjectURL(imagePreviews[index]);
   }
-  updatedPreviews[index] = null; // 清除预览图
+  updatedPreviews[index] = null; 
 
   setImageSlots(updatedSlots);
   setImagePreviews(updatedPreviews);
@@ -102,19 +108,13 @@ const handleImageDelete = (index) => {
     const updatedPreviews = [...imagePreviews];
     updatedPreviews[index] = URL.createObjectURL(file);
 
-    // 释放旧的 URL，避免内存泄漏
+    // remove the old urls to release the ram.
     if (imagePreviews[index] && imagePreviews[index].startsWith("blob:")) {
       URL.revokeObjectURL(imagePreviews[index]);
     }
 
     setImageSlots(updatedSlots);
     setImagePreviews(updatedPreviews);
-
-  //   // 向formData添加卡槽索引信息
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     slotIndex: index + 1, // 加1使其与文件名对应（1.webp, 2.webp, etc.）
-  // }));
   };
 
   // Handle form submission
@@ -135,9 +135,10 @@ const handleImageDelete = (index) => {
     updateform.append('visibility', formData.visibility);
 
     imageSlots.forEach((image,index) => {
+      //check if the image is the object of File
       if (image instanceof File) {
-        console.log(`Appending image at slotIndex ${index}: ${image.name}`); // 日志：添加的图片和索引
-        updateform.append("images", image, (index+1).toString() + '-' + image.name); // 如果是文件则直接添加
+        console.log(`Appending image at slotIndex ${index}: ${image.name}`); 
+        updateform.append("images", image, (index+1).toString() + '-' + image.name); 
 
       } else if (image) {
         // Check if it's an existing URL and needs to be sent as a URL
@@ -148,9 +149,12 @@ const handleImageDelete = (index) => {
     
     try {
         printFormData(updateform);
+        //put is more in line with the operational requirements for updating resources
+        //POST is used to create new resources, while PUT is used to replace or update existing resources.
         const response = await axios.put(`http://localhost:3001/api/products/${productId}`, updateform, {
             headers: { "Content-Type": "multipart/form-data" },
         });
+        //need the father page to refresh
         router.push({pathname: "/admin/product",
           query: { refresh: true },}); 
     } catch (error) {
@@ -159,13 +163,14 @@ const handleImageDelete = (index) => {
     };
 
 
-    // 函数用于打印 FormData 中的所有数据
+    // function is used to print all the data in the FormData to debug.
   const printFormData = (formData) => {
     console.log('Printing FormData contents:');
     formData.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
   };
+
   // Handle cancel button (navigates back to product management page)
   const handleCancel = () => {
     router.push("/admin/product");
