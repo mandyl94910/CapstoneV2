@@ -40,7 +40,8 @@ const { getAllProducts,
   updateProductById } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
-    getOrderTotalNumber} = require('../pages/functions/order/orderController');
+    getOrderTotalNumber,
+    getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
 const getReviewByProductId = require('../pages/functions/product/review');
 
@@ -150,6 +151,9 @@ app.post('/api/products-admin/changeVisibility',changeProductVisibility);
 app.get('/api/user-admin/datatable', (req, res) => {
   getAllUsers(req, res);
 });
+
+// Rout to get orders for customer
+app.get('/api/orders/:customerId', getAllOrdersByCustomerId);
 
 // Route to get order
 app.get('/api/order-admin/datatable', (req, res) => {

@@ -23,32 +23,30 @@ const DefaultAddress = ({ customer_id }) => {
         is_default: true
     });
 
-    useEffect(() => {
 
-        const fetchDefaultAddress = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/api/addresses/${parseInt(customer_id, 10)}`);
-                const addresses = response.data;
+    const fetchDefaultAddress = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/addresses/${parseInt(customer_id, 10)}`);
+            const addresses = response.data;
+            const defaultAddress = addresses.find(addr => addr.is_default);
 
-                const defaultAddress = addresses.find(addr => addr.is_default);
-
-                if (defaultAddress) {
-                    setDefaultAddress(defaultAddress);
-                    setHasAddress(true);
-                } else {
-                    setHasAddress(false);
-                }
-                
-            } catch (error) {
-                console.error('Error fetching default address:', error);
-            } finally {
-                setLoading(false);
+            if (defaultAddress) {
+                setDefaultAddress(defaultAddress);
+                setHasAddress(true);
+            } else {
+                setHasAddress(false);
             }
-        };
+            
+        } catch (error) {
+            console.error('Error fetching default address:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchDefaultAddress();
-
-    }, [customer_id, defaultAddress]);
+    }, [customer_id]);
 
     const handleSubmit = async (e) => {
         //stop Page Refresh or Jump
@@ -69,6 +67,8 @@ const DefaultAddress = ({ customer_id }) => {
             setDefaultAddress(response.data);
             setHasAddress(true);
             setShowAddModal(false);
+            // fetch default address again after adding a default address
+            fetchDefaultAddress();
 
         } catch (error) {
             console.error('Error adding address:', error);

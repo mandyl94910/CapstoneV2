@@ -19,7 +19,7 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                 </thead>
                 <tbody>
                     {addresses.map((address, index) => (
-                        <tr key={address.id} 
+                        <tr key={address.id || index} 
                             className={`h-14 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
                         >
                             <td className="px-6">{address.first_name} {address.last_name}</td>

@@ -60,6 +60,36 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+
+const getAllOrdersByCustomerId = async (req, res) => {
+  const {customerId} = req.params;
+  try {
+    const orders = await Order.findAll({
+      where:{
+        customer_id: customerId,
+      },
+      include: [
+        {
+          model: OrderDetail,
+          attributes: ['product_id', 'quantity', 'name', 'price'], 
+          include: [
+            {
+              model: Product,
+              attributes: ['image'],
+              visiblity: true
+            }
+          ]
+        }
+      ],
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error.message);
+    res.status(500).send('Error fetching orders');
+  }
+};
+
+
 // Function name: getTotalSales
 // Description: Calculates the total sales amount by summing the 'total' field in the Order table.
 // Parameters:
@@ -102,5 +132,6 @@ try {
 module.exports = {
   getAllOrders,
   getTotalSales,
-  getOrderTotalNumber
+  getOrderTotalNumber,
+  getAllOrdersByCustomerId
 };

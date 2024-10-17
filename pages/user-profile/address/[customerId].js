@@ -36,23 +36,24 @@ function Address() {
     });
 
     const router = useRouter();
-    const { id } = router.query;
-    const customerId = parseInt(id, 10);
+    const { customerId } = router.query;
+    //const customerId = parseInt(id, 10);
 
+
+    const fetchAddresses = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/addresses/${customerId}`);
+            setAddresses(response.data);
+        } catch (error) {
+            console.error('Error fetching addresses by customerId:', error); 
+        }
+    };
 
     useEffect(() => {
         if (customerId) {
-            const fetchAddresses = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:3001/api/addresses/${customerId}`);
-                    setAddresses(response.data);
-                } catch (error) {
-                    console.error('Error fetching addresses by customerId:', error); 
-                }
-            };
             fetchAddresses();
         }
-    }, [customerId, addresses]);
+    }, [customerId]);
 
     // when click edit icon
     const handleEditClick = (address) => {
@@ -114,13 +115,8 @@ function Address() {
                 // update the address
                 const response = await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
                 console.log('Address updated:', response.data);
-
-                setAddresses((prevAddresses) =>
-                    prevAddresses.map((address) =>
-                        // if id is the same as selectedId, update the address, if not keep the same
-                        address.id === selectedAddressId ? response.data : address
-                    )
-                );
+                // fetch addresses again after updating an address
+                fetchAddresses();
             } else {
                 // add a new address
                 const response = await axios.post(`http://localhost:3001/api/address/add`, addressData, {
@@ -128,13 +124,13 @@ function Address() {
                         'Content-Type': 'application/json', 
                         }
                 });
-                setAddresses([...addresses, response.data]);
+                // fetch addresses again after adding a new address
+                fetchAddresses();
             }
             setShowEditModal(false); 
         } catch (error) {
             console.error('Error submitting address:', error);
         }
-        
     };
 
     const confirmDelete = async (selectedAddressId) => {
@@ -149,9 +145,10 @@ function Address() {
             
             if (response.data.success) {
                  // update addresses array after deleting
-                setAddresses((prevAddresses) => 
-                    prevAddresses.filter(address => address.id !== selectedAddressId)
-                );
+                // setAddresses((prevAddresses) => 
+                //     prevAddresses.filter(address => address.id !== selectedAddressId)
+                // );
+                fetchAddresses();
                 setShowDeleteModal(false);
             } else {
                 console.error('Failed to delete address: ', response.data.message);
@@ -160,7 +157,6 @@ function Address() {
         } catch (error) {
             console.error('Error deleting address:', error);
         }
-        
     };
 
 

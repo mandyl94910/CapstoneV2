@@ -70,24 +70,9 @@ export default function UserProfile() {
                         </div>
 
                         {/* Shipping Address */}
-                        {/* <Link href={`/user-profile/address/${user.customer_id}`}> */}
-                        {/* hardcode here to point to the customer having addresses */}
                         <DefaultAddress customer_id={user.customer_id}/>
-                        {/* <Link href="/user-profile/address/1">
-                            <div className="bg-blue-100 p-4 rounded-md mb-6">
-                                <div className="flex justify-between">
-                                    <h3 className="font-bold">Default Shipping Address:</h3>
-                                    <FaAngleRight />
-                                </div>
-                                
-                                <p>Name: {user.customer_name}</p>
-                                <p>Phone: {user.phone}</p>
-                                <p className="text-gray-700">{user.address} 786 14 Street NW, Calgary, AB {user.postcal}E39 5H2</p>
-                            </div>
-                        </Link> */}
-                       
 
-                        {/* My Logistics */}
+                        {/* Order tracking */}
                         <h3 className="font-bold mb-4">Track order</h3>
                         <p className="text-gray-500">No available</p>
 
