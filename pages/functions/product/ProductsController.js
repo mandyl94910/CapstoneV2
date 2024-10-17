@@ -71,6 +71,7 @@ const getProductsByCategory = async (req, res) => {
         visibility: true  // Only retrieve products that are visible
       }
     });
+    //JSON（JavaScript Object Notation）from chatgpt
     res.json(products);  // Send the filtered products as a JSON response
   } catch (error) {
     res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
@@ -409,8 +410,9 @@ const getTopSellingProducts = async (req, res) => {
       };
     });
      // Sort products in descending order based on total sales and select the top four products
-     //ascendingProducts = result.sort((a, b) => a.sold - b.sold);
+     //ascending Products = result.sort((a, b) => a.sold - b.sold);
     const topSellingProducts = result
+    //sort these elements in descending order
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 4);
     // Return the list of top-selling products as a JSON response.
@@ -435,7 +437,7 @@ const getTotalValue = async (req, res) => {
       // Fetches price and quantity of each product
       attributes: ['price', 'quantity'],
     });
-    // Calculates total inventory value
+    // Calculates total inventory value,reduce(acccumulate the total value of products)
     const totalValue = products.reduce((acc, product) => {
       return acc + product.price * product.quantity;
     }, 0);
