@@ -58,7 +58,7 @@ async function updateAdminDetails (req, res) {
     const { name, title } = req.body;
     // Multer handles file upload and makes it accessible via req.file
     const file = req.file;
-    console.log('Uploaded file:', file); // 日志：上传的文件信息
+    console.log('Uploaded file:', file); 
     try {
         let imagePath = null; // Define it as null first
         //Because we're going to try to store the new avatar first, return the new path and name after storing it, 
@@ -66,14 +66,14 @@ async function updateAdminDetails (req, res) {
         // Upload an avatar and get the path
         if (file) {
             imagePath = `admin/${adminId}.webp`;
-            console.log(`Image path set to: ${imagePath}`); // 日志：图片路径
+            console.log(`Image path set to: ${imagePath}`); 
         }else {
-            console.log('No file uploaded'); // 日志：没有上传文件
+            console.log('No file uploaded'); 
         }
 
         // Update the database with new admin details
         const result = await saveAdminDetailsToDatabase(name, title, imagePath, adminId);
-        console.log('Database update result:', result); // 日志：数据库更新结果
+        console.log('Database update result:', result); 
         res.send({ message: 'Admin details updated successfully!' });
     } catch (error) {
         console.error('Error updating admin details:', error);
@@ -96,6 +96,7 @@ async function updateAdminDetails (req, res) {
 //   Given adminId = 1, it updates the `admin` table where `id = 1` with the new name, title, and image path.
 function saveAdminDetailsToDatabase(name, title, imagePath,adminId) {
     return new Promise((resolve, reject) => {
+        //Promises allow asynchronous operations to be encapsulated within them, returning an object that represents the eventual outcome of those operations. This enables asynchronous operations to be chained and managed similarly to synchronous operations.
         // SQL query to update admin information in the database
         const query = 'UPDATE admin SET name = $1, title = $2, image = $3 WHERE id = $4';
         const values = [name, title, imagePath, adminId]; 

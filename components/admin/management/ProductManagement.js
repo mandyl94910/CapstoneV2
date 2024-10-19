@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+//For page jumps and URL parameter management
 import { useRouter } from "next/router";
 import axios from "axios";
 import DataTable from "./DataTable";
@@ -32,6 +33,7 @@ const ProductManagement = () => {
     async function fetchProductStats() {
       try {
         const [totalProductsRes, totalCategoriesRes, totalValueRes] =
+        //An array with all the results is returned when all the Promises in the array have completed (succeeded or failed)
           await Promise.all([
             axios.get("http://localhost:3001/api/total-products"),
             axios.get("http://localhost:3001/api/total-categories"),
@@ -53,17 +55,15 @@ const ProductManagement = () => {
       fetchProducts();
       fetchProductStats();
 
-      // 清除查询参数，以免页面重载时重复触发刷新
+      // shallow is true means that the update changes the URL path, but does not reload the data and components on the page.
+      //the second slot means set the displayed link. Because i dont need it so i set it to undefined.
       router.replace("/admin/product", undefined, { shallow: true });
     } else {
       fetchProducts();
       fetchProductStats();
     }
+    //if the boolean refresh is true then refresh the whole page
   }, [router.query.refresh]);
-
-  const updateLastUpdated = () => {
-    setLastUpdated(Date.now());
-  };
 
   // Check if `products` is an array before filtering
   const filteredProducts = Array.isArray(products)
@@ -114,8 +114,11 @@ const ProductManagement = () => {
       if (response.data) {
         // Update the product array to reflect the new visibility status
         const updatedProducts = products.map((p) =>
+          //if we find the exact product in database(p.productid=productid)
           p.product_id === productId
+          //update the attribute of visibility
             ? { ...p, visibility: updatedVisibility }
+            //otherwise return the product itself
             : p
         );
         setProducts(updatedProducts);
@@ -149,18 +152,6 @@ const ProductManagement = () => {
       } catch (error) {
         console.error("Error deleting product:", error);
       }
-    }
-  };
-
-  // Refresh the product list after deleting an item
-  const refreshProductList = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:3001/api/products-admin/datatable"
-      );
-      setProducts(response.data); // Update the product list with the new data
-    } catch (error) {
-      console.error("Error refreshing product list:", error);
     }
   };
 

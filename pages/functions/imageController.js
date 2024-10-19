@@ -98,7 +98,6 @@ const productUpdateStorage = multer.diskStorage({
         const productId = req.params.productId;
         // Use slotIndex from the request to determine the file name
         const fileIndex = file.originalname.split('-')[0]; // Default can be replaced with a fallback filename logic
-        console.log(`Received slotIndex for filename: ${fileIndex}`); 
 
         const filename = `${fileIndex}.webp`;
         const filePath = `./public/images/product/${categoryId}/${productId}/${filename}`;

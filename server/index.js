@@ -6,6 +6,8 @@ const passport = require('passport');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 const events = require('events');
+//EventEmitter is a core class in Node.js for handling and triggering events.
+//from chatgpt
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 
 const { uploadSellerAvatar,uploadProductImage,updateProductImage } = require('../pages/functions/imageController');
@@ -81,6 +83,9 @@ app.use(passport.session());
 app.use('/images', express.static('public/images'));
 
 require("./passportConfig")(passport);  // Initialize Passport for authentication
+
+//app.js is the parent route, router.post is the child route, 
+//you can aggregate many router.posts together modularly, and then use app.use to call all the routes of this module
 
 // Registration route
 app.post('/api/register', registerFunction);
@@ -189,16 +194,16 @@ app.get('/api/total-value', getTotalValue);
 // Get the total number of users
 app.get('/api/total-users', getUserTotalNumber);
 
-// 获取一周内增加用户
+// Get additional users in a week
 app.get('/api/new-users', getNewUsers);
 
-// 获取销售总额
+// Get total sales
 app.get('/api/total-sales', getTotalSales);
 
-// 获取订单总数量
+// Get the total number of orders
 app.get('/api/total-orders', getOrderTotalNumber);
 
-// 定义获取销量最高的四个产品的路由
+// Define the route to get the top four selling products
 app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Sales report route

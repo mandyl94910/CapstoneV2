@@ -71,6 +71,7 @@ const getProductsByCategory = async (req, res) => {
         visibility: true  // Only retrieve products that are visible
       }
     });
+    //JSON（JavaScript Object Notation）from chatgpt
     res.json(products);  // Send the filtered products as a JSON response
   } catch (error) {
     res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
@@ -172,6 +173,7 @@ const getRecommendedProducts = async (req, res) => {
         },
         visibility: true,
       },
+      //limit = int limit or = 6
       limit: parseInt(limit) || 6, // limit the number of returned products,|| is Logical OR Operator
     }); 
     //console.log('Recommended products:',products);
@@ -278,7 +280,6 @@ const updateProductById = async (req, res) => {
     const { productId } = req.params;
     const updates = req.body;
 
-    // 如果存在 image 字段，将其删除，以便忽略图片路径的更改
     delete updates.image;
 
     await Product.update(updates, {
@@ -320,7 +321,7 @@ const deleteProduct = async (req, res) => {
       }]
     });
 
-     // Check if all associated orders are complete
+     //every() is used to check if every order status is completed.
     const allCompleted = orderDetails.every(detail => detail.Order.status === 'completed');
     //|| is Logical OR Operator
     if (allCompleted || action === 'delete') {
@@ -397,7 +398,8 @@ const getTopSellingProducts = async (req, res) => {
       //and returns a new array containing the result of the processing of each element of the original array by that function.
       const orderQuantities = product.OrderDetails.map(orderDetail => orderDetail.quantity);
       // Accumulate all the quantity values in the array to get the total sales of the product
-      const totalSold = orderQuantities.reduce((sum, quantity) => sum + quantity, 0); // 累加所有的 quantity
+      //reduce(): accumulate the orderQuantities array.
+      const totalSold = orderQuantities.reduce((sum, quantity) => sum + quantity, 0); 
       return {
         // Convert the product object to JSON format and retain all specified fields.
         ...product.toJSON(),
@@ -408,7 +410,9 @@ const getTopSellingProducts = async (req, res) => {
       };
     });
      // Sort products in descending order based on total sales and select the top four products
+     //ascending Products = result.sort((a, b) => a.sold - b.sold);
     const topSellingProducts = result
+    //sort these elements in descending order
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 4);
     // Return the list of top-selling products as a JSON response.
@@ -433,7 +437,7 @@ const getTotalValue = async (req, res) => {
       // Fetches price and quantity of each product
       attributes: ['price', 'quantity'],
     });
-    // Calculates total inventory value
+    // Calculates total inventory value,reduce(acccumulate the total value of products)
     const totalValue = products.reduce((acc, product) => {
       return acc + product.price * product.quantity;
     }, 0);
