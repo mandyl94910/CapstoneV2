@@ -46,7 +46,7 @@ const AddProduct = () => {
     
     
     
-const fetchProductDetails = async (productId ) => {
+const fetchProductDetails = async (productId) => {
     try {
     const response = await axios.get(`http://localhost:3001/api/products/${productId}`);
     const product = response.data;
