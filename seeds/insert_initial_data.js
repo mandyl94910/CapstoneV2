@@ -334,5 +334,47 @@ exports.seed = async function(knex) {
         END
     )
     WHERE total IS NOT NULL;
+
+    -- Insert payment records based on the orders table data
+    INSERT INTO payment (order_id, customer_id, amount, payment_method, status, payment_date, transaction_id, card_number_last4, refunded, refund_amount, notes)
+    VALUES
+    (1, 5, 1805.97, 'credit card', 'completed', '2023-09-03 09:30:00', 'TXN12345', '1234', FALSE, 0.00, 'Payment completed successfully'),
+    (2, 20, 1448.98, 'PayPal', 'completed', '2023-09-05 15:15:00', 'TXN12346', 'N/A', FALSE, 0.00, 'PayPal payment verified'),
+    (3, 8, 1365.42, 'credit card', 'completed', '2023-09-07 12:30:00', 'TXN12347', '5678', FALSE, 0.00, 'Payment confirmed'),
+    (4, 12, 1937.59, 'credit card', 'completed', '2023-09-10 09:50:00', 'TXN12348', '9876', FALSE, 0.00, 'Successfully processed'),
+    (5, 9, 1889.98, 'PayPal', 'pending', '2023-09-12 16:30:00', 'TXN12349', 'N/A', FALSE, 0.00, 'Awaiting confirmation'),
+    (6, 11, 251.97, 'credit card', 'completed', '2023-09-15 18:30:00', 'TXN12350', '4321', FALSE, 0.00, 'Payment cleared'),
+    (7, 16, 1575.79, 'PayPal', 'completed', '2023-09-18 15:30:00', 'TXN12351', 'N/A', FALSE, 0.00, 'Payment completed'),
+    (8, 13, 651.92, 'credit card', 'completed', '2023-09-20 11:00:00', 'TXN12352', '1111', FALSE, 0.00, 'Processed successfully'),
+    (9, 6, 2415.68, 'credit card', 'completed', '2023-09-22 10:00:00', 'TXN12353', '2222', FALSE, 0.00, 'Verified and processed'),
+    (10, 18, 1364.99, 'PayPal', 'pending', '2023-09-25 13:45:00', 'TXN12354', 'N/A', FALSE, 0.00, 'Awaiting payment'),
+    (11, 21, 104.98, 'credit card', 'completed', '2023-09-28 09:00:00', 'TXN12355', '3333', FALSE, 0.00, 'Payment successful'),
+    (12, 15, 419.99, 'PayPal', 'completed', '2023-09-30 16:30:00', 'TXN12356', 'N/A', FALSE, 0.00, 'Paid via PayPal'),
+    (13, 3, 1417.73, 'credit card', 'completed', '2023-10-03 10:30:00', 'TXN12357', '4444', FALSE, 0.00, 'Confirmed and cleared'),
+    (14, 22, 419.99, 'credit card', 'completed', '2023-10-06 10:00:00', 'TXN12358', '5555', FALSE, 0.00, 'Payment received'),
+    (15, 14, 839.98, 'PayPal', 'completed', '2023-10-09 17:30:00', 'TXN12359', 'N/A', FALSE, 0.00, 'Processed via PayPal'),
+    (16, 17, 104.99, 'credit card', 'completed', '2023-10-12 13:00:00', 'TXN12360', '6666', FALSE, 0.00, 'Payment successful'),
+    (17, 25, 157.49, 'PayPal', 'completed', '2023-10-14 11:30:00', 'TXN12361', 'N/A', FALSE, 0.00, 'Successfully paid'),
+    (18, 24, 157.49, 'credit card', 'completed', '2023-10-17 17:00:00', 'TXN12362', '7777', FALSE, 0.00, 'Payment confirmed'),
+    (19, 4, 1412.03, 'credit card', 'completed', '2023-10-20 15:00:00', 'TXN12363', '8888', FALSE, 0.00, 'Verified successfully'),
+    (20, 28, 209.99, 'PayPal', 'pending', '2023-10-22 11:15:00', 'TXN12364', 'N/A', FALSE, 0.00, 'Pending verification');
+
+    -- Create a function to update payment table based on corresponding orders data
+    CREATE OR REPLACE FUNCTION update_payment_info()
+    RETURNS VOID AS $$
+    BEGIN
+        UPDATE payment p
+        SET 
+            customer_id = o.customer_id,  -- Update customer_id from orders
+            amount = o.total + COALESCE(o.total_tax, 0),  -- Update amount using total and total_tax from orders
+            payment_date = o.order_date  -- Update payment_date to match order_date from orders
+        FROM orders o
+        WHERE p.order_id = o.id;  -- Ensure the update corresponds to the correct order_id
+    END;
+    $$ LANGUAGE plpgsql;
+
+    -- Execute the function to perform the update
+    SELECT update_payment_info();
+
   `);
 };
