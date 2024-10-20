@@ -1,6 +1,6 @@
 // OrderSummary.js
 import React from "react";
-import taxRates from "./addressForm/taxRates"; // Import tax rates based on provinces
+import taxRates from "./addressForm/TaxRates"; // Import tax rates based on provinces
 
 const OrderSummary = ({ cart, province }) => {
   // Function to calculate total price based on cart items

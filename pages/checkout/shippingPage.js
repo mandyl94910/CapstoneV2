@@ -6,30 +6,38 @@ import CheckoutNav from "../../components/user/checkout/CheckoutNav";
 import ReturnButton from "../../components/user/checkout/button/ReturnButton";
 import SubmitButton from "../../components/user/checkout/button/SubmitButton";
 import Image from "next/image";
+import UserInfo from "../../components/user/checkout/UserInfo";
+import PaymentForm from "../../components/user/checkout/PaymentForm"; // Import PaymentForm
+import { Elements } from "@stripe/react-stripe-js"; // Import Elements from Stripe
+import { loadStripe } from "@stripe/stripe-js"; // Import Stripe library
+
+const stripePromise = loadStripe(
+  "pk_test_51QBpyuCdc6M7JQRmFrFgrt1YCO0hrVm9kz3upoRGO9nF95lsrQubHW2pjyU7Z85QwtcyV4A7c2wuemnjHlxsSPbS00RcBMChwy"
+); // Load Stripe publishable key
 
 const ShippingPage = () => {
-  const [formData, setFormData] = useState({}); // State to hold form data
+  const [formData, setFormData] = useState({}); // State to hold user information
   const [cart, setCart] = useState([]); // State to hold cart items
-  const [selectedShippingMethod, setSelectedShippingMethod] =
-    useState("standard"); // Default shipping method selected
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState(""); // State to hold selected shipping method
 
   const router = useRouter(); // Hook to handle routing
 
-  // Load form data and cart items from localStorage on component mount
+  // Load user information and cart items from localStorage when the component mounts
   useEffect(() => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-    if (storedFormData) setFormData(storedFormData); // Set form data if available
+    if (storedFormData) setFormData(storedFormData); // Set user information if available
     setCart(cartItems); // Set cart items from localStorage
   }, []);
 
-  // Function to handle the continue to payment action
-  const handleContinueToPayment = () => {
-    console.log("Selected Shipping Method: ", selectedShippingMethod);
-    router.push("/checkout/payment"); // Navigate to the payment page
+  // Function to handle payment success
+  const handlePaymentSuccess = (paymentMethod) => {
+    console.log("Payment Method:", paymentMethod); // Log the payment method
+    alert("Payment was successful! Thank you for your order."); // Alert for successful payment
+    // Additional logic can be added here (e.g., redirect to a success page)
   };
 
-  // Function to handle the return to information page action
+  // Function to handle the action of returning to the information page
   const handleReturn = () => {
     router.push("/checkout/checkoutPage"); // Navigate back to the information page
   };
@@ -48,33 +56,8 @@ const ShippingPage = () => {
 
         <h2 className="text-2xl font-bold mb-4">Shipping</h2>
 
-        {/* Name, Contact, and Shipping Address displayed in a styled box */}
-        <div className="border border-slate-400 p-4 rounded-lg mb-4">
-          {/* Name */}
-          <div className="flex justify-between items-center">
-            <p className="text-slate-500">Name</p>
-            <p className="font-semibold">
-              {formData.first_name} {formData.last_name}
-            </p>
-          </div>
-          <hr className="my-2" />
-
-          {/* Contact */}
-          <div className="flex justify-between items-center">
-            <p className="text-slate-500">Contact</p>
-            <p className="font-semibold">{formData.phone}</p>
-          </div>
-          <hr className="my-2" />
-
-          {/* Shipping Address */}
-          <div className="flex justify-between items-center">
-            <p className="text-slate-500">Ship to</p>
-            <p className="font-semibold">
-              {formData.street}, {formData.city}, {formData.province}{" "}
-              {formData.postal}, {formData.country}
-            </p>
-          </div>
-        </div>
+        {/* Shipping Info */}
+        <UserInfo formData={formData} />
 
         {/* Shipping method selection */}
         <ShippingMethod
@@ -82,12 +65,19 @@ const ShippingPage = () => {
           setSelectedMethod={setSelectedShippingMethod}
         />
 
-        {/* Return and Continue buttons */}
+        {/* Payment Form wrapped in Elements */}
+        <Elements stripe={stripePromise}>
+          <PaymentForm onPaymentSuccess={handlePaymentSuccess} />
+        </Elements>
+
+        {/* Return and Confirm buttons */}
         <div className="flex justify-between mt-8">
           <ReturnButton onClick={handleReturn} label="Return to information" />
           <SubmitButton
-            label="Continue to payment"
-            onClick={handleContinueToPayment}
+            label="Confirm"
+            onClick={() => {
+              // Additional payment processing logic can be added here.
+            }}
           />
         </div>
       </div>

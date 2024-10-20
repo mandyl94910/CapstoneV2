@@ -17,7 +17,7 @@ const Method = ({ selectedMethod, setSelectedMethod }) => {
             className={`flex justify-between items-center p-4 mb-2 border rounded-lg cursor-pointer ${
               selectedMethod === option.id ? "border-black" : "border-gray-300"
             }`}
-            onClick={() => setSelectedMethod(option.id)} // 클릭 이벤트를 div에 적용
+            onClick={() => setSelectedMethod(option.id)}
           >
             <div className="flex items-center">
               <input

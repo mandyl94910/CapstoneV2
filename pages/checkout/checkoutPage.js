@@ -4,7 +4,7 @@ import AddressForm from "../../components/user/checkout/AddressForm";
 import OrderSummary from "../../components/user/checkout/OrderSummary";
 import Image from "next/image";
 import CheckoutNav from "../../components/user/checkout/CheckoutNav";
-import { useRouter } from "next/router"; // Importing useRouter hook
+import { useRouter } from "next/router"; 
 
 const CheckoutPage = () => {
   const [formData, setFormData] = useState({
@@ -46,11 +46,6 @@ const CheckoutPage = () => {
   // Function to handle cancel action
   const handleCancel = () => {
     console.log("Canceled");
-  };
-
-  // Function to navigate to cart page when the 'Return to cart' button is clicked
-  const handleReturnToCart = () => {
-    router.push("/cart"); // Navigate to the cart page
   };
 
   // Function to handle login action (triggered by the login button in the form)

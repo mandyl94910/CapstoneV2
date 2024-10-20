@@ -7,7 +7,7 @@ import SelectField from "./addressForm/SelectField";
 import AddressDropdown from "./addressForm/AddressDropdown";
 import taxRates from "./addressForm/TaxRates";
 
-const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
+const AddressForm = ({ formData, setFormData, handleSubmit }) => {
   const [addresses, setAddresses] = useState([]);
   const [errors, setErrors] = useState({});
   const router = useRouter();
