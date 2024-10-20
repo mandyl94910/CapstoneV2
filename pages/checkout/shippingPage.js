@@ -12,12 +12,15 @@ const ShippingPage = () => {
   const [cart, setCart] = useState([]); // State to hold cart items
   const [selectedShippingMethod, setSelectedShippingMethod] =
     useState("standard"); // Default shipping method selected
-
+  const [customerInfo, setCustomerInfo] = useState('');
   const router = useRouter(); // Hook to handle routing
 
   // Load form data and cart items from localStorage on component mount
   useEffect(() => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
+
+    const storedCustomerInfo = JSON.parse(localStorage.getItem("customerInfo"));
+    setCustomerInfo(storedCustomerInfo)
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     if (storedFormData) setFormData(storedFormData); // Set form data if available
     setCart(cartItems); // Set cart items from localStorage
@@ -25,8 +28,19 @@ const ShippingPage = () => {
 
   // Function to handle the continue to payment action
   const handleContinueToPayment = () => {
-    console.log("Selected Shipping Method: ", selectedShippingMethod);
-    router.push("/checkout/payment"); // Navigate to the payment page
+    // 创建要展示的信息内容
+    const message = `
+    User ID: ${customerInfo.customer_id || "Not provided"}\n
+    User Phone: ${formData.phone || "Not provided"}\n
+    User Email: ${customerInfo.email || "Not provided"}\n\n
+    Cart Product IDs: ${cart.map(item => item.product_id).join(", ") || "No products in cart"}\n\n
+    Shipping Address:\n
+      ${formData.street || "Not provided"}, ${formData.city || "Not provided"}, ${formData.province || "Not provided"} ${formData.postal || "Not provided"}, ${formData.country || "Not provided"}\n\n
+    Selected Shipping Method: ${selectedShippingMethod}
+      `;
+
+    // 弹出提示框，展示所有信息
+    alert(message);
   };
 
   // Function to handle the return to information page action

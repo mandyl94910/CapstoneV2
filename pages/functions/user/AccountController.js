@@ -67,6 +67,11 @@ async function loginFunction(req, res, next) {
               console.error(err);
               return res.status(500).send('Login error');
           }
+          if (!req.user) {
+            console.error('User not found in session after login');
+            return res.status(500).send('User session error');
+          }
+          console.log('User logged in:', req.user); 
           // After successful login, delete previous login attempt records
           await deleteSession(`login_attempts_${loginIdentifier}`);
           // Cache user session data with a 3-hour expiration

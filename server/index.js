@@ -65,7 +65,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //expressSession manages user sessions by creating a unique session for each user and storing it on the server.
 //High performance because only the sessionID is passed
 //High data consistency, updated in real time
-app.use(expressSession({ secret: 'mySecretKey', resave: false, saveUninitialized: false }));
+app.use(expressSession({ secret: 'mySecretKey', resave: false, saveUninitialized: false,cookie: { secure: false } }));
 //CORS (Cross-Origin Resource Sharing) middleware allows your server to handle requests from different origins.
 //origin: Restricts access to requests coming from http://localhost:3000.
 //credentials: true: Enables cross-origin requests to include credentials, like cookies, with the request.
