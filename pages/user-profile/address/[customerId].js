@@ -15,7 +15,8 @@ import { useAuth } from "../../../hooks/useAuth";
  * helped with chatGPT
  * prompt: How can I create a popup for edit/add new address, 
  * and it can be closed by click cancel or close button on the right top
- * 
+ * How can I adjust my code to implement when I add or edit an address with default status true
+ * and then the previous default address will be set to false if exists.
  */
 function Address() {
     const { user } = useAuth();
@@ -37,8 +38,6 @@ function Address() {
 
     const router = useRouter();
     const { customerId } = router.query;
-    //const customerId = parseInt(id, 10);
-
 
     const fetchAddresses = async () => {
         try {
@@ -111,6 +110,18 @@ function Address() {
         };
 
         try {
+            // if the new address is set to default
+            // then change the previous default to false(if exists) before update or add the new address
+            // as there can be only one default address  
+            if (formData.is_default) {
+                const existingDefaultAddress = addresses.find(address => address.is_default);
+                if (existingDefaultAddress) {
+                    await axios.put(`http://localhost:3001/api/addresses/${existingDefaultAddress.id}`, {
+                        ...existingDefaultAddress,
+                        is_default: false
+                    });
+                }
+            }
             if (selectedAddressId) {
                 // update the address
                 const response = await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
@@ -144,7 +155,19 @@ function Address() {
             const response = await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
             
             if (response.data.success) {
-                 // update addresses array after deleting
+                // check if the address being deleted is default address
+                const deleteAddress = response.data.deleteAddress;
+                if (deleteAddress && deleteAddress.is_default) {
+                    // check the nextAddress and set to default
+                    const nextAddress = addresses.find(address => address.id !== deleteAddress.id);
+                    if (nextAddress) {
+                        await axios.put(`http://localhost:3001/api/addresses/${nextAddress.id}`, {
+                            ...nextAddress,
+                            is_default: true
+                        });
+                    }
+                }
+                // update addresses array after deleting
                 // setAddresses((prevAddresses) => 
                 //     prevAddresses.filter(address => address.id !== selectedAddressId)
                 // );
