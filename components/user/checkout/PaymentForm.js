@@ -1,35 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const PaymentForm = ({ onPaymentSuccess }) => {
+const PaymentForm = ({ clientSecret, onPaymentSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태 추가
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage(""); // 요청할 때 오류 메시지 초기화
 
     if (!stripe || !elements) {
-      return; // Stripe.js가 로드되지 않은 경우 처리
+      setLoading(false); // Stripe가 로드되지 않았을 때 로딩 상태 해제
+      return;
     }
 
     const cardElement = elements.getElement(CardElement);
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-    });
+
+    // PaymentIntent 확인 및 결제 처리
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      clientSecret,
+      {
+        payment_method: {
+          card: cardElement,
+        },
+      }
+    );
 
     if (error) {
-      console.error(error);
-      alert(error.message); // 오류 메시지 사용자에게 표시
-    } else {
-      console.log("Payment Method Created:", paymentMethod);
-      onPaymentSuccess(paymentMethod); // 결제가 성공적으로 처리된 경우 호출
+      console.error("Payment failed:", error);
+      setErrorMessage(error.message); // 오류 메시지 업데이트
+    } else if (paymentIntent.status === "succeeded") {
+      console.log("Payment succeeded:", paymentIntent);
+      alert("Payment was successful! Thank you.");
+      onPaymentSuccess(paymentIntent); // 결제 성공 시 콜백 호출
     }
+
+    setLoading(false); // 결제 후 로딩 상태 해제
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col">
-      {/* Payment Heading */}
       <h1 className="text-2xl font-bold mb-6 mt-10">Payment</h1>
 
       <div className="flex flex-col mb-4">
@@ -39,25 +52,25 @@ const PaymentForm = ({ onPaymentSuccess }) => {
               base: {
                 fontSize: "16px",
                 color: "#000",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
               },
               invalid: {
                 color: "#fa755a",
-                iconColor: "#fa755a",
               },
             },
           }}
         />
       </div>
 
+      {errorMessage && (
+        <div className="text-red-500 mb-4">{errorMessage}</div> // 오류 메시지 표시
+      )}
+
       <button
         type="submit"
-        disabled={!stripe}
+        disabled={!stripe || loading}
         className="bg-indigo-500 text-white px-4 py-2 rounded-lg mt-4"
       >
-        Pay
+        {loading ? "Processing..." : "Pay"}
       </button>
     </form>
   );

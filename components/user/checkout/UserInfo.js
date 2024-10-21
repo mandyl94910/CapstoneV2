@@ -1,14 +1,25 @@
-// components/user/checkout/ShippingInfo.js
+// components/user/checkout/UserInfo.js
 import React from "react";
 
-const UserInfo = ({ formData }) => {
+const UserInfo = ({ formData = {} }) => {
+  const {
+    first_name = "",
+    last_name = "",
+    phone = "",
+    street = "",
+    city = "",
+    province = "",
+    postal = "",
+    country = "Canada",
+  } = formData;
+
   return (
     <div className="border border-slate-400 p-4 rounded-lg mb-4">
       {/* Name */}
       <div className="flex justify-between items-center">
         <p className="text-slate-500">Name</p>
         <p className="font-semibold">
-          {formData.first_name} {formData.last_name}
+          {first_name} {last_name}
         </p>
       </div>
       <hr className="my-2" />
@@ -16,7 +27,7 @@ const UserInfo = ({ formData }) => {
       {/* Contact */}
       <div className="flex justify-between items-center">
         <p className="text-slate-500">Contact</p>
-        <p className="font-semibold">{formData.phone}</p>
+        <p className="font-semibold">{phone}</p>
       </div>
       <hr className="my-2" />
 
@@ -24,8 +35,7 @@ const UserInfo = ({ formData }) => {
       <div className="flex justify-between items-center">
         <p className="text-slate-500">Ship to</p>
         <p className="font-semibold">
-          {formData.street}, {formData.city}, {formData.province}{" "}
-          {formData.postal}, {formData.country}
+          {street}, {city}, {province} {postal}, {country}
         </p>
       </div>
     </div>
