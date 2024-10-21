@@ -25,6 +25,8 @@ const getAllOrders = async (req, res) => {
       ],
        // Retrieves order ID, total price, date, and status
       attributes: ['id', 'total', 'order_date', 'status'],  
+      //raw = false means return an sequalize object an allowing you to call the functions like .save() .update()
+      //raw=true meanse return a normal javascript object.more suitble only for requirements of data
       raw: false
     });
     const products = await Product.findAll({

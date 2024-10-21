@@ -217,6 +217,7 @@ const getNewUsers = async (req, res) => {
     const newUsers = await Customer.count({
       where: {
         register_date: {
+          //$gte means greater than or equal to
           $gte: oneWeekAgo, // Filter criteria to get users with registration date within one week
         },
       },
