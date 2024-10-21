@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
+import { saveAs } from "file-saver"; 
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]); // State to hold order data
@@ -103,6 +104,10 @@ const OrderManagement = () => {
     },
   ];
 
+  const downloadOrderExcel = () => {
+    window.location.href = "http://localhost:3001/api/export-orders";
+  };
+
   return (
     <div className="border-t-2">
       {/* Container for search bar and DataTable */}
@@ -140,7 +145,16 @@ const OrderManagement = () => {
           onEdit={handleEdit} // Handle edit action
           onDelete={handleDelete} // Handle delete action
         />
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={downloadOrderExcel}
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
+            Download Order Data
+          </button>
+        </div>
       </div>
+      
 
       {/* Order Info Cards */}
       <InfoCards stats={stats} />

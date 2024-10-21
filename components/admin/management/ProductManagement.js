@@ -4,6 +4,7 @@ import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
+import { saveAs } from "file-saver";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]); // Initial state for storing product data
@@ -169,6 +170,10 @@ const ProductManagement = () => {
     router.push("/admin/addProduct");
   };
 
+  const downloadExcel = () => {
+    window.location.href = "http://localhost:3001/api/export-products";
+  };
+
   return (
     <div className="border-t-2">
       {/* Container for product data table */}
@@ -217,7 +222,13 @@ const ProductManagement = () => {
           onDelete={handleDelete} // Handle delete action
         />
         {/* Add Product Button */}
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between mt-4">
+        <button
+          onClick={downloadExcel}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Download Product Data
+        </button>
           <button
             onClick={handleAddProduct}
             className="bg-blue-500 text-white py-2 px-4 rounded"

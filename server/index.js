@@ -46,7 +46,7 @@ const getReviewByProductId = require('../pages/functions/product/review');
 
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
-
+const { generateProductExcel,generateOrderExcel,generateUserExcel  } = require('../pages/functions/data/excelController');
 
 const app = express();
 
@@ -206,6 +206,16 @@ app.get('/api/sales-report', getSalesReportData);
 
 // Route to get a category by ID
 app.get('/api/categories/:id', getCategoryById);
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-products', generateProductExcel);
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-orders', generateOrderExcel );
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-users', generateUserExcel );
+
 
 // Start the server
 app.listen(3001, () => {

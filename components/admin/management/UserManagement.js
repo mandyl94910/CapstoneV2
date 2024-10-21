@@ -90,6 +90,10 @@ const UserManagement = () => {
     console.log("Delete user:", index);
   };
 
+  const downloadUserExcel = () => {
+    window.location.href = "http://localhost:3001/api/export-users";
+  };
+
   return (
     <div className="border-t-2">
       {/* Container for search bar and DataTable */}
@@ -121,6 +125,12 @@ const UserManagement = () => {
           onEdit={handleEdit} // Handle edit action
           onDelete={handleDelete} // Handle delete action
         />
+        <button
+            onClick={downloadUserExcel}
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
+            Download User Data
+          </button>
       </div>
       {/* Info Cards for User Statistics */}
       <InfoCards stats={stats} />{" "}
