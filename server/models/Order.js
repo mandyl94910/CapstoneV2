@@ -44,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
       complete_date: {
         type: DataTypes.DATE,
         allowNull: true
+      },
+      address_data: {
+        type: DataTypes.JSONB,  // 新增的字段，用于存储JSON格式的地址数据
+        allowNull: true
       }
     }, {
       tableName: 'orders',

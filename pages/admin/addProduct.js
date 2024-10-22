@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+//For page jumps and URL parameter management
 import { useRouter } from "next/router";
 import axios from "axios";
 

@@ -25,6 +25,8 @@ const getAllOrders = async (req, res) => {
       ],
        // Retrieves order ID, total price, date, and status
       attributes: ['id', 'total', 'order_date', 'status'],  
+      //raw = false means return an sequalize object an allowing you to call the functions like .save() .update()
+      //raw=true meanse return a normal javascript object.more suitble only for requirements of data
       raw: false
     });
     const products = await Product.findAll({
@@ -135,10 +137,104 @@ try {
 }
 };
 
+// 获取订单信息的控制器函数
+const getOrderById = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    // 查询订单，并包括相关的客户和订单详情
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+
+    // 返回格式化后的订单数据
+    const formattedOrder = {
+      order_id: order.id,
+      customer_id: order.customer_id,
+      total: order.total,
+      total_tax: order.total_tax,
+      order_date: order.order_date,
+      ship_date: order.ship_date,
+      shipping_method: order.shipping_method,
+      tracking_number: order.tracking_number,
+      complete_date: order.complete_date,
+      status: order.status,
+      address_data: order.address_data,
+    };
+
+    res.json(formattedOrder); // 返回格式化后的订单信息
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).json({ message: 'Error fetching order details' });
+  }
+};
+
+const updateOrderById  = async (req, res) => {
+  const { orderId } = req.params;
+  const { address_data, total, total_tax, status, ship_date, shipping_method, tracking_number, complete_date } = req.body;
+  console.log("Updating order with ID:", orderId);
+  try {
+    // 查找指定的订单
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // 更新订单的各个字段，包括地址数据
+    await order.update({
+      address_data,  // 地址数据作为 JSONB 更新
+      total,
+      total_tax,
+      status,
+      ship_date,
+      shipping_method,
+      tracking_number,
+      complete_date
+    });
+
+    res.json({ message: 'Order updated successfully' });
+  } catch (error) {
+    console.error("Error updating order:", error);
+    res.status(500).json({ message: 'Error updating order' });
+  }
+};
+
+const getOrderProducts = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    // 查询订单的产品详情
+    const orderDetails = await OrderDetail.findAll({
+      where: { order_id: orderId },
+    });
+
+    // 格式化返回的数据
+    const products = orderDetails.map(detail => ({
+      id: detail.product_id,
+      name: detail.name,
+      price: detail.price,
+      quantity: detail.quantity
+    }));
+    console.log('product of this order is :',products)
+
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching order products:', error);
+    res.status(500).json({ message: 'Error fetching order products' });
+  }
+};
+
 // Export the functions
 module.exports = {
   getAllOrders,
   getAllOrdersByCustomerId,
   getTotalSales,
-  getOrderTotalNumber
+  getOrderTotalNumber,
+  getOrderById,
+  updateOrderById,
+  getOrderProducts
 };

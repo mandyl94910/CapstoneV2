@@ -1,4 +1,5 @@
 // C:\CPRG306\CapstoneV1\server\index.js
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -6,6 +7,7 @@ const passport = require("passport");
 const expressSession = require("express-session");
 const cookieParser = require("cookie-parser");
 const events = require("events");
+
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 const { createPaymentIntent } = require("./services/paymentService"); // 서비스 로직 불러오기
 const helmet = require("helmet");
@@ -54,14 +56,18 @@ const {
 const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber,
+    getOrderById,
+    updateOrderById,
+    getOrderProducts, 
     getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
+
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
   addReview, 
   checkReviewStatus} = require('../pages/functions/product/review');
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
-
+const { generateProductExcel,generateOrderExcel,generateUserExcel  } = require('../pages/functions/data/excelController');
 
 const app = express();
 
@@ -124,6 +130,9 @@ app.use(
 );
 
 require("./passportConfig")(passport); // Initialize Passport for authentication
+
+//app.js is the parent route, router.post is the child route, 
+//you can aggregate many router.posts together modularly, and then use app.use to call all the routes of this module
 
 // Registration route
 app.post("/api/register", registerFunction);
@@ -253,17 +262,18 @@ app.get("/api/total-value", getTotalValue);
 // Get the total number of users
 app.get("/api/total-users", getUserTotalNumber);
 
-// 获取一周内增加用户
-app.get("/api/new-users", getNewUsers);
 
-// 获取销售总额
-app.get("/api/total-sales", getTotalSales);
+// Get additional users in a week
+app.get('/api/new-users', getNewUsers);
 
-// 获取订单总数量
-app.get("/api/total-orders", getOrderTotalNumber);
+// Get total sales
+app.get('/api/total-sales', getTotalSales);
 
-// 定义获取销量最高的四个产品的路由
-app.get("/api/top-selling-products", getTopSellingProducts);
+// Get the total number of orders
+app.get('/api/total-orders', getOrderTotalNumber);
+
+// Define the route to get the top four selling products
+app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Sales report route
 app.get("/api/sales-report", getSalesReportData);
@@ -286,6 +296,24 @@ app.post("/api/payment/create-payment-intent", async (req, res) => {
     res.status(500).json({ error: error.message }); // Respond with an error message if the payment intent creation fails
   }
 });
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-products', generateProductExcel);
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-orders', generateOrderExcel );
+
+// 创建一个用于导出Excel的路由
+app.get('/api/export-users', generateUserExcel );
+
+// 定义获取订单的路由
+app.get('/api/orders/:orderId', getOrderById);
+
+// 定义修改订单的路由
+app.put('/api/update-orders/:orderId', updateOrderById );
+
+// 获取订单的产品信息
+app.get('/api/orders/:orderId/products', getOrderProducts);
 
 // Start the server
 app.listen(3001, () => {
