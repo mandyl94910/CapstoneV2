@@ -51,9 +51,15 @@ const getAddresses = async (req, res) => {
         return res.status(404).json({ success: false, message: 'Address not found' });
       }
 
+      const deleteAddress = address.get(); 
+
       await address.destroy();
 
-      res.json({ success: true, message: "Address deleted successfully" });
+      res.json({ 
+        success: true, 
+        message: "Address deleted successfully",
+        deleteAddress
+       });
     } catch (error) {
       console.error("Error deleting address:", error);
       res.status(500).send({ message: "Error deleting address: " + error.message });
@@ -100,7 +106,9 @@ const getAddresses = async (req, res) => {
 
     } catch (error) {
         console.error('Error adding address to database:', error);
-        return res.status(500).send({ message: 'Failed to add address.', error: error.message });
+        return res.status(500).send({ 
+          message: 'Failed to add address.', 
+          error: error.message });
     }
   };
 
@@ -110,7 +118,7 @@ const getAddresses = async (req, res) => {
    * prompt: How can I edit an address according to its id
    * @param {*} req   client request
    * @param {*} res   server response
-   * @returns  the address being added
+   * @returns  the address being updated
    */
   const updateAddress = async (req, res) => {
     const { addressId } = req.params;
@@ -124,7 +132,8 @@ const getAddresses = async (req, res) => {
       });
 
       if (!address){
-        return res.status(404).json({ success: false, 
+        return res.status(404).json({ 
+          success: false, 
           message: 'Address not found' });
       }
 
@@ -141,12 +150,14 @@ const getAddresses = async (req, res) => {
         is_default,
       });
 
-      res.status(200).json({ success: true, 
+      res.status(200).json({ 
+        success: true, 
         message: 'Address updated successfully', 
         address });
     } catch (error) {
       console.error('Error updating address:', error);
-      res.status(500).send({ message: 'Failed to update address.', 
+      res.status(500).send({ 
+        message: 'Failed to update address.', 
         error: error.message });
     }
   

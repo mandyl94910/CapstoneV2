@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FaBell, FaFileLines, FaGear, FaHeart, FaUser } from "react-icons/fa6";
+import { useAuth } from "../../hooks/useAuth";
 
 
 export default function Sidebar() {
     const router = useRouter();
+    const {user} = useAuth();
 
     return(
         <div>
@@ -16,12 +18,15 @@ export default function Sidebar() {
                             <p>My account</p>
                         </li>
                     </Link>
-                    <Link href="/user-profile/order">
-                        <li className={`flex items-center space-x-3 py-2 border-b cursor-pointer ${router.pathname === '/user-profile/order' ? 'text-blue-600' : 'hover:text-blue-600'}`}>
+                    {user && (
+                        <Link href={`/user-profile/order/${user.customer_id}`}>
+                        <li className={`flex items-center space-x-3 py-2 border-b cursor-pointer ${router.pathname.startsWith('/user-profile/order') ? 'text-blue-600' : 'hover:text-blue-600'}`}>
                             <FaFileLines/>
                             <p>Orders</p>
                         </li>
                     </Link>
+                    )}
+                    
                     <li className="flex items-center space-x-3 py-2 border-b cursor-pointer hover:text-blue-600">
                         <FaHeart/>
                         <p>Favorite</p>

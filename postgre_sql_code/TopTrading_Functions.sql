@@ -78,3 +78,22 @@ SET total_tax = total * (
     END
 )
 WHERE total IS NOT NULL;
+
+------------------------------------------------------------------------------------------
+
+-- Create a function to update payment table based on corresponding orders data
+CREATE OR REPLACE FUNCTION update_payment_info()
+RETURNS VOID AS $$
+BEGIN
+    UPDATE payment p
+    SET 
+        customer_id = o.customer_id,  -- Update customer_id from orders
+        amount = o.total + COALESCE(o.total_tax, 0),  -- Update amount using total and total_tax from orders
+        payment_date = o.order_date  -- Update payment_date to match order_date from orders
+    FROM orders o
+    WHERE p.order_id = o.id;  -- Ensure the update corresponds to the correct order_id
+END;
+$$ LANGUAGE plpgsql;
+
+-- Execute the function to perform the update
+SELECT update_payment_info();

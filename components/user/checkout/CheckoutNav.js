@@ -30,15 +30,15 @@ const CheckoutNav = () => {
           href="/checkout/shippingPage"
           className={getLinkClass("/checkout/shippingPage")}
         >
-          Shipping
+          Shipping & Payment
         </Link>
-        <span>&gt;</span>
+        {/* <span>&gt;</span>
         <Link
-          href="/checkout/payment"
+          href="/checkout/paymentPage"
           className={getLinkClass("/checkout/payment")}
         >
           Payment
-        </Link>
+        </Link> */}
       </nav>
     </div>
   );

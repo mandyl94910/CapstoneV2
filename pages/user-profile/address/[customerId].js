@@ -12,10 +12,11 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { useAuth } from "../../../hooks/useAuth";
 
 /**
- * helped with chatGPT
+ * Helped with chatGPT
  * prompt: How can I create a popup for edit/add new address, 
  * and it can be closed by click cancel or close button on the right top
- * 
+ * How can I adjust my code to implement when I add or edit an address with default status true
+ * and then the previous default address will be set to false if exists.
  */
 function Address() {
     const { user } = useAuth();
@@ -36,23 +37,22 @@ function Address() {
     });
 
     const router = useRouter();
-    const { id } = router.query;
-    const customerId = parseInt(id, 10);
+    const { customerId } = router.query;
 
+    const fetchAddresses = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/api/addresses/${customerId}`);
+            setAddresses(response.data);
+        } catch (error) {
+            console.error('Error fetching addresses by customerId:', error); 
+        }
+    };
 
     useEffect(() => {
         if (customerId) {
-            const fetchAddresses = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:3001/api/addresses/${customerId}`);
-                    setAddresses(response.data);
-                } catch (error) {
-                    console.error('Error fetching addresses by customerId:', error); 
-                }
-            };
             fetchAddresses();
         }
-    }, [customerId, addresses]);
+    }, [customerId]);
 
     // when click edit icon
     const handleEditClick = (address) => {
@@ -110,17 +110,24 @@ function Address() {
         };
 
         try {
+            // if the new address is set to default
+            // then change the previous default to false(if exists) before update or add the new address
+            // as there can be only one default address  
+            if (formData.is_default) {
+                const existingDefaultAddress = addresses.find(address => address.is_default);
+                if (existingDefaultAddress) {
+                    await axios.put(`http://localhost:3001/api/addresses/${existingDefaultAddress.id}`, {
+                        ...existingDefaultAddress,
+                        is_default: false
+                    });
+                }
+            }
             if (selectedAddressId) {
                 // update the address
                 const response = await axios.put(`http://localhost:3001/api/addresses/${selectedAddressId}`, formData);
                 console.log('Address updated:', response.data);
-
-                setAddresses((prevAddresses) =>
-                    prevAddresses.map((address) =>
-                        // if id is the same as selectedId, update the address, if not keep the same
-                        address.id === selectedAddressId ? response.data : address
-                    )
-                );
+                // fetch addresses again after updating an address
+                fetchAddresses();
             } else {
                 // add a new address
                 const response = await axios.post(`http://localhost:3001/api/address/add`, addressData, {
@@ -128,13 +135,13 @@ function Address() {
                         'Content-Type': 'application/json', 
                         }
                 });
-                setAddresses([...addresses, response.data]);
+                // fetch addresses again after adding a new address
+                fetchAddresses();
             }
             setShowEditModal(false); 
         } catch (error) {
             console.error('Error submitting address:', error);
         }
-        
     };
 
     const confirmDelete = async (selectedAddressId) => {
@@ -148,10 +155,23 @@ function Address() {
             const response = await axios.delete(`http://localhost:3001/api/address/delete/${selectedAddressId}`);
             
             if (response.data.success) {
-                 // update addresses array after deleting
-                setAddresses((prevAddresses) => 
-                    prevAddresses.filter(address => address.id !== selectedAddressId)
-                );
+                // check if the address being deleted is default address
+                const deleteAddress = response.data.deleteAddress;
+                if (deleteAddress && deleteAddress.is_default) {
+                    // check the nextAddress and set to default
+                    const nextAddress = addresses.find(address => address.id !== deleteAddress.id);
+                    if (nextAddress) {
+                        await axios.put(`http://localhost:3001/api/addresses/${nextAddress.id}`, {
+                            ...nextAddress,
+                            is_default: true
+                        });
+                    }
+                }
+                // update addresses array after deleting
+                // setAddresses((prevAddresses) => 
+                //     prevAddresses.filter(address => address.id !== selectedAddressId)
+                // );
+                fetchAddresses();
                 setShowDeleteModal(false);
             } else {
                 console.error('Failed to delete address: ', response.data.message);
@@ -160,7 +180,6 @@ function Address() {
         } catch (error) {
             console.error('Error deleting address:', error);
         }
-        
     };
 
 

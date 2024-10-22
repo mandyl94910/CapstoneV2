@@ -1,5 +1,5 @@
 const { Order } = require('../../../server/models');
-// Sequelize provides a wide range of operators for query conditions, like:
+// Sequelize provides a wide range of operators for query conditions, like:.
 
 // Op.eq: Equal (=)
 // Op.ne: Not equal (!=)
