@@ -42,7 +42,10 @@ const { getAllProducts,
   updateProductById } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
-    getOrderTotalNumber} = require('../pages/functions/order/orderController');
+    getOrderTotalNumber,
+    getOrderById,
+    updateOrderById,
+    getOrderProducts  } = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
 const getReviewByProductId = require('../pages/functions/product/review');
 
@@ -221,6 +224,14 @@ app.get('/api/export-orders', generateOrderExcel );
 // 创建一个用于导出Excel的路由
 app.get('/api/export-users', generateUserExcel );
 
+// 定义获取订单的路由
+app.get('/api/orders/:orderId', getOrderById);
+
+// 定义修改订单的路由
+app.put('/api/update-orders/:orderId', updateOrderById );
+
+// 获取订单的产品信息
+app.get('/api/orders/:orderId/products', getOrderProducts);
 
 // Start the server
 app.listen(3001, () => {

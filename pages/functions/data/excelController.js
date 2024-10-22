@@ -68,8 +68,16 @@ const generateOrderExcel = async (req, res) => {
         { header: 'Shipping Method', key: 'shipping_method', width: 20 },
         { header: 'Tracking Number', key: 'tracking_number', width: 20 },
         { header: 'Complete Date', key: 'complete_date', width: 20 },
+        { header: 'Address Data', key: 'address_data', width: 50 }
       ];
   
+      // 格式化地址数据
+      const formatAddress = (addressData) => {
+        if (!addressData) return 'N/A';
+        const { street, city, state, zipcode, country , phone } = addressData;
+        return `${street}, ${city}, ${state}, ${zipcode}, ${country}, ${phone}`;
+      };
+
       orders.forEach(order => {
         worksheet.addRow({
           id: order.id,
@@ -83,12 +91,13 @@ const generateOrderExcel = async (req, res) => {
           shipping_method: order.shipping_method,
           tracking_number: order.tracking_number,
           complete_date: order.complete_date,
+          address_data: formatAddress(order.address_data),
         });
       });
   
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=orders.xlsx');
-  
+      
       await workbook.xlsx.write(res);
       res.end();
     } catch (error) {

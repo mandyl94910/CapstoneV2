@@ -14,6 +14,7 @@ const OrderManagement = () => {
     totalProducts: "Loading...",
     totalOrders: "Loading...",
   });
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
 
   // Fetch order data and order statistics when the component mounts
   useEffect(() => {
@@ -71,12 +72,17 @@ const OrderManagement = () => {
   });
 
   // Placeholder for edit functionality
-  const handleEdit = (index) => {
-    console.log("Edit order:", index);
+  const handleEdit = (orderId) => {
+    router.push({
+      pathname: '/admin/editOrder',
+      query: { orderId: orderId }, 
+    }).then(() => {
+      setLastUpdated(Date.now()); 
+    });
   };
 
   // Placeholder for delete functionality
-  const handleDelete = (index) => {
+  const handleDelete = (orderId) => {
     console.log("Delete order:", index);
   };
 
@@ -135,15 +141,15 @@ const OrderManagement = () => {
             "Status",
           ]}
           data={filteredOrders.map((order) => ({
-            orderNo: order.order_id, // Order ID
-            productID: order.product_name, // Product ID
-            total: order.total, // Total amount
-            customerName: order.customer_name, // Customer name
-            orderDate: new Date(order.order_date).toLocaleDateString(), // Format order date
-            status: order.status, // Order status
-          }))}
-          onEdit={handleEdit} // Handle edit action
-          onDelete={handleDelete} // Handle delete action
+            id: order.order_id, // 设置 id 为 order_id
+            product_name: order.product_name,
+            total: order.total,
+            customer_name: order.customer_name,
+            order_date: new Date(order.order_date).toLocaleDateString(),
+            status: order.status,
+          }))} // 在这里使用 .map() 来映射数据
+          onEdit={(orderId) => handleEdit(orderId)} // 使用 id 进行编辑操作
+          onDelete={(orderId) => handleDelete(orderId)} // 使用 id 进行删除操作
         />
         <div className="flex justify-between mt-4">
           <button
