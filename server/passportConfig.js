@@ -93,7 +93,7 @@ module.exports = function(passport) {
         });
       }
     )
-  );
+
 
   // Function: Serialize User
   // Description: Serializes the user ID into the session. This is part of the login process where only the user's ID is stored in the session store to efficiently manage user sessions.
