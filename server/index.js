@@ -307,7 +307,7 @@ app.get('/api/export-orders', generateOrderExcel );
 app.get('/api/export-users', generateUserExcel );
 
 // 定义获取订单的路由
-app.get('/api/orders/:orderId', getOrderById);
+app.get('/api/get-orders-for-admin/:orderId', getOrderById);
 
 // 定义修改订单的路由
 app.put('/api/update-orders/:orderId', updateOrderById );

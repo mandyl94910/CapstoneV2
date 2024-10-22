@@ -30,7 +30,7 @@ const EditOrder = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    console.log('order Id is',orderId)
+
     if (orderId) {
       fetchOrderDetails(orderId);
       fetchOrderProducts(orderId);
@@ -41,10 +41,10 @@ const EditOrder = () => {
   // Fetch order details from the API
   const fetchOrderDetails = async (orderId) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/orders/${orderId}`);
-      const order = response.data;
 
-      console.log('customer_id is :',order.customer_id)
+      const response = await axios.get(`http://localhost:3001/api/get-orders-for-admin/${orderId}`);
+      const order = response.data;
+      console.log('order Id is ：',orderId,'in edit order')
 
       // 直接从 order.address_data 中提取字段
         const address = order.address_data || {};  // 确保 address_data 存在
