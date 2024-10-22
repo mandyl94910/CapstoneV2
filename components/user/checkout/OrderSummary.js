@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import taxRates from "./addressForm/TaxRates"; // Import tax rates based on provinces
 
@@ -31,7 +32,7 @@ const OrderSummary = ({ cart, province, onTotalCalculated }) => {
         {cart.map((item, index) => (
           <div key={index} className="flex items-center mb-4">
             <img
-              src={`/images/${item.image}`}
+              src={`/images/${item.image.split(',')[0]}`} // Adjust image path as needed
               alt={item.product_name}
               className="w-16 h-16 object-cover rounded-lg mr-4"
             />

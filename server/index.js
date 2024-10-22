@@ -50,25 +50,18 @@ const {
   getTopSellingProducts,
   getTotalValue,
   nameProductImages,
-  updateProductById,
-} = require("../pages/functions/product/ProductsController");
-const {
-  getAllOrders,
-  getTotalSales,
-  getOrderTotalNumber,
-} = require("../pages/functions/order/orderController");
-const searchProductsByName = require("../pages/functions/product/search");
-const getReviewByProductId = require("../pages/functions/product/review");
+  updateProductById } = require('../pages/functions/product/ProductsController');
+const {getAllOrders,
+    getTotalSales,
+    getOrderTotalNumber,
+    getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
+const searchProductsByName = require('../pages/functions/product/search');
+const {getReviewByProductId, 
+  addReview, 
+  checkReviewStatus} = require('../pages/functions/product/review');
+const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
+const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
 
-const {
-  getAddresses,
-  deleteAddress,
-  addAddress,
-  updateAddress,
-} = require("../pages/functions/user/AddressController");
-const {
-  getSalesReportData,
-} = require("../pages/functions/report/SalesReportController");
 
 const app = express();
 
@@ -162,6 +155,12 @@ app.get("/api/products", getAllProducts);
 // Get reviews
 app.get("/api/reviews/:productId", getReviewByProductId);
 
+// Add review
+app.post('/api/reviews/add', addReview);
+
+// Check if a product within an order being reviewed or not
+app.get('/api/review/check', checkReviewStatus);
+
 // Get all products for admin
 app.get("/api/products-admin/datatable", getAllProductsForDataTable);
 
@@ -206,6 +205,9 @@ app.post("/api/products-admin/changeVisibility", changeProductVisibility);
 app.get("/api/user-admin/datatable", (req, res) => {
   getAllUsers(req, res);
 });
+
+// Rout to get orders for customer
+app.get('/api/orders/:customerId', getAllOrdersByCustomerId);
 
 // Route to get order
 app.get("/api/order-admin/datatable", (req, res) => {

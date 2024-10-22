@@ -8,10 +8,11 @@ import { FaMinus, FaPlus } from 'react-icons/fa';
 import Review from '../../components/product/Review';
 
 /**
- * helped by chatGPT
+ * Helped by chatGPT
  * prompt: How can I switch the image of the product so that it will show the image being clicked on the big frame
- * while the image being selected with blue border
- * 
+ *    while the image being selected with blue border
+ * Create a page for display product information including product images, name, price, description, reviews for the products
+ *    and offer add to cart function for user
  */
 const ProductPage = () => {
   const [product, setProduct] = useState(null);  // Store product data

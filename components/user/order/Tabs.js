@@ -1,5 +1,10 @@
 
-
+/**
+ * Helped with chatGPT
+ * Create tabs that can show different styles according to its active status
+ * For each tab, it will check if it is active to decide which styles is for it
+ * Also, it will set new active tab and pass that value to the parent's component when being clicked
+ */
 const Tabs = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { key: "allOrders", label: "All Orders" },
