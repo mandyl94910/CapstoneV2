@@ -316,8 +316,8 @@ const EditOrder = () => {
             name="total"
             value={formData.total}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
+            className="w-full p-2 border rounded bg-gray-100 text-gray-500"
+            readOnly
           />
         </div>
 
@@ -329,8 +329,8 @@ const EditOrder = () => {
             name="total_tax"
             value={formData.total_tax}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
+            className="w-full p-2 border rounded bg-gray-100 text-gray-500"
+            readOnly
           />
         </div>
       </div>
