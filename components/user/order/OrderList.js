@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import OrderCard from './OrderCard';
 import axios from 'axios';
   
-
+/**
+ * Helped with chatGPT
+ * Filter orders according to the activeTab value
+ * If there are orders under a specific tab it will pass the orders to OrderCard to display
+ * Otherwise it will inform users that "No orders found."
+ */
 const OrderList = ( {activeTab, orders, customerId } ) => {
 
   const filteredOrders = orders.filter(order => {

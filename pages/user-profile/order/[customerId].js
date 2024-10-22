@@ -9,7 +9,11 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import axios from "axios";
 
-
+/**
+ * Helped with chatGPT
+ * Create a order page which can retrieve orders from databse based on the customerId
+ * Pass orders retrieved to OrderList to display after beling filtering
+ */
 export default function OrderPage() {
     const router = useRouter();
     const { customerId } = router.query;

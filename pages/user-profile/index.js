@@ -7,7 +7,10 @@ import Link from "next/link";
 import DefaultAddress from "../../components/user/DefaultAddress";
 
 
-
+/**
+ * Helped with chatGPT
+ * Create a page to display the user's basic information and order statistics
+ */
 export default function UserProfile() {
 
     const { user } = useAuth();

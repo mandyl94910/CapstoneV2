@@ -2,6 +2,13 @@ import Link from 'next/link';
 import React from 'react';
 import { FaX } from 'react-icons/fa6';
 
+/**
+ * Helped with chatGPT
+ * Create a card to display information of an order including orderId, orderStatus, 
+ *      and all prodcuts within this order through the assosiated model OrderDetails
+ * Calculate the total price for the order through the price and quantity in each orderDetail
+ * Display all information in a human-readable format
+ */
 const OrderCard = ({ order, customerId }) => {
     // Function to format date
     const formatDateTime = (isoDate) => {

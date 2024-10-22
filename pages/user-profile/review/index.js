@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../../../components/common/Header';
 import axios from 'axios';
+import Footer from '../../../components/common/Footer';
 
 /**
- * helped with chatGPT
- * prompt: Create a review page which can retrieve data from order and 
- * display areas for comment for each product in that order
- *         Check if the product is reviewed and disable the submit button for that product
- * @returns 
+ * Helped with chatGPT
+ * Create a review page which can retrieve data from order and 
+ *      display areas for comment for each product in that order
+ * Check if the product is reviewed and disable the submit button for that product
  */
 const ReviewPage = () => {
     const router = useRouter();
@@ -84,7 +84,7 @@ const ReviewPage = () => {
     return (
         <>
             <Header/>
-            <div className="container mx-auto p-4">
+            <div className="container mx-16 my-6">
                 <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
                 {order.OrderDetails && order.OrderDetails.map((orderDetail) => (
                     <div key={orderDetail.product_id} className="border p-4 mb-4 flex">
@@ -99,7 +99,7 @@ const ReviewPage = () => {
                             <h3 className="font-bold text-lg">{orderDetail.name}</h3>
                             {hasReviewed[orderDetail.product_id] ? (
                                 <>
-                                <p className='text-gray-500'>You have reviewed this product</p>
+                                    <p className='text-gray-500'>You have reviewed this product</p>
                                 </>
                             ) : (
                                 <>
@@ -136,6 +136,7 @@ const ReviewPage = () => {
                     </div>
                 ))}
             </div>
+            <Footer/>
         </>
     );
 };
