@@ -218,7 +218,7 @@ const ProductManagement = () => {
           onClick={downloadExcel}
           className="bg-blue-500 text-white py-2 px-4 rounded"
         >
-          Download Product Data
+          Download Product Table
         </button>
           <button
             onClick={handleAddProduct}

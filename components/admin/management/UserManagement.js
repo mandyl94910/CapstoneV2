@@ -129,7 +129,7 @@ const UserManagement = () => {
             onClick={downloadUserExcel}
             className="bg-blue-500 text-white py-2 px-4 rounded"
           >
-            Download User Data
+            Download User Table
           </button>
       </div>
       {/* Info Cards for User Statistics */}
