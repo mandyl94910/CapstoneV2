@@ -12,7 +12,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 // Initialize Stripe with the publishable key
 const stripePromise = loadStripe(
-  "pk_test_51QBpyuCdc6M7JQRmFrFgrt1YCO0hrVm9kz3upoRGO9nF95lsrQubHW2pjyU7Z85QwtcyV4A7c2wuemnjHlxsSPbS00RcBMChwy"
+  "pk_test_51QCoS2COleXGGsXie013uUq4ENnhil0nGsOeF0QZ81NMchbDoEyB5pdREwxp89nblbMB87jo8Zs2iKe7CrwJhR0c00C4t1RMuN"
 );
 
 const ShippingPage = () => {
