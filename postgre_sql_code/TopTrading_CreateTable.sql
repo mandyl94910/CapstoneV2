@@ -1,12 +1,14 @@
 -- Drop tables if they exist, cascade foreign key dependencies
+Drop TABLE IF EXISTS payment CASCADE;
 DROP TABLE IF EXISTS orders_detail CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS review CASCADE;
 DROP TABLE IF EXISTS address CASCADE;
-DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS product CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS admin CASCADE;
 DROP TABLE IF EXISTS customer CASCADE;
+
 
 -- Create customer table
 CREATE TABLE customer (
@@ -107,6 +109,22 @@ CREATE TABLE orders_detail (
     quantity INT NOT NULL DEFAULT 1
 );
 
+-- Create payment table
+CREATE TABLE payment (
+    id SERIAL PRIMARY KEY,  -- Auto-incrementing primary key
+    order_id INT NOT NULL,  -- Foreign key to orders table
+    customer_id INT NOT NULL,  -- Foreign key to customer table
+    amount DECIMAL(10, 2) NOT NULL,  -- Payment amount
+    payment_method VARCHAR(255) NOT NULL,  -- Payment method (e.g., credit card, PayPal, bank transfer)
+    status VARCHAR(255) NOT NULL,  -- Payment status (e.g., pending, completed, failed, canceled)
+    payment_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- Payment date, default is the current timestamp
+    transaction_id VARCHAR(255),  -- Transaction ID for tracking payments
+    card_number_last4 VARCHAR(255),  -- Last 4 digits of the card number (for credit card payments)
+    refunded BOOLEAN DEFAULT FALSE,  -- Indicates if the payment has been refunded
+    refund_amount DECIMAL(10, 2) DEFAULT 0.00,  -- Amount refunded, default is 0.00
+    notes TEXT  -- Additional notes related to the payment
+);
+
 
 -- Add foreign key constraints
 -- Add self-referencing foreign key to category table
@@ -142,6 +160,10 @@ ADD CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES customer 
 ALTER TABLE orders
 ADD CONSTRAINT fk_orders_address FOREIGN KEY (address_id) REFERENCES address (id);
 
+-- Add CHECK constraint for order status to limit to specific values
+ALTER TABLE orders
+ADD CONSTRAINT check_order_status CHECK (status IN ('pending', 'shipped', 'completed', 'cancelled', 'refunded'));
+
 -- Add foreign key constraints to orders_detail table
 ALTER TABLE orders_detail
 ADD CONSTRAINT fk_orders_detail_order FOREIGN KEY (order_id) REFERENCES orders (id);
@@ -149,3 +171,17 @@ ADD CONSTRAINT fk_orders_detail_order FOREIGN KEY (order_id) REFERENCES orders (
 -- Add unique constraint to ensure only one default address per customer
 CREATE UNIQUE INDEX unique_default_address ON address (customer_id) WHERE is_default = TRUE;
 
+-- Add foreign key constraints
+ALTER TABLE payment
+ADD CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders (id);
+
+ALTER TABLE payment
+ADD CONSTRAINT fk_payment_customer FOREIGN KEY (customer_id) REFERENCES customer (customer_id);
+
+-- Add CHECK constraint for payment_method to limit to specific values
+ALTER TABLE payment
+ADD CONSTRAINT check_payment_method CHECK (payment_method IN ('credit card', 'PayPal'));
+
+-- Add CHECK constraint for status to limit to specific values
+ALTER TABLE payment
+ADD CONSTRAINT check_payment_status CHECK (status IN ('pending', 'completed', 'failed', 'canceled'));
