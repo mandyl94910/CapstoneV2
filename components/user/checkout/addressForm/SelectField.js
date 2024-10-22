@@ -7,7 +7,7 @@ const SelectField = ({ label, value, onChange, options, error }) => {
           error ? "border-red-500" : "border-slate-400"
         } rounded-lg px-4 py-3 appearance-none h-13 ${
           value === "" ? "text-gray-500" : "text-black"
-        }`} // 처음 선택된 값에 따라 색상 변경
+        }`} 
         value={value}
         onChange={onChange}
       >
