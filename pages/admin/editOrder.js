@@ -340,7 +340,7 @@ const EditOrder = () => {
         <label className="block text-gray-700 mb-2">Status</label>
         <select
             name="status"
-            value={formData.status} // 当前状态显示
+            value={formData.status} 
             onChange={handleChange}
             className="w-full p-2 border rounded"
             required
