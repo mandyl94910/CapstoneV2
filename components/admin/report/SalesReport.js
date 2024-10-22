@@ -138,12 +138,12 @@ const ReportManagement = () => {
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded border-t-2 border-b-2">
+    <div className="p-4">
       {/* Buttons for selecting Weekly, Monthly, Yearly */}
       <div className="mb-4 space-x-4">
         <button
           className={`py-2 px-4 rounded ${
-            period === "weekly" ? "bg-indigo-400 text-white" : "bg-gray-300"
+            period === "weekly" ? "bg-slate-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("weekly")}
         >
@@ -151,7 +151,7 @@ const ReportManagement = () => {
         </button>
         <button
           className={`py-2 px-4 rounded ${
-            period === "monthly" ? "bg-indigo-400 text-white" : "bg-gray-300"
+            period === "monthly" ? "bg-slate-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("monthly")}
         >
@@ -159,7 +159,7 @@ const ReportManagement = () => {
         </button>
         <button
           className={`py-2 px-4 rounded ${
-            period === "yearly" ? "bg-indigo-400 text-white" : "bg-gray-300"
+            period === "yearly" ? "bg-slate-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => setPeriod("yearly")}
         >
@@ -168,7 +168,7 @@ const ReportManagement = () => {
       </div>
 
       {/* Chart rendering */}
-      <div className="h-80">
+      <div className="w-full h-96">
         {" "}
         {/* Adjust height as needed */}
         <Line data={getChartData()} options={options} />
