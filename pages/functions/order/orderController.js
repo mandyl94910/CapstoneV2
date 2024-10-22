@@ -60,7 +60,14 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-
+// Function name: getAllOrdersByCustomerId
+// Description: Retrieves all orders with related customer id.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object used to return the orders or an error message.
+// Functionality:
+//   This function retrieves order details, including all products information included in each order, 
+//   The data is returned in JSON format.
 const getAllOrdersByCustomerId = async (req, res) => {
   const {customerId} = req.params;
   try {
@@ -131,7 +138,7 @@ try {
 // Export the functions
 module.exports = {
   getAllOrders,
+  getAllOrdersByCustomerId,
   getTotalSales,
-  getOrderTotalNumber,
-  getAllOrdersByCustomerId
+  getOrderTotalNumber
 };

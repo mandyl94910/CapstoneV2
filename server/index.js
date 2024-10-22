@@ -43,8 +43,9 @@ const {getAllOrders,
     getOrderTotalNumber,
     getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
 const searchProductsByName = require('../pages/functions/product/search');
-const getReviewByProductId = require('../pages/functions/product/review');
-
+const {getReviewByProductId, 
+  addReview, 
+  checkReviewStatus} = require('../pages/functions/product/review');
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
 
@@ -112,6 +113,12 @@ app.get('/api/products', getAllProducts);
 
 // Get reviews
 app.get('/api/reviews/:productId', getReviewByProductId);
+
+// Add review
+app.post('/api/reviews/add', addReview);
+
+// Check if a product within an order being reviewed or not
+app.get('/api/review/check', checkReviewStatus);
 
 // Get all products for admin
 app.get('/api/products-admin/datatable', getAllProductsForDataTable);

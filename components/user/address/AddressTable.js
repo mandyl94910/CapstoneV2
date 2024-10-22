@@ -13,8 +13,8 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                         <th className="px-4">City</th>
                         <th className="px-4">Province</th>
                         <th className="px-4">Postal Code</th>
-                        <th className="px-4">Edit</th>
                         <th className="px-4">Default</th>
+                        <th className="px-4">Edit</th>
                     </tr>
                 </thead>
                 <tbody>

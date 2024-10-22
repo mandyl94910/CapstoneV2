@@ -49,7 +49,7 @@ export default function OrderPage() {
                     <Sidebar/>
                     <div>
                         <Tabs activeTab={activeTab} setActiveTab={setActiveTab}/>
-                        <OrderList activeTab={activeTab} orders={orders}/>
+                        <OrderList activeTab={activeTab} orders={orders} customerId={customerId}/>
                     </div>
                     
                 </div>

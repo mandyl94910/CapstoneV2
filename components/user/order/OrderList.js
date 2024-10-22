@@ -3,7 +3,7 @@ import OrderCard from './OrderCard';
 import axios from 'axios';
   
 
-const OrderList = ( {activeTab, orders} ) => {
+const OrderList = ( {activeTab, orders, customerId } ) => {
 
   const filteredOrders = orders.filter(order => {
       if (activeTab === 'allOrders') return true;
@@ -16,7 +16,7 @@ const OrderList = ( {activeTab, orders} ) => {
     <div className="container ml-4 py-4 px-6">
       {filteredOrders.length > 0 ? (
             filteredOrders.map((order, index) => (
-                <OrderCard key={index} order={order} />
+                <OrderCard key={index} order={order} customerId={customerId}/>
               ))
       ) : (
         <p>No orders found.</p>
