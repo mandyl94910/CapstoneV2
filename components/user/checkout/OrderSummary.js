@@ -1,6 +1,6 @@
 // OrderSummary.js
 import React from "react";
-import taxRates from "./addressForm/taxRates"; // Import tax rates based on provinces
+import taxRates from "./addressForm/TaxRates"; // Import tax rates based on provinces
 
 const OrderSummary = ({ cart, province }) => {
   // Function to calculate total price based on cart items
@@ -25,7 +25,7 @@ const OrderSummary = ({ cart, province }) => {
           <div key={index} className="flex items-center mb-4">
             {/* Product image */}
             <img
-              src={`/images/${item.image}`} // Adjust image path as needed
+              src={`/images/${item.image.split(',')[0]}`} // Adjust image path as needed
               alt={item.product_name}
               className="w-16 h-16 object-cover rounded-lg mr-4"
             />

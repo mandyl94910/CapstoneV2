@@ -6,28 +6,35 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
         <>
             <table className="w-full border border-gray-300">
                 <thead>
-                    <tr className="h-12 w-full bg-blue-100 text-left">
-                        <th className="px-6">Name</th>
-                        <th className="px-6">Phone</th>
-                        <th className="px-6">Street</th>
-                        <th className="px-6">City</th>
-                        <th className="px-6">Province</th>
-                        <th className="px-6">Postal Code</th>
-                        <th className="px-6">Edit</th>
-                        <th className="px-6">Default</th>
+                    <tr className="h-12 w-full bg-blue-100 text-center">
+                        <th className="px-4">Name</th>
+                        <th className="px-4">Phone</th>
+                        <th className="px-4">Street</th>
+                        <th className="px-4">City</th>
+                        <th className="px-4">Province</th>
+                        <th className="px-4">Postal Code</th>
+                        <th className="px-4">Default</th>
+                        <th className="px-4">Edit</th>
                     </tr>
                 </thead>
                 <tbody>
                     {addresses.map((address, index) => (
-                        <tr key={address.id} 
-                            className={`h-14 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                        <tr key={address.id || index} 
+                            className={`h-14 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} text-center`}
                         >
-                            <td className="px-6">{address.first_name} {address.last_name}</td>
-                            <td className="px-6">{address.phone}</td>
-                            <td className="px-6">{address.street}</td>
-                            <td className="px-6">{address.city}</td>
-                            <td className="px-6">{address.province}</td>
-                            <td className="px-6">{address.postal}</td>
+                            <td className="px-4">{address.first_name} {address.last_name}</td>
+                            <td className="px-4">{address.phone}</td>
+                            <td className="px-4">{address.street}</td>
+                            <td className="px-4">{address.city}</td>
+                            <td className="px-4">{address.province}</td>
+                            <td className="px-4">{address.postal}</td>
+                            <td className="px-4">
+                                {address.is_default ? (
+                                <span className="border-blue-600 border-2 rounded-md px-2 py-1 text-blue-600">Default</span>
+                                ) : (
+                                <p>N/A</p>
+                                )}
+                            </td>
                             <td className="px-6">
                                 {/* inline-flex make icons in td items-center with other data at the same row */}
                                 <div className="inline-flex items-center space-x-2">
@@ -40,13 +47,7 @@ const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
                                 </div>
                                 
                             </td>
-                            <td className="px-6">
-                                {address.is_default ? (
-                                <span className="bg-blue-300 rounded-md px-2 py-1 text-blue-800 font-bold">Default</span>
-                                ) : (
-                                <p>N/A</p>
-                                )}
-                            </td>
+                            
                         </tr>
                     ))}
                 </tbody>
