@@ -25,6 +25,9 @@ const {
   getAllUsers,
   getUserTotalNumber,
   getNewUsers,
+  verifyEmail,
+  sendResetPasswordEmail,
+  resetPassword 
 } = require("../pages/functions/user/AccountController");
 const {
   getAdminInformation,
@@ -318,6 +321,15 @@ app.get('/api/orders/:orderId/products', getOrderProducts);
 
 // 创建订单
 app.post('/api/create-orders', createOrder);
+
+// 验证邮箱
+app.post('/api/verify-email', verifyEmail);
+
+// 发送邮件
+app.post('/api/send-reset-password-email', sendResetPasswordEmail);
+
+// 更新密码
+app.post('/api/reset-password', resetPassword );
 
 // Start the server
 app.listen(3001, () => {
