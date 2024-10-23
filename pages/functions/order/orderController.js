@@ -228,6 +228,54 @@ const getOrderProducts = async (req, res) => {
   }
 };
 
+const createOrder = async (req, res) => {
+  try {
+    // 从请求体中解析传递过来的数据
+    const {
+      customer_id,
+      address_id,
+      total,
+      total_tax,
+      shipping_method,
+      products,  // 包含每个产品信息的数组
+    } = req.body;
+
+    // 创建订单，status 和其他一些字段可以设为默认空值
+    const newOrder = await Order.create({
+      customer_id,
+      address_id,
+      total,
+      total_tax,
+      status: 'pending',  // 初始状态为 'pending'
+      order_date: new Date(),  // 当前订单日期
+      ship_date: null,  // 发货日期为空
+      tracking_number: null,  // 追踪号为空
+      complete_date: null,  // 完成日期为空
+      shipping_method,
+      address_data: req.body.address_data || null,  // JSON 格式的地址数据
+    });
+
+    // 遍历产品数组，为每个产品创建一条 orders_detail 数据
+    const orderDetails = products.map(async (product) => {
+      return await OrderDetail.create({
+        order_id: newOrder.id,  // 使用新创建的 order 的 id
+        product_id: product.product_id,
+        name: product.name,
+        price: product.price,
+        quantity: product.quantity,
+      });
+    });
+
+    // 等待所有订单详情的创建完成
+    await Promise.all(orderDetails);
+
+    return res.status(201).json({ message: 'Order created successfully', orderId: newOrder.id });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    return res.status(500).json({ message: 'Error creating order', error });
+  }
+};
+
 // Export the functions
 module.exports = {
   getAllOrders,
@@ -236,5 +284,6 @@ module.exports = {
   getOrderTotalNumber,
   getOrderById,
   updateOrderById,
-  getOrderProducts
+  getOrderProducts,
+  createOrder
 };

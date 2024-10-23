@@ -22,13 +22,69 @@ const CheckoutPage = () => {
   const [cart, setCart] = useState([]); // State to store cart items
   const [totalAmount, setTotalAmount] = useState(0); // 총 금액 상태 추가
   const router = useRouter();
+  const { customer_id } = router.query;
+  const [customerInfo, setCustomerInfo] = useState(null);
+  const [addresses, setAddresses] = useState([]);
 
   useEffect(() => {
-    localStorage.removeItem("formData");
+    const storedFormData = JSON.parse(localStorage.getItem("formData"));
+    console.log('customer id is :', customer_id)
+
+    if (storedFormData) {
+      setFormData(storedFormData); // If formData exists in localStorage, set it
+    }
 
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(cartItems);
+
+    if (customer_id) {
+      fetchCustomerInfo(customer_id);
+    }
   }, []);
+
+  // Function to fetch customer information using customer_id
+  const fetchCustomerInfo = async (customer_id) => {
+    try {
+      const [userResponse, addressResponse] = await Promise.all([
+        fetch(`http://localhost:3001/api/getUser?customer_id=${customer_id}`, {
+          method: 'GET',
+          credentials: 'include'  // 确保传递 Cookies
+        }),
+        fetch(`http://localhost:3001/api/addresses/${customer_id}`, {
+          method: 'GET',
+          credentials: 'include'
+        })
+      ]);
+      if (!userResponse.ok || !addressResponse.ok) {
+        throw new Error('Failed to fetch customer data');
+      }
+      // 获取用户信息和地址信息
+      const userData = await userResponse.json();
+      const addressData = await addressResponse.json();
+      setCustomerInfo(userData);  // 存储用户信息
+      setAddresses(addressData);
+      console.log("Customer info loaded:", {addressData});
+
+      // can set the default address here
+      // if (addressData.length > 0) {
+      //   const address = addressData[0]; // 假设只使用第一个地址
+      //   setFormData((prevFormData) => ({
+      //     ...prevFormData,
+      //     phone: userData.phone,
+      //     first_name: address.first_name,
+      //     last_name: address.last_name,
+      //     street: address.street,
+      //     city: address.city,
+      //     province: address.province,
+      //     postal: address.postal,
+      //     country: address.country,
+      //     address_Id: address.id
+      //   }));
+      // }
+    } catch (error) {
+      console.error("Error loading customer information:", error);
+    }
+  };
 
   const handleTotalCalculated = (amount) => {
     setTotalAmount(amount); // 총 금액을 상태로 저장
@@ -58,7 +114,16 @@ const CheckoutPage = () => {
 
         <CheckoutNav />
 
-        <ContactForm handleLogin={handleLogin} />
+        {/* Contact Form */}
+        {customerInfo ? (
+          <div className="p-4 rounded-md">
+            <h3 className="text-xl font-semibold">
+              Thank you for shopping, {customerInfo.customer_name}!
+            </h3>
+          </div>
+        ) : (
+          <ContactForm handleLogin={handleLogin} />
+        )}
 
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Shipping Address</h2>
@@ -67,6 +132,8 @@ const CheckoutPage = () => {
             setFormData={setFormData}
             handleSubmit={handleSubmit}
             onCancel={handleCancel}
+            addresses={addresses}
+            customerInfo={customerInfo}
           />
         </div>
       </div>

@@ -25,6 +25,9 @@ const {
   getAllUsers,
   getUserTotalNumber,
   getNewUsers,
+  verifyEmail,
+  sendResetPasswordEmail,
+  resetPassword 
 } = require("../pages/functions/user/AccountController");
 const {
   getAdminInformation,
@@ -59,7 +62,8 @@ const {getAllOrders,
     getOrderById,
     updateOrderById,
     getOrderProducts, 
-    getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
+    getAllOrdersByCustomerId,
+    createOrder} = require('../pages/functions/order/orderController');
 
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
@@ -297,23 +301,35 @@ app.post("/api/payment/create-payment-intent", async (req, res) => {
   }
 });
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-products', generateProductExcel);
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-orders', generateOrderExcel );
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-users', generateUserExcel );
 
-// 定义获取订单的路由
+// Define the route to get the order
 app.get('/api/get-orders-for-admin/:orderId', getOrderById);
 
-// 定义修改订单的路由
+// Define routes for modifying orders
 app.put('/api/update-orders/:orderId', updateOrderById );
 
-// 获取订单的产品信息
+// Get product information for an order
 app.get('/api/orders/:orderId/products', getOrderProducts);
+
+// Create an order
+app.post('/api/create-orders', createOrder);
+
+// Verify email
+app.post('/api/verify-email', verifyEmail);
+
+// Send mail
+app.post('/api/send-reset-password-email', sendResetPasswordEmail);
+
+// Update password
+app.post('/api/reset-password', resetPassword );
 
 // Start the server
 app.listen(3001, () => {
