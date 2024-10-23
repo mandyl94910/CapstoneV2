@@ -11,6 +11,20 @@ import { useRouter } from 'next/router';
 // only load this component when being visited
 const ProductGrid = dynamic(() => import('../../components/category/ProductGrid'), { ssr: false });
 
+/**
+ * Helped by chatGPT
+ * Products Component
+ * 
+ * This component displays a list of products based on categories.
+ * It allows users to filter products by categories, search for products,
+ * and sort the product list.
+ *
+ * Features:
+ * - Fetch categories and products from the API.
+ * - Display a sidebar for category selection.
+ * - Implement pagination for product listings.
+ * - Dynamically load the ProductGrid component.
+ */
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);

@@ -7,11 +7,11 @@ const ProductGrid = ({ products }) => {
     <div className="flex flex-wrap gap-6">
       {/* Map through the products array and render a ProductCard for each product */}
       {products.map((product, index) => (
-        <ProductCard key={index} product={product} />  // Use the index as the key and pass the product object to the ProductCard
+        <ProductCard key={index} product={product} /> 
       ))}
     </div>
   );
 };
 
-// Export the ProductGrid component as the default export of this module
+
 export default ProductGrid;

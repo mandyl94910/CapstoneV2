@@ -1,11 +1,26 @@
 import { useState } from "react";
 import InputField from "./InputField";
 
-
+/**
+ * Helped by chatGPT
+ *
+ * This component is a form for collecting user address details, including first name,
+ * last name, phone number, street address, city, province, postal code, and country.
+ * It includes validation for required fields and specific formats for phone numbers and postal codes.
+ *
+ * Props:
+ * - formData: An object containing the current form data.
+ * - setFormData: A function to update the form data.
+ * - handleSubmit: A function to handle form submission.
+ * - onCancel: A function to handle the cancellation of the form.
+ *
+ * Features:
+ * - Real-time validation and error messages for input fields.
+ * - Dynamic updating of form fields with state management.
+ * - Support for checkbox input to set the address as default.
+ */
 const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
 
-    const [phoneError, setPhoneError] = useState("");
-    const [postalError, setPostalError] = useState("");
     const [errors, setErrors] = useState({});
     
     /**
@@ -13,6 +28,7 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
      * Prompt: How to get the data updated for the form
      * 
      */
+    // Handles changes to input fields and updates form data
     // update value or checked state
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -37,13 +53,18 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
         return postalPattern.test(postal);
     }
 
+    /**
+     * Validates all form data and sets error messages for invalid fields.
+     * 
+     * @returns {boolean} - Returns true if all fields are valid, false otherwise.
+     */
     const validateFormData = () => {
         const newErrors = {};
         if (!formData.first_name) newErrors.first_name = "Enter a first name";
         if (!formData.last_name) newErrors.last_name = "Enter a last name";
         if (!formData.street) newErrors.street = "Enter an address";
         if (!formData.city) newErrors.city = "Enter a city";
-        if (!formData.province) newErrors.province = "Choose province";
+        if (!formData.province) newErrors.province = "Choose a province";
         if (!formData.postal) newErrors.postal = "Enter a ZIP / postal code";
         if (!formData.phone) newErrors.phone = "Enter a phone number";
 
@@ -51,13 +72,17 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
         return Object.keys(newErrors).length === 0;
     }
 
+    /**
+     * Handles form submission by validating the data and calling the submit function.
+     * 
+     * @param {Event} e - The event object from the form submission.
+     */
     const handleSubmitWrapper = (e) => {
         e.preventDefault();
 
         // if all fields are filled, check specific format for phone and postal
         if (validateFormData()) {
             if (!validatePhone(formData.phone)) {
-                //setPhoneError("Phone number must be 10 digits.");
                 setErrors((preErrors) => ({
                     ...preErrors,
                     phone: "Phone number must be 10 digits."
@@ -66,7 +91,6 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
             }
     
             if (!validatePostal(formData.postal)) {
-                //setPostalError("Postal code format is incorrect.(e.g., A1A 1A1)");
                 setErrors((preErrors) => ({
                     ...preErrors,
                     postal: "Postal code format is incorrect.(e.g., A1A 1A1)"
@@ -75,7 +99,7 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
             }
         }
 
-        handleSubmit(e);
+        handleSubmit(e);// Call the submit function if all validations pass
     }
 
     const provinces = [
@@ -152,8 +176,11 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
                         name="province"
                         value={formData.province}
                         onChange={handleChange}
-                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
+                        className={`w-full border rounded-lg px-3 py-2 
+                            focus:outline-none focus:ring-2 focus:ring-blue-500
+                            h-13 
+                            ${errors.province ? "border-red-500" : ""} 
+                            ${formData.province === "" ? "text-gray-400" : ""}`}
                     >
                         <option value="">Select Province</option>
                         {provinces.map((province) => (
@@ -162,6 +189,7 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
                             </option>
                         ))}
                     </select>
+                    {errors.province && <p className="text-red-500 text-sm mt-1">{errors.province}</p>}
                 </div>
             </div>
 
@@ -191,9 +219,7 @@ const AddressForm = ({ formData, setFormData, handleSubmit, onCancel }) => {
             </div>
             </div>
             
-           
-            
-            
+            {/* check box */}
             <div className="mb-3">
                 <label className="inline-flex items-center">
                     <input 

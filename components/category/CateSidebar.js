@@ -1,11 +1,23 @@
+//components\category\CateSidebar.js
 import React, { useState } from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 
 /**
- * helped by chatGPT
- * prompt：create a sidebar for categories with subcategories，
- * categories can be expanded or collapsed when being clicked
+ * Helped by chatGPT
+ * CateSidebar Component
+ * 
+ * This component renders a sidebar for categories with expandable/collapsible subcategories.
+ * Users can click on a category to expand or collapse its subcategories.
  *
+ * Props:
+ * - categories: An array of category objects, each potentially containing subcategories.
+ * - selectedCategory: The name of the currently selected category.
+ * - onCategorySelect: A callback function to handle the selection of a category.
+ *
+ * Features:
+ * - Supports expanding and collapsing parent categories.
+ * - Displays subcategories when their parent category is expanded.
+ * - Highlights the selected category with a different background color.
  */
 const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
   const [expandedCategories, setExpandedCategories] = useState({}); // State to manage expanded/collapsed categories
@@ -31,38 +43,37 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
     return (
       <li
         key={category.id}
-        // lever > 0 means it is a child category
+        // lever > 0 means it is a child category, and it will have pl-6
         className={`p-2 mb-2 rounded ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : 'cursor-pointer'}`}
         onClick={() => {
-          if (!isParent) {
-            // If it's not a parent category, select only the clicked subcategory
-            onCategorySelect(category); 
+          {/* if it is a parent category, toggle its expansion status */}
+          if (isParent) {
+            toggleCategory(category.id);
           }
+          onCategorySelect(category); 
         }}
       >
+
+        {/* Category name and the Angle icon (if it is a parent category)*/}
         <div className="flex justify-between items-center">
-          <span 
-            className={`${isSelected ? 'text-white' : ''}`}
-            onClick={() => {
-              if (isParent) {
-                // Click the parent to expand/collapse, but only select the parent when not expanding
-                onCategorySelect(category); // Select the parent category
-              }
-            }}
-          >
+          <span>
             {category.name}
           </span>
+          
+          {/* only show this angle icon when its a parent category */}
           {isParent && (
-            <span className="ml-2 cursor-pointer" onClick={() => toggleCategory(category.id)}>
+            <span className="ml-2 cursor-pointer">
+              {/* Show angleUp or angleDown based on if the parent category is expanded or not */}
               {isExpanded ? (
                 <FaAngleUp className= {`${isSelected ? 'text-white text-sm' : 'text-gray-500 text-sm'} `}/> 
                 ): (
                 <FaAngleDown className= {`${isSelected ? 'text-white text-sm' : 'text-gray-500 text-sm'} `}/>
                 )}
-            </span> // Show angleDown for collapsed and angleUp for expanded categories
+            </span>
           )}
         </div>
 
+        {/* if it is an expanded parent category, show its subcategories */}
         {isParent && isExpanded && (
           <ul className="ml-4 mt-2"> {/* Only display subcategories if the parent is expanded */}
             {category.subcategories.map(subcategory => (

@@ -3,7 +3,7 @@ import OrderCard from './OrderCard';
 import axios from 'axios';
   
 /**
- * Helped with chatGPT
+ * Helped by chatGPT
  * Filter orders according to the activeTab value
  * If there are orders under a specific tab it will pass the orders to OrderCard to display
  * Otherwise it will inform users that "No orders found."

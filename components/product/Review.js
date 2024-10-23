@@ -2,10 +2,25 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 /**
- * helped with chatGPT
+ * Helped by chatGPT
  * prompt: how can I render the stars according to the rating that I retrieved from database
  *  how can I render the stars partially according to the average rating
  *  how can I calculate the total ratings that I retrieved from database and calculate the average rating
+ *
+ * Review Component
+ * 
+ * This component fetches and displays product reviews, including ratings and user comments.
+ * It calculates the average rating and the total number of reviews from the fetched data,
+ * and allows for rendering star ratings both as full stars and partially filled stars.
+ *
+ * Props:
+ * - productId: The ID of the product for which reviews are being fetched.
+ *
+ * Features:
+ * - Fetches reviews from an API based on the product ID.
+ * - Calculates and displays the average rating with a total number of reviews.
+ * - Renders star ratings dynamically based on the average rating and individual review ratings.
+ * - Formats the review timestamp to a readable format.
  */
 export default function Review( {productId} ){
 

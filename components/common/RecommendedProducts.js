@@ -1,4 +1,4 @@
-// components/commen/RecommendedProducts.js
+// components/common/RecommendedProducts.js
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "../../components/category/ProductCard";

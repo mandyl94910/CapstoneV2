@@ -1,5 +1,22 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 
+/**
+ * Helped by chatGPT
+ *
+ * This component displays a table of user addresses. Each row contains the details 
+ * of an address, including the name, phone number, street, city, province, postal 
+ * code, and whether the address is set as the default.
+ *
+ * Props:
+ * - addresses: An array of address objects containing the address details.
+ * - onEditClick: A callback function to handle editing an address.
+ * - onDeleteClick: A callback function to handle deleting an address.
+ *
+ * Features:
+ * - Displays each address in a structured table format.
+ * - Supports editing and deleting addresses through icon buttons.
+ * - Indicates the default address with a special label.
+ */
 const AddressTable = ({ addresses, onEditClick, onDeleteClick }) => {
 
     return (

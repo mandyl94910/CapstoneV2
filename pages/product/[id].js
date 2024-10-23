@@ -41,14 +41,14 @@ const ProductPage = () => {
   useEffect(() => {
     if (product && product.image) {
       const imagesArray = product.image.split(',');
-      setSelectedImage(imagesArray[0]); // 主图设为第一张
+      setSelectedImage(imagesArray[0]); // set the first image as the primary image
     }
   }, [product]);
 
-  // 获取所有图片（四张）
+  // get all images (4 of them)
   const getAllImages = () => {
     if (product && product.image) {
-      return product.image.split(','); // 返回图片数组
+      return product.image.split(','); // return images array
     }
     return [];
   };
@@ -58,9 +58,9 @@ const ProductPage = () => {
     const productExists = cart.find((item) => item.product_id === product.product_id);
 
     if (productExists) {
-      productExists.quantity += 1;
+      productExists.quantity += quantity;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, quantity: quantity });
     }
 
     localStorage.setItem('cart', JSON.stringify(cart)); 

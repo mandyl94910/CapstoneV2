@@ -95,9 +95,9 @@ function Address() {
     };
 
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
         //stop Page Refresh or Jump
-        //e.preventDefault();
+        e.preventDefault();
 
         // incase submit the form without customerId
         if (isNaN(customerId)) {
