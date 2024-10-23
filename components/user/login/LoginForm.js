@@ -77,11 +77,13 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
         onSuccess(); 
       } else {
         setError(res.data.message);
+        window.grecaptcha.reset();
       }
     })
     .catch((err) => {
       setIsLoading(false);
       setError(err.response?.data?.message || err.message);
+      window.grecaptcha.reset();
     });
   };
 
@@ -108,7 +110,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
         <input
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="password"
-          type="password"
+          // type="password"
           placeholder="Password"
           value={loginPassword}
           onChange={(e) => setLoginPassword(e.target.value)}

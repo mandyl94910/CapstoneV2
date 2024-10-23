@@ -9,6 +9,7 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const router = useRouter();
 
   // Verify that both password entries match
@@ -48,7 +49,14 @@ export default function ResetPassword() {
     })
     .then((res) => {
       console.log('Password updated successfully:', res.data);
-      router.push('/login');  // Redirect to login page on success
+      
+      // 显示成功消息
+      setSuccessMessage('Password updated successfully! Return to login page in 5 seconds.');
+      
+      // 等待5秒后跳转到登录页面
+      setTimeout(() => {
+        router.push('/login');
+      }, 5000);
 
     })
     .catch((err) => {
@@ -78,7 +86,7 @@ export default function ResetPassword() {
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="newPassword"
-              type="password"
+              // type="password"
               placeholder="Enter your new password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -91,7 +99,7 @@ export default function ResetPassword() {
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="confirmPassword"
-              type="password"
+              // type="password"
               placeholder="Confirm your new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -105,9 +113,15 @@ export default function ResetPassword() {
           >
             {isLoading ? 'Please wait...' : 'Reset Password'}
           </button>
+          {/* 显示成功或错误信息 */}
           {error && (
             <p className="text-red-500 text-center mt-4">
               {error}
+            </p>
+          )}
+          {successMessage && (
+            <p className="text-green-500 text-center mt-4">
+              {successMessage}
             </p>
           )}
         </form>
