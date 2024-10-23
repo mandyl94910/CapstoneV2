@@ -106,6 +106,9 @@ const ShippingPage = () => {
         province: formData.province,
         postal: formData.postal,
         country: formData.country,
+        phone: formData.phone,             
+        first_name: formData.first_name,   
+        last_name: formData.last_name, 
       },
       products: cart.map(item => ({
         product_id: item.product_id,
