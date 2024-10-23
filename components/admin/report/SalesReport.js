@@ -1,43 +1,10 @@
-// useState is a React hook that allows functional components to have and manage state 
-// by returning a state variable and a function to update it. 
-// useEffect is another hook that lets you handle side effects like data fetching, 
-// subscriptions, or manually updating the DOM after a component renders. 
-// The useEffect hook can be triggered conditionally based on dependencies, 
-// ensuring effects only run when specific state values change. Together, 
-// these hooks enable dynamic, stateful, and side-effect-driven behavior 
-// in functional components without needing to convert them into class components.
 import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-// Axios is a popular JavaScript library used to make HTTP requests from the browser or 
-// Node.js. It is often used in React and other frontend frameworks to interact with APIs 
-// by sending requests (like GET, POST, PUT, DELETE) and handling responses.
-import axios from "axios";
-
-// Chart as ChartJS:
-// Chart is the core class of the chart.js library, responsible for creating and managing chart instances.
-// The as keyword renames Chart to ChartJS in this context to avoid potential naming conflicts with other Chart variables or classes in the project.
-// 2. CategoryScale:
-// CategoryScale is a component used for categorical axes in chart.js, typically for the X-axis. It handles categorical data (such as months, years, or product names) instead of numerical data.
-// For example, if your X-axis shows categories like "January", "February", etc., CategoryScale is used.
-// 3. LinearScale:
-// LinearScale is a component used for creating linear scales, typically for the Y-axis. It is used to represent continuous data, such as sales, temperature, or scores.
-// For example, if your Y-axis shows sales amounts or product quantities, LinearScale generates a linear scale from the minimum to maximum values.
-// 4. PointElement:
-// PointElement defines the appearance of data points in line or scatter charts. It controls the shape, size, and color of the points displayed on the chart.
-// For example, the circular data points in a line chart are managed by PointElement.
-// 5. LineElement:
-// LineElement is responsible for drawing the lines in a line chart. It controls the appearance of the lines connecting data points, such as their color, width, and smoothness.
-// 6. Title:
-// Title is used to add a title to the chart. It allows you to display a heading or description at the top of the chart.
-// 7. Tooltip:
-// Tooltip is the component that manages the tooltips that appear when hovering over data points on the chart. It provides additional information about a data point when a user hovers over it.
-// 8. Legend:
-// Legend is responsible for displaying the legend on the chart, which helps users understand the different datasets by labeling them with corresponding colors or markers.
-
+import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  BarElement,
   PointElement,
   LineElement,
   Title,
@@ -45,133 +12,255 @@ import {
   Legend,
 } from "chart.js";
 
-/*
-  Sales Report Line Chart using react-chartjs-2 with Chart.js.
-  - Reference for integration with Chart.js: 
-  knoldus https://blog.knoldus.com/how-to-render-charts-in-react-using-react-chartjs-2-and-chart-js/ 
-  ReplayBird (https://replaybird.com/blog /react-chartjs-2-graphs)
-  ** this blog was main reference to make the code but unfortunately the post was deleted 
-  ** The data is now fetched dynamically from the backend using axios.
-*/
-
-// Register Chart.js components
-ChartJS.register( // The ChartJS.register method is used to register the components from the chart.js library that you want to use in your application.    
-  CategoryScale,  // By registering only the required components, you reduce the size of the final bundle and optimize performance, as chart.js follows a modular design.
+ChartJS.register(
+  CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
 );
 
 const ReportManagement = () => {
-  const [period, setPeriod] = useState("monthly"); // State to handle selected period
-  const [salesData, setSalesData] = useState([]); // State to store fetched sales data
+  const [year, setYear] = useState("2024");
+  const [month, setMonth] = useState("January");
+  const [sortCategory, setSortCategory] = useState("highToLow");
+  const [sortProductCategory, setSortProductCategory] = useState("Category 1");
+  const [sortProductSales, setSortProductSales] = useState("highToLow");
 
-  // useEffect to fetch data from the backend when the period changes
+  const [salesData, setSalesData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [productData, setProductData] = useState([]);
+
   useEffect(() => {
-    async function fetchSalesData() {
-      try {
-        // Backend API request to fetch sales data for the selected period
-        const response = await axios.get(
-          `http://localhost:3001/api/sales-report?period=${period}`
-        );
-        setSalesData(response.data); // Store the fetched data into state
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-      }
-    }
-    fetchSalesData(); // Fetch sales data when component mounts or period changes
-  }, [period]);
+    const fakeSalesData = Array.from({ length: 7 }, (_, i) => ({
+      period: `Day ${i + 1}`,
+      total_sales: Math.floor(Math.random() * 1000) + 200,
+    }));
+    const fakeCategoryData = Array.from({ length: 5 }, (_, i) => ({
+      category: `Category ${i + 1}`,
+      sales: Math.floor(Math.random() * 500) + 50,
+    }));
+    const fakeProductData = Array.from({ length: 5 }, (_, i) => ({
+      productName: `Product ${i + 1}`,
+      soldNumber: Math.floor(Math.random() * 300) + 100,
+      productId: `P-100${i + 1}`,
+      categoryName: `Category ${Math.floor(Math.random() * 5) + 1}`,
+    }));
 
-  // Function to format the chart data based on the fetched sales data
+    setSalesData(fakeSalesData);
+    setCategoryData(fakeCategoryData);
+    setProductData(fakeProductData);
+  }, [year, month]);
+
+  const sortedCategoryData =
+    sortCategory === "highToLow"
+      ? [...categoryData].sort((a, b) => b.sales - a.sales)
+      : [...categoryData].sort((a, b) => a.sales - b.sales);
+
+  const sortedProductData = [...productData]
+    .filter((product) => product.categoryName === sortProductCategory)
+    .sort((a, b) =>
+      sortProductSales === "highToLow"
+        ? b.soldNumber - a.soldNumber
+        : a.soldNumber - b.soldNumber
+    );
+
   const getChartData = () => {
-    // Map the sales data to chart labels (periods) and values (total sales)
-    // Maps each element of the salesData array (a sales record) to a chart X-axis label
-    const labels = salesData.map((item) => {
-      const periodDate = new Date(item.period);
-      //conditional judgment, if the period is yearly, only show the year
-      return period === "yearly"
-        ? periodDate.getFullYear()  // If yearly, just show the year
-        : periodDate.toLocaleDateString();  // Otherwise, show full date
-    });
+    const labels = salesData.map((item) => item.period);
     const data = {
       labels,
       datasets: [
         {
-          label: `Sales Data (${period.charAt(0).toUpperCase() + period.slice(1)})`, // Chart label
-          data: salesData.map((item) => item.total_sales), // Sales values
-          borderColor: "rgba(72, 187, 120, 1)", // Green
-          backgroundColor: "rgba(156, 163, 175, 0.5)", // Gray background
+          label: `Sales Data (${month} ${year})`,
+          data: salesData.map((item) => item.total_sales),
+          borderColor: "rgba(72, 187, 120, 1)",
+          backgroundColor: "rgba(156, 163, 175, 0.5)",
           fill: true,
-          tension: 0.4, // Smoothing of the line
+          tension: 0.4,
         },
       ],
     };
     return data;
   };
 
-  // Chart options to configure responsiveness and aspect ratio
+  const getCategoryChartData = () => {
+    const labels = sortedCategoryData.map((item) => item.category);
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: `Top Sales by Category (${month} ${year})`,
+          data: sortedCategoryData.map((item) => item.sales),
+          backgroundColor: "rgba(75, 123, 236, 0.6)",
+          borderColor: "rgba(75, 123, 236, 1)",
+          borderWidth: 1,
+        },
+      ],
+    };
+    return data;
+  };
+
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Disable the default aspect ratio
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top", // Position the legend at the top of the chart
+        position: "top",
       },
-      tooltip: {
-        callbacks: {
-          // Custom callback for tooltip to show both sales data and order count
-          label: function (tooltipItem) {
-            const datasetLabel = tooltipItem.dataset.label || '';//falsy values are replaced with empty string
-            const value = tooltipItem.raw;
-            return `${datasetLabel}: ${value}`;
-          },
-          afterLabel: function (tooltipItem) {
-            const orderCount = salesData[tooltipItem.dataIndex].order_count; // Fetch the corresponding order count
-            return `Order Count: ${orderCount}`;
-          }
-        }
-      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        suggestedMax: Math.max(...salesData.map((item) => item.total_sales)) * 1.2 || 10,
+      },
+    },
+  };
+
+  const barOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        suggestedMax: Math.max(...sortedCategoryData.map((item) => item.sales)) * 1.2 || 10,
+      },
     },
   };
 
   return (
     <div className="p-4">
-      {/* Buttons for selecting Weekly, Monthly, Yearly */}
-      <div className="mb-4 space-x-4">
-        <button
-          className={`py-2 px-4 rounded ${
-            period === "weekly" ? "bg-slate-500 text-white" : "bg-gray-300"
-          }`}
-          onClick={() => setPeriod("weekly")}
-        >
-          Weekly
-        </button>
-        <button
-          className={`py-2 px-4 rounded ${
-            period === "monthly" ? "bg-slate-500 text-white" : "bg-gray-300"
-          }`}
-          onClick={() => setPeriod("monthly")}
-        >
-          Monthly
-        </button>
-        <button
-          className={`py-2 px-4 rounded ${
-            period === "yearly" ? "bg-slate-500 text-white" : "bg-gray-300"
-          }`}
-          onClick={() => setPeriod("yearly")}
-        >
-          Yearly
-        </button>
+      <div className="flex space-x-4">
+        <div className="bg-white p-4 rounded-md shadow w-1/2">
+          <h2 className="text-lg font-semibold">ORDERS LAST 30 DAYS</h2>
+          <p className="text-4xl font-bold mt-2">5,948</p>
+          <div className="mt-4 border-t pt-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-700">Sales over time</span>
+              <span className="text-gray-500">6,052 orders</span>
+            </div>
+            <div className="flex justify-between text-sm mt-2">
+              <span className="text-gray-700">Sales by product</span>
+              <span className="text-gray-500">312 products</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-md shadow w-1/2">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Sales Data</h2>
+            <div className="flex space-x-2">
+              <select
+                className="border px-2 py-1 rounded"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              >
+                {Array.from({ length: 11 }, (_, i) => (2020 + i).toString()).map(
+                  (year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  )
+                )}
+              </select>
+              <select
+                className="border px-2 py-1 rounded"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
+                {[
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ].map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="h-64">
+            <Line data={getChartData()} options={options} />
+          </div>
+        </div>
       </div>
 
-      {/* Chart rendering */}
-      <div className="w-full h-96">
-        {" "}
-        {/* Adjust height as needed */}
-        <Line data={getChartData()} options={options} />
+      <div className="bg-white p-4 rounded-md shadow mt-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Top Sales by Category</h2>
+          <select
+            className="border px-2 py-1 rounded"
+            value={sortCategory}
+            onChange={(e) => setSortCategory(e.target.value)}
+          >
+            <option value="highToLow">Sales high to low</option>
+            <option value="lowToHigh">Sales low to high</option>
+          </select>
+        </div>
+        <div className="h-72">
+          <Bar data={getCategoryChartData()} options={barOptions} />
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-md shadow mt-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Top Sales by Product</h2>
+          <div className="flex space-x-2">
+            <select
+              className="border px-2 py-1 rounded"
+              value={sortProductCategory}
+              onChange={(e) => setSortProductCategory(e.target.value)}
+            >
+              {["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"].map(
+                (category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                )
+              )}
+            </select>
+            <select
+              className="border px-2 py-1 rounded"
+              value={sortProductSales}
+              onChange={(e) => setSortProductSales(e.target.value)}
+            >
+              <option value="highToLow">Sales high to low</option>
+              <option value="lowToHigh">Sales low to high</option>
+            </select>
+          </div>
+        </div>
+        <table className="w-full mt-2">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="p-2">Product Name</th>
+              <th className="p-2">Sold Number</th>
+              <th className="p-2">Product ID</th>
+              <th className="p-2">Category Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedProductData.map((product, index) => (
+              <tr key={index} className="bg-white even:bg-gray-100">
+                <td className="p-2">{product.productName}</td>
+                <td className="p-2">{product.soldNumber}</td>
+                <td className="p-2">{product.productId}</td>
+                <td className="p-2">{product.categoryName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
