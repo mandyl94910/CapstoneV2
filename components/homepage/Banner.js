@@ -1,9 +1,15 @@
+//\components\homepage\Banner.js
 import React from 'react';
 import Image from 'next/image';
 import Slider from 'react-slick'; // Importing React Slick
 import Link from 'next/link';
 
-
+/**
+ * Helped with chatGPT
+ * This component displays a carousel of promotional banners using the React Slick library.
+ * Each banner features an image, title, description, and a "Shop Now" button that links
+ *    to a product page. The component supports autoplay, navigation dots.
+ */
 function Banner() {
   const banners = [
     { src: '/banner1.jpg', alt: 'Banner 1', title: '20% off headset', 
@@ -11,22 +17,22 @@ function Banner() {
       textposition: 'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white',
       titlestyle: '',
       descstyle: '',
-      id: 1 
+      id: 6 
     },
     { src: '/banner2.jpg', alt: 'Banner 2', title: 'New Collection', 
       description: 'Explore the latest trends',
       textposition: 'absolute top-1/2 left-1/2 transform -translate-y-1/2 text-left text-white',
       titlestyle: '',
       descstyle: '',
-      id: 2 
-     },
+      id: 17 
+    },
     { src: '/banner3.jpg', alt: 'Banner 3', title: 'Holiday Deals', 
       description: 'Up to 50% off on selected items',
       textposition: 'absolute top-1/2 left-1/2 transform -translate-y-1/2  text-left text-white',
       titlestyle: '',
       descstyle: '',
-      id: 3 
-     }
+      id: 19 
+    }
   ];
 
   // Slider settings for react-slick

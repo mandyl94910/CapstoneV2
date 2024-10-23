@@ -5,7 +5,22 @@ import axios from 'axios';
 import Modal from './address/Modal';
 import AddressForm from './address/AddressForm';
  
-
+/**
+ * Helped by chatGPT
+ * DefaultAddress Component
+ * 
+ * This component displays the default shipping address for a customer.
+ * If no default address exists, it provides an option to add a new address.
+ * It fetches the default address from an API and manages the address form state.
+ *
+ * Props:
+ * - customer_id: The ID of the customer whose default address is being managed.
+ *
+ * Features:
+ * - Fetches the default address on component mount and displays it.
+ * - Allows users to add a new shipping address via a modal form.
+ * - Handles loading state and error handling for API requests.
+ */
 const DefaultAddress = ({ customer_id }) => {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [loading, setLoading] = useState(true);
