@@ -4,11 +4,11 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 
 const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
-  const [loginIdentifier, setLoginIdentifier] = useState(''); // 用户名/邮箱
-  const [loginPassword, setLoginPassword] = useState(''); // 密码
-  const [error, setError] = useState(''); // 错误信息
+  const [loginIdentifier, setLoginIdentifier] = useState(''); 
+  const [loginPassword, setLoginPassword] = useState(''); 
+  const [error, setError] = useState(''); 
   const [isClient, setIsClient] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // 加载状态
+  const [isLoading, setIsLoading] = useState(false); 
   const router = useRouter();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
     }
   }, []);
 
-  // 验证表单
+  // Validation Form
   const validateLoginForm = () => {
     const emailOrUsernameRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$|^\w+$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -46,7 +46,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
     return true;
   };
 
-  // 处理登录逻辑
+   // Handles the login logic
   const handleLogin = () => {
     if (!validateLoginForm()) {
       return;
@@ -74,7 +74,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
     .then((res) => {
       setIsLoading(false);
       if (res.data.success) {
-        onSuccess(); // 成功后回调
+        onSuccess(); 
       } else {
         setError(res.data.message);
       }
@@ -134,7 +134,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
         <button
           type="button"
           className="text-blue-600 hover:underline"
-          onClick={onSwitchToForgetPassword} // 切换到 ForgetPasswordForm
+          onClick={onSwitchToForgetPassword}
         >
           Forgot Password?
         </button>

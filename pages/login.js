@@ -12,9 +12,9 @@ export default function Login() {
   const router = useRouter();
   const [isLoginForm, setIsLoginForm] = useState(true);
 
-  // 成功登录后的回调
+  // Callback after successful login
   const handleLoginSuccess = () => {
-    // 获取用户信息并跳转到首页
+    // Get user information and jump to home page
     axios({
       method: 'get',
       withCredentials: true,
@@ -61,7 +61,7 @@ export default function Login() {
             <a className="text-blue-600 hover:underline mt-2">Create Account</a>
           </Link>
 
-          {/* 添加按钮，跳转到重置密码页面 */}
+          {/* Add button to jump to reset password page */}
           {/* <button
             className="text-blue-600 hover:underline mt-4"
             onClick={() => router.push('/resetpassword')}

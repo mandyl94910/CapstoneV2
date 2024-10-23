@@ -301,34 +301,34 @@ app.post("/api/payment/create-payment-intent", async (req, res) => {
   }
 });
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-products', generateProductExcel);
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-orders', generateOrderExcel );
 
-// 创建一个用于导出Excel的路由
+// Create a route for exporting to Excel
 app.get('/api/export-users', generateUserExcel );
 
-// 定义获取订单的路由
+// Define the route to get the order
 app.get('/api/get-orders-for-admin/:orderId', getOrderById);
 
-// 定义修改订单的路由
+// Define routes for modifying orders
 app.put('/api/update-orders/:orderId', updateOrderById );
 
-// 获取订单的产品信息
+// Get product information for an order
 app.get('/api/orders/:orderId/products', getOrderProducts);
 
-// 创建订单
+// Create an order
 app.post('/api/create-orders', createOrder);
 
-// 验证邮箱
+// Verify email
 app.post('/api/verify-email', verifyEmail);
 
-// 发送邮件
+// Send mail
 app.post('/api/send-reset-password-email', sendResetPasswordEmail);
 
-// 更新密码
+// Update password
 app.post('/api/reset-password', resetPassword );
 
 // Start the server

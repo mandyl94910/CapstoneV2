@@ -3,22 +3,22 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const ForgetPasswordForm = ({ onSwitchToLogin }) => {
-  const [email, setEmail] = useState(''); // 用户输入的邮箱
-  const [message, setMessage] = useState(''); // 显示成功或错误信息
-  const [isLoading, setIsLoading] = useState(false); // 加载状态
+  const [email, setEmail] = useState(''); 
+  const [message, setMessage] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
 
-    // 发送请求到后端处理忘记密码逻辑
+    // Send a request to the backend to process the forgotten password logic
     axios.post('http://localhost:3001/api/verify-email', { email })
         .then((res) => {
-            // 成功时的日志输出
+            // Logic on success
             console.log('Response:', res.data);
             if (res.data.exists) {
-                // 如果邮箱存在，调用后端函数发送重置密码邮件
+                // If the mailbox exists, call the backend function to send a password reset email
                 axios.post('http://localhost:3001/api/send-reset-password-email', { email: res.data.email })
                   .then(() => {
                     console.log('Reset password email sent.');
@@ -30,7 +30,7 @@ const ForgetPasswordForm = ({ onSwitchToLogin }) => {
         })
       .finally(() => {
         setIsLoading(false);
-        // 无论成功还是失败，都显示相同的提示消息
+        // Display the same alert message whether it succeeds or fails
         setMessage('If your email exists, we will send a verification link. Please check your inbox.');
       });
   };

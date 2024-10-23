@@ -11,7 +11,8 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // 验证两次密码输入是否一致
+  // Verify that both password entries match
+
   const formValidation = () => {
     if (!newPassword || !confirmPassword) {
       setError('Please fill in both password fields.');
@@ -24,33 +25,38 @@ export default function ResetPassword() {
     return true;
   };
 
-  // 提交表单，更新密码
+ 
+  // Submit form to update password
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');  // 清除之前的错误消息
+    setError(''); 
 
-    // 验证表单
     if (!formValidation()) {
       return;
     }
 
     setIsLoading(true);
 
-    // 获取 URL 中的 token
+    // Get the token in the URL
+
     const { token } = router.query;
 
-    // 调用 API 更新密码
+    // Call the API to update the password
     axios.post('http://localhost:3001/api/reset-password', {
-      token, // 传递token用于身份验证
+      token, // Pass the token for authentication
       newPassword,
     })
     .then((res) => {
       console.log('Password updated successfully:', res.data);
-      router.push('/login');  // 成功后重定向到登录页面
+      router.push('/login');  // Redirect to login page on success
+
     })
     .catch((err) => {
       console.error('Error updating password:', err.response?.data || err.message);
-      setError('Failed to reset password. Please try again.');
+      const errorMessage = err.response?.data?.message || 'An unexpected error occurred. Please try again.';
+        
+        // Display back-end error messages in the error message area
+      setError(errorMessage);
     })
     .finally(() => {
       setIsLoading(false);

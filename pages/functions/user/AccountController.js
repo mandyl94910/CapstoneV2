@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 require('../../../server/passportConfig')(passport); // Correctly import passportConfig.js
 const redisClient = require('../../../lib/redis'); // Import Redis client
 const { saveSession, getSession, updateSession, deleteSession, incrementLoginAttempts } = require('../../../lib/redisUtils/userOps');
-const { setCache, getCache} = require('../../../lib/redisUtils/cacheOps');
+const { setCache, getCache,deleteCache } = require('../../../lib/redisUtils/cacheOps');
 const bcrypt = require('bcrypt');
 const db = require('../../../server/db');
 const { Customer, Order,sequelize} = require('../../../server/models');  
@@ -232,19 +232,19 @@ const getNewUsers = async (req, res) => {
   }
 };
 
-// 验证邮箱的函数
+// Functions to authenticate mailboxes
 const verifyEmail = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // 在数据库中查找是否存在此邮箱
+    // Find out if the mailbox exists in the database
     const customer = await Customer.findOne({ where: { email } });
 
     if (customer) {
-      // 如果邮箱存在，返回邮箱值
+      // If the mailbox exists, return the mailbox value
       return res.status(200).json({ email: customer.email, exists: true });
     } else {
-      // 如果邮箱不存在，返回 false
+      // Return false if the mailbox does not exist
       return res.status(200).json({ exists: false });
     }
   } catch (error) {
@@ -257,36 +257,35 @@ const sendResetPasswordEmail = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // 生成一个随机的token
+   // Generate a random token
     const token = crypto.randomBytes(32).toString('hex');
 
-    // 设置重置密码URL，包含token
+    // Set the reset password URL, including the token
     const resetUrl = `${RESET_URL_BASE}?token=${token}`;
 
-    // 将token和email存入Redis，过期时间为10分钟（600秒）
-    await setCache(token, { email }, 600); // 将token关联用户邮箱，存储10分钟
+    // Store token and email in Redis with an expiration time of 10 minutes (600 seconds)
+    await setCache(token, { email }, 600); 
 
-    // 创建邮件发送服务
+    // Create a mail delivery service
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'mandyl94910@gmail.com', // 发送者邮箱
-        pass: 'esgaoptocroqcehq', // 发送者邮箱的密码（强烈建议使用应用专用密码）
+        user: 'mandyl94910@gmail.com', // Sender's e-mail
+        pass: 'esgaoptocroqcehq', // app password
       },
     });
 
-    // 定义邮件的内容
+        // Define the content of the message
     const mailOptions = {
       from: 'mandyl94910@gmail.com',
-      to: email, // 收件人
+      to: email, // Recipient
       subject: 'Reset Your Password',
       text: `Click the following link to reset your password: ${resetUrl}. This link will expire in 10 minutes.`,
     };
-
-    // 发送邮件
     await transporter.sendMail(mailOptions);
 
-    // 响应前端，表示邮件已发送
+    // Respond to the front-end to indicate that the email has been sent
+
     return res.status(200).json({ message: 'Reset password email sent.' });
   } catch (error) {
     console.error('Error sending reset password email:', error);
@@ -298,28 +297,29 @@ const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
-    // 从 Redis 中获取与 token 相关的邮箱
+    // get the email address associated with the token from Redis (267)
     const cachedData = await getCache(token);
-
+     
+  // If the token does not exist or has expired, return an explicit error message
     if (!cachedData || !cachedData.email) {
       return res.status(400).json({ message: 'Invalid or expired token.' });
     }
 
     const { email } = cachedData;
 
-    // 根据邮箱在数据库中查找用户
+    // Find users in the database by mailbox
     const customer = await Customer.findOne({ where: { email } });
 
     if (!customer) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    // 更新用户的密码（假设已经对密码进行了哈希处理）
-    customer.password = newPassword;  // 你应该在实际代码中对密码进行加密处理
+    // update the user's password
+    customer.password = newPassword;
     await customer.save();
 
-    // 删除 Redis 中的 token（可选，保证 token 一次性使用）
-    // await deleteCache(token);
+    // Deleting a token in Redis ensures that the token is only used once.
+    await deleteCache(token);
 
     return res.status(200).json({ message: 'Password updated successfully.' });
   } catch (error) {
