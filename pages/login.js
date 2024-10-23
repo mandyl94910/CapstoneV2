@@ -62,12 +62,12 @@ export default function Login() {
           </Link>
 
           {/* 添加按钮，跳转到重置密码页面 */}
-          <button
+          {/* <button
             className="text-blue-600 hover:underline mt-4"
             onClick={() => router.push('/resetpassword')}
           >
             Reset Password
-          </button>
+          </button> */}
         </div>
       </div>
     </main>
