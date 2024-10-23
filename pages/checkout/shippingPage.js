@@ -9,6 +9,7 @@ import UserInfo from "../../components/user/checkout/UserInfo";
 import PaymentForm from "../../components/user/checkout/PaymentForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
 // Initialize Stripe with the publishable key
 const stripePromise = loadStripe(
@@ -23,6 +24,7 @@ const ShippingPage = () => {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(""); // Selected shipping method
   const [subtotal, setSubtotal] = useState(0); // Subtotal before tax
   const [totalAmount, setTotalAmount] = useState(0); // Total amount including tax
+  const [customerInfo, setCustomerInfo] = useState('');
   const paymentCreated = useRef(false); // Prevent duplicate PaymentIntent creation
   const TAX_RATE = 0.05; // Tax rate (5%)
   const router = useRouter(); // Router for navigation
@@ -31,6 +33,8 @@ const ShippingPage = () => {
   useEffect(() => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const storedCustomerInfo = JSON.parse(localStorage.getItem("customerInfo"));
+    setCustomerInfo(storedCustomerInfo)
 
     if (storedFormData) setFormData(storedFormData); // Set user form data
     setCart(cartItems); // Set cart items
@@ -87,9 +91,42 @@ const ShippingPage = () => {
   }, [totalAmount]); // Trigger when totalAmount changes
 
   // Handle successful payment
-  const handlePaymentSuccess = (paymentIntent) => {
+  const handlePaymentSuccess = async (paymentIntent) => {
     console.log("Payment Intent:", paymentIntent); // Log successful payment
-    router.push("/checkout/success"); // Navigate to success page
+
+    const formDataToSend  = {
+      customer_id: customerInfo.customer_id,
+      address_id: formData.addressId,
+      total: subtotal,  // 总金额
+      total_tax: parseFloat((subtotal * TAX_RATE).toFixed(2)),  // 税额
+      shipping_method: selectedShippingMethod,
+      address_data: {
+        street: formData.street,
+        city: formData.city,
+        province: formData.province,
+        postal: formData.postal,
+        country: formData.country,
+      },
+      products: cart.map(item => ({
+        product_id: item.product_id,
+        name: item.product_name,
+        price: item.price,
+        quantity: item.quantity,
+      }))
+    };
+
+    try {
+      // 通过 axios 向后端发送 POST 请求创建订单
+      const response = await axios.post('http://localhost:3001/api/create-orders', formDataToSend);
+  
+      if (response.status === 201) {
+        alert(`Order created successfully! Order ID: ${response.data.orderId}`);
+        router.push("/checkout/success"); // 重定向到成功页面
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      alert("There was an error creating your order. Please try again.");
+    }
   };
 
   // Handle return to previous page

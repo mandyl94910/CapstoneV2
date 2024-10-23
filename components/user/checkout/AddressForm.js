@@ -7,28 +7,8 @@ import SelectField from "./addressForm/SelectField";
 import AddressDropdown from "./addressForm/AddressDropdown";
 import taxRates from "./addressForm/TaxRates";
 
-const AddressForm = ({ formData, setFormData, handleSubmit }) => {
-  const [addresses, setAddresses] = useState([]);
+const AddressForm = ({ formData, setFormData,customerInfo, addresses,handleSubmit, onCancel }) => {
   const [errors, setErrors] = useState({});
-  const router = useRouter();
-
-  useEffect(() => {
-    // Fetch addresses for the logged-in user
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.id) {
-      const fetchAddresses = async () => {
-        try {
-          const response = await axios.get(`/api/addresses/${user.id}`);
-          setAddresses(response.data);
-        } catch (error) {
-          console.error("Error fetching addresses:", error);
-        }
-      };
-      fetchAddresses();
-    } else {
-      console.error("User is not logged in.");
-    }
-  }, []);
 
   // Handle form validation
   const handleValidation = () => {
@@ -65,12 +45,23 @@ const AddressForm = ({ formData, setFormData, handleSubmit }) => {
         <AddressDropdown
           addresses={addresses}
           value={formData.addressId}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              addressId: e.target.value,
-            })
-          }
+          onChange={(e) => {
+            const selectedAddress = addresses.find(addr => addr.id === parseInt(e.target.value));
+            if (selectedAddress) {
+              setFormData({
+                ...formData,
+                addressId: selectedAddress.id,
+                first_name: selectedAddress.first_name,
+                last_name: selectedAddress.last_name,
+                street: selectedAddress.street,
+                city: selectedAddress.city,
+                province: selectedAddress.province,
+                postal: selectedAddress.postal,
+                country: selectedAddress.country,
+                phone: customerInfo.phone
+              });
+            }
+          }}
           error={errors.addressId}
         />
 

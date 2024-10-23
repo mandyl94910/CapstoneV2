@@ -5,6 +5,7 @@ import CategoryHomeGrid from '../../components/homepage/CategoryHomeGrid';
 import { FaTrash } from 'react-icons/fa';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import Link from 'next/link';
+import { useRouter } from "next/router";
 
 /**
  * helped by chatGPT
@@ -13,7 +14,7 @@ import Link from 'next/link';
  */
 export default function CartPage() {
   const [cart, setCart] = useState([]);
-
+  const router = useRouter();
   // read cart data from localStorage
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
@@ -44,6 +45,38 @@ export default function CartPage() {
   // calculate the total price of items in shopping cart
   const calculateTotalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      // 发起 API 请求时，确保传递凭证（如 Cookie）
+      const response = await fetch('http://localhost:3001/api/getUser', {
+        method: 'GET',
+        credentials: 'include',  // 确保凭证（如 Cookies）被发送
+      });
+      
+      if (response.status === 401) {
+        alert('Please login to proceed to checkout');
+        return;
+      }
+      
+      const userData = await response.json();
+      const customer_id = userData.customer_id;
+
+      console.log('Customer ID is :' , customer_id);
+      if (!customer_id) {
+        alert('Customer ID not found. Please login again.');
+        return;
+      }
+
+      router.push({
+        pathname: '/checkout/checkoutPage', // 付款页面的路径
+        query: { customer_id: customer_id }, // 携带 customer_id 作为查询参数
+      });
+    } catch (error) {
+      console.error('Error fetching customer ID:', error);
+      alert('Error proceeding to checkout. Please try again.');
+    }
   };
 
   return (
@@ -141,10 +174,8 @@ export default function CartPage() {
               </div>
 
               <div className="flex justify-end">
-                <button
-                  onClick={() =>
-                    (window.location.href = "/checkout/checkoutPage")
-                  }
+              <button
+                  onClick={handleCheckout} // Call handleCheckout instead of direct navigation
                   className="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg"
                 >
                   Proceed to Checkout

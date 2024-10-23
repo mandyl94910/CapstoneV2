@@ -59,7 +59,8 @@ const {getAllOrders,
     getOrderById,
     updateOrderById,
     getOrderProducts, 
-    getAllOrdersByCustomerId} = require('../pages/functions/order/orderController');
+    getAllOrdersByCustomerId,
+    createOrder} = require('../pages/functions/order/orderController');
 
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
@@ -314,6 +315,9 @@ app.put('/api/update-orders/:orderId', updateOrderById );
 
 // 获取订单的产品信息
 app.get('/api/orders/:orderId/products', getOrderProducts);
+
+// 创建订单
+app.post('/api/create-orders', createOrder);
 
 // Start the server
 app.listen(3001, () => {
