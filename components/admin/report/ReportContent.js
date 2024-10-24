@@ -1,8 +1,5 @@
 import React from "react";
 import SalesReport from "./SalesReport";
-import TopSalesByCategory from "./TopSalesByCategory";
-import TopSalesByProduct from "./TopSalesByProduct";
-import OrderSummary from "./OrderSummary";
 
 const ReportContent = ({ selectedReport, setSelectedReport }) => {
   return (
@@ -32,16 +29,7 @@ const ReportContent = ({ selectedReport, setSelectedReport }) => {
 
       {selectedReport === "sales" && (
         <div className="pb-4 px-4 bg-gray-50 w-full h-full">
-          <div className="flex space-x-4">
-            <div className="w-1/2 bg-white p-4 rounded-md shadow">
-              <OrderSummary />
-            </div>
-            <div className="w-1/2 bg-white p-4 rounded-md shadow">
-              <SalesReport />
-            </div>
-          </div>
-          <TopSalesByCategory />
-          <TopSalesByProduct />
+          <SalesReport />
         </div>
       )}
     </div>
