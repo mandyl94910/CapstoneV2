@@ -34,7 +34,7 @@ export default function Login() {
   return (
     <main>
       <Header />
-      <div className="flex h-[550px] mx-16 my-6 rounded-2xl border-2">
+      <div className="flex h-[700px] mx-16 my-6 rounded-2xl border-2">
         <div className="w-2/3 h-full bg-blue-500 rounded-l-2xl">
           <img src="/login-bg.png" alt="Login Background" className="w-full h-full object-cover rounded-l-2xl"></img>
         </div>
