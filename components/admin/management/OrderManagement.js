@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
-import { saveAs } from "file-saver"; 
+import { saveAs } from "file-saver";
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]); // State to hold order data
@@ -52,20 +52,17 @@ const OrderManagement = () => {
     fetchOrderStats(); // Fetch order statistics
   }, []);
 
-  // Filter orders based on Order No, Product Name, and Customer Name
+  // Filter orders based on Order No, Order Status, and Customer Name
   const filteredOrders = orders.filter((order) => {
-    // Check if properties are defined and convert them to strings to avoid undefined errors
+    // Ensure that properties are defined and convert them to strings to prevent errors when filtering
     return (
       (order.order_id &&
         order.order_id
           .toString()
           .toLowerCase()
           .includes(searchQuery.toLowerCase())) || // Filter by Order ID
-      (order.product_id &&
-        order.product_id
-          .toString()
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())) || // Filter by Product ID
+      (order.status &&
+        order.status.toLowerCase().includes(searchQuery.toLowerCase())) || // Filter by Order Status
       (order.customer_name &&
         order.customer_name.toLowerCase().includes(searchQuery.toLowerCase())) // Filter by Customer Name
     );
@@ -73,12 +70,14 @@ const OrderManagement = () => {
 
   // Placeholder for edit functionality
   const handleEdit = (orderId) => {
-    router.push({
-      pathname: '/admin/editOrder',
-      query: { orderId: orderId }, 
-    }).then(() => {
-      setLastUpdated(Date.now()); 
-    });
+    router
+      .push({
+        pathname: "/admin/editOrder",
+        query: { orderId: orderId },
+      })
+      .then(() => {
+        setLastUpdated(Date.now());
+      });
   };
 
   // Placeholder for delete functionality
@@ -125,7 +124,7 @@ const OrderManagement = () => {
             type="text"
             value={searchQuery} // Bind input value to searchQuery state
             onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on user input
-            placeholder="🔍 Search by Order No, Product ID, or Customer Name"
+            placeholder="🔍 Search by Order No, Customer Name, and Order Status"
             className="border p-2 rounded w-full"
           />
         </div>
@@ -160,7 +159,6 @@ const OrderManagement = () => {
           </button>
         </div>
       </div>
-      
 
       {/* Order Info Cards */}
       <InfoCards stats={stats} />
