@@ -70,7 +70,11 @@ const {getReviewByProductId,
   addReview, 
   checkReviewStatus} = require('../pages/functions/product/review');
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
-const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
+
+const { 
+  getSalesReportData, 
+  getOrdersSummary } = require('../pages/functions/report/ReportController');
+
 const { generateProductExcel,generateOrderExcel,generateUserExcel  } = require('../pages/functions/data/excelController');
 
 const app = express();
@@ -281,6 +285,7 @@ app.get('/api/top-selling-products', getTopSellingProducts);
 
 // Sales report route
 app.get("/api/sales-report", getSalesReportData);
+app.get('/api/orders-summary', getOrdersSummary);
 
 // Route to get a category by ID
 app.get("/api/categories/:id", getCategoryById);

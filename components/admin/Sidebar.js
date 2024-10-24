@@ -16,7 +16,7 @@ const Sidebar = () => {
   const isActive = (pathname) => router.pathname === pathname;
 
   return (
-    <div className="w-40 h-screen bg-indigo-400 flex flex-col items-center py-4 space-y-6">
+    <div className="w-40 min-h-screen bg-indigo-400 flex flex-col items-center py-4 space-y-6">
       <div className="w-full text-white flex justify-center mb-6">
         <i className="icon icon-dashboard"></i>
       </div>

@@ -11,12 +11,12 @@ exports.seed = async function(knex) {
   const orders = [];
 
   const fromDate = new Date('2023-09-01');  // Starting date
-  const toDate = new Date(Math.min(new Date('2024-09-30').getTime(), Date.now()));  // Ensure it doesn't exceed today or 2024-09-30
+  const toDate = new Date(Math.min(new Date('2024-10-23').getTime(), Date.now()));  // Ensure it doesn't exceed today or 2024-09-30
 
   let currentDate = fromDate;  // Initialize with the starting date
 
   // Generate 500 orders
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 50000; i++) {
     // Ensure currentDate does not exceed the limited date range
     if (currentDate >= toDate) break;
 
@@ -27,7 +27,7 @@ exports.seed = async function(knex) {
     const totalTax = (total + (total * 0.05)).toFixed(2); // Fixed tax rate of 5%
 
     let status;
-    if (currentDate < new Date('2024-09-01')) {
+    if (currentDate < new Date('2024-10-01')) {
       status = 'completed';  // Ensure all orders before 2024-09-01 are completed
     } else {
       status = faker.helpers.arrayElement(['pending', 'shipped', 'cancelled']); // Random status after Sept 2024
