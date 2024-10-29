@@ -77,7 +77,7 @@ const OrderMap = ({ location }) => {
     }, [coordinates]);
 
     return (
-        <div ref={mapContainer} className="w-full h-64 mt-6" />
+        <div ref={mapContainer} className="w-full h-64" />
     );
 };
 
