@@ -38,10 +38,17 @@ const CheckoutPage = () => {
     setCart(cartItems);
 
     const storedCustomerInfo = JSON.parse(localStorage.getItem("customerInfo"));
+    const storedAddresses = JSON.parse(localStorage.getItem("addresses"));
+
     if (storedCustomerInfo) {
       setCustomerInfo(storedCustomerInfo); // 如果 `customerInfo` 已经存在于 `localStorage` 中，则设置
     } else if (customer_id) {
       fetchCustomerInfo(customer_id); // 如果没有存储 `customerInfo`，则调用 `fetchCustomerInfo`
+    }
+    if (storedAddresses) {
+      setAddresses(storedAddresses);
+    } else if (customer_id) {
+      fetchCustomerInfo(customer_id);
     }
   }, [customer_id]);
 
@@ -64,13 +71,15 @@ const CheckoutPage = () => {
       // 获取用户信息和地址信息
       const userData = await userResponse.json();
       const addressData = await addressResponse.json();
-      setCustomerInfo(userData);  // 存储用户信息
-      setAddresses(addressData);
-      console.log("Customer info loaded:", {addressData});
-
-      // 存储 `customerInfo` 到 `localStorage` 以便后续读取
-    localStorage.setItem("customerInfo", JSON.stringify(userData));
-    console.log("Customer info loaded and saved to localStorage:", userData);
+      if (userData && addressData) {
+        setCustomerInfo(userData);
+        setAddresses(addressData);
+        localStorage.setItem("customerInfo", JSON.stringify(userData));
+        localStorage.setItem("addresses", JSON.stringify(addressData));
+        console.log("Customer info and addresses loaded:", { userData, addressData });
+      } else {
+        console.warn("Received empty data:", { userData, addressData });
+      }
       // can set the default address here
       // if (addressData.length > 0) {
       //   const address = addressData[0]; // 假设只使用第一个地址
