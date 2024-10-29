@@ -74,12 +74,23 @@ export default function ContactUsModal({ isOpen, onClose, onNewMessage }) {
             className="w-full p-2 border rounded-md"
             required
           ></textarea>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md"
-          >
-            Send Message
-          </button>
+
+          {/* Buttons Container */}
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500"
+            >
+              Send Message
+            </button>
+          </div>
         </form>
       </div>
     </div>

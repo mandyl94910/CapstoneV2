@@ -34,17 +34,27 @@ export default function Footer() {
         </div>
 
         <div className="flex space-x-10">
+          {/* Contact Us Section */}
           <div className="text-sm">
             <h2 className="text-base font-bold mb-3">Contact Us</h2>
-            <p className="mb-1">Email: toptradings@gmail.com</p>
-            <p className="mb-1">Phone: +1 587-123-4567</p>
-            <p className="mb-1">768 street NW City Prov</p>
+            <p className="mb-1 text-gray-500">Email: toptradings@gmail.com</p>
+            <p className="mb-1 text-gray-500">Phone: +1 587-123-4567</p>
+            <p className="mb-1 text-gray-500">768 street NW City Prov</p>
             <button
               onClick={openModal}
               className="bg-blue-600 text-white text-base mt-2 px-5 py-1 rounded-lg hover:bg-blue-500"
             >
               Contact Us
             </button>
+          </div>
+
+          {/* Customer Support Section */}
+          <div className="text-sm">
+            <h2 className="text-base font-bold mb-3">Customer Support</h2>
+            <p className="mb-1 text-gray-500">Order status</p>
+            <p className="mb-1 text-gray-500">Shipping and Delivery</p>
+            <p className="mb-1 text-gray-500">Returns</p>
+            <p className="mb-1 text-gray-500">Refund policy</p>
           </div>
         </div>
       </div>
