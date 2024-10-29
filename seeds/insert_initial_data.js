@@ -379,16 +379,16 @@ exports.seed = async function(knex) {
 
     INSERT INTO message (first_name, last_name, email, message, is_read, sent_time)
     VALUES
-    ('John', 'Doe', 'johndoe@example.com', 'I am interested in the new smartphone model.', FALSE, '2023-10-01 10:15:00'),
+    ('John', 'Doe', 'johndoe@example.com', 'I am interested in the new smartphone model.', TRUE, '2023-10-01 10:15:00'),
     ('Jane', 'Smith', 'janesmith@example.com', 'I would like to return a product.', TRUE, '2023-10-02 11:30:00'),
-    ('Michael', 'Brown', 'michaelbrown@example.com', 'Can I get a discount on bulk orders?', FALSE, '2023-10-03 12:45:00'),
+    ('Michael', 'Brown', 'michaelbrown@example.com', 'Can I get a discount on bulk orders?', TRUE, '2023-10-03 12:45:00'),
     ('Emily', 'Johnson', 'emilyjohnson@example.com', 'The delivery was delayed, any updates?', TRUE, '2023-10-04 14:00:00'),
-    ('David', 'Lee', 'davidlee@example.com', 'Can I change my shipping address?', FALSE, '2023-10-05 15:15:00'),
+    ('David', 'Lee', 'davidlee@example.com', 'Can I change my shipping address?', TRUE, '2023-10-05 15:15:00'),
     ('Sarah', 'Davis', 'sarahdavis@example.com', 'How can I track my order?', TRUE, '2023-10-06 16:30:00'),
-    ('Robert', 'Wilson', 'robertwilson@example.com', 'Is there a warranty on this product?', FALSE, '2023-10-07 17:45:00'),
+    ('Robert', 'Wilson', 'robertwilson@example.com', 'Is there a warranty on this product?', TRUE, '2023-10-07 17:45:00'),
     ('Laura', 'Martinez', 'lauramartinez@example.com', 'I forgot my account password. Can you help?', TRUE, '2023-10-08 09:00:00'),
-    ('James', 'Anderson', 'jamesanderson@example.com', 'Do you ship internationally?', FALSE, '2023-10-09 10:30:00'),
-    ('Anna', 'Taylor', 'annataylor@example.com', 'I received a defective product, what should I do?', TRUE, '2023-10-10 11:45:00');
+    ('James', 'Anderson', 'jamesanderson@example.com', 'Do you ship internationally?', TRUE, '2023-10-09 10:30:00'),
+    ('Anna', 'Taylor', 'annataylor@example.com', 'I received a defective product, what should I do?', FALSE, '2023-10-10 11:45:00');
 
 
 
