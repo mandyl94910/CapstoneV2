@@ -1,4 +1,5 @@
 -- Drop tables if they exist, cascade foreign key dependencies
+DROP TABLE IF EXISTS message CASCADE;
 Drop TABLE IF EXISTS payment CASCADE;
 DROP TABLE IF EXISTS orders_detail CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
@@ -8,7 +9,6 @@ DROP TABLE IF EXISTS product CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS admin CASCADE;
 DROP TABLE IF EXISTS customer CASCADE;
-
 
 -- Create customer table
 CREATE TABLE customer (
@@ -123,6 +123,16 @@ CREATE TABLE payment (
     refunded BOOLEAN DEFAULT FALSE,  -- Indicates if the payment has been refunded
     refund_amount DECIMAL(10, 2) DEFAULT 0.00,  -- Amount refunded, default is 0.00
     notes TEXT  -- Additional notes related to the payment
+);
+
+CREATE TABLE message (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    sent_time TIMESTAMPTZ
 );
 
 
