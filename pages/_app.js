@@ -1,9 +1,9 @@
-// pages/_app.js
 import "../styles/globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { MessageProvider } from "../context/MessageContext";
 
 // Stripe public key
 const stripePromise = loadStripe(
@@ -11,7 +11,13 @@ const stripePromise = loadStripe(
 );
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return (
+    <MessageProvider>
+      <Elements stripe={stripePromise}>
+        <Component {...pageProps} />
+      </Elements>
+    </MessageProvider>
+  );
 }
 
 export default MyApp;
