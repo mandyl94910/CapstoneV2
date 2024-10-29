@@ -98,7 +98,7 @@ exports.up = function(knex) {
         CREATE TABLE orders (
             id SERIAL PRIMARY KEY,
             customer_id INT NOT NULL,  -- Foreign key to customer table
-            address_id INT NOT NULL,   -- Foreign key to address table
+            address_id INT,   -- Foreign key to address table
             total NUMERIC(10, 2) NOT NULL,  -- Total order amount
             total_tax NUMERIC(10, 2),  -- Total tax amount
             status VARCHAR(255) NOT NULL,  -- Order status
