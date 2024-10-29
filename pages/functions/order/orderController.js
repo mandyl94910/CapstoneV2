@@ -203,6 +203,32 @@ const updateOrderById  = async (req, res) => {
   }
 };
 
+
+const updateOrderStatus = async (req, res) => {
+  const { orderId } = req.params;
+  const { trackingNumber, shippingMethod, status, shipDate } = req.body;
+
+  try {
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    await order.update({
+      status: status,
+      ship_date: shipDate,
+      shipping_method: shippingMethod,
+      tracking_number: trackingNumber,
+      complete_date: null,
+    });
+
+    res.json({ message: 'Order updated successfully' });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: 'Error updating order status' });
+  }
+}
+
 const getOrderProducts = async (req, res) => {
   const { orderId } = req.params;
 
@@ -284,6 +310,7 @@ module.exports = {
   getOrderTotalNumber,
   getOrderById,
   updateOrderById,
+  updateOrderStatus,
   getOrderProducts,
   createOrder
 };

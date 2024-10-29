@@ -26,8 +26,7 @@ export default function OrderPage() {
             // if there is no customerId, do not send request
             if (!customerId) return;
             try {
-                const response = await axios.get(`http://localhost:3001/api/orders/${customerId}`);
-                console.log(response.data);
+                const response = await axios.get(`http://localhost:3001/api/orders/customer/${customerId}`);
                 setOrders(response.data);
             } catch (error) {
                 console.error('Error fetching orders by customerId:', error); 
