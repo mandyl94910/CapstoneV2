@@ -11,6 +11,9 @@ const events = require("events");
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
 const { createPaymentIntent } = require("./services/paymentService"); // 서비스 로직 불러오기
 const helmet = require("helmet");
+// To use info from .env.local
+const dotenv = require("dotenv");
+dotenv.config();
 
 const {
   uploadSellerAvatar,
@@ -61,6 +64,7 @@ const {getAllOrders,
     getOrderTotalNumber,
     getOrderById,
     updateOrderById,
+    updateOrderStatus,
     getOrderProducts, 
     getAllOrdersByCustomerId,
     createOrder} = require('../pages/functions/order/orderController');
@@ -72,6 +76,13 @@ const {getReviewByProductId,
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 const { getSalesReportData } = require('../pages/functions/report/SalesReportController');
 const { generateProductExcel,generateOrderExcel,generateUserExcel  } = require('../pages/functions/data/excelController');
+
+const { 
+  getUPSOrderStatus, 
+  getFedExOrderStatus, 
+  getDHLOrderStatus, 
+  getCanadaPostOrderStatus 
+} = require('../pages/functions/ShippingService');
 
 const app = express();
 
@@ -219,8 +230,11 @@ app.get("/api/user-admin/datatable", (req, res) => {
   getAllUsers(req, res);
 });
 
-// Rout to get orders for customer
-app.get('/api/orders/:customerId', getAllOrdersByCustomerId);
+// Route to get orders for customer
+app.get('/api/orders/customer/:customerId', getAllOrdersByCustomerId);
+
+// Route to update order shipping status based on order Id
+app.put('/api/order/:orderId/ship', updateOrderStatus);
 
 // Route to get order
 app.get("/api/order-admin/datatable", (req, res) => {
@@ -330,6 +344,37 @@ app.post('/api/send-reset-password-email', sendResetPasswordEmail);
 
 // Update password
 app.post('/api/reset-password', resetPassword );
+
+// 定义物流追踪状态的 API 路由
+app.get('/api/shipping/status', async (req, res) => {
+  const { tracking_number, shipping_method } = req.query;
+
+  try {
+    let trackingInfo;
+
+    switch (shipping_method) {
+      case 'UPS':
+        trackingInfo = await getUPSOrderStatus(tracking_number);
+        break;
+      case 'FedEx':
+        trackingInfo = await getFedExOrderStatus(tracking_number);
+        break;
+      case 'DHL':
+        trackingInfo = await getDHLOrderStatus(tracking_number);
+        break;
+      case 'Canada Post':
+        trackingInfo = await getCanadaPostOrderStatus(tracking_number);
+        break;
+      default:
+        return res.status(400).json({ message: 'Unsupported shipping method' });
+    }
+
+    res.json(trackingInfo);
+  } catch (error) {
+    console.error('Error fetching tracking data:', error);
+    res.status(500).json({ message: 'Error fetching tracking data' });
+  }
+});
 
 // Start the server
 app.listen(3001, () => {

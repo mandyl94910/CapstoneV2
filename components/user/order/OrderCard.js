@@ -90,7 +90,9 @@ const OrderCard = ({ order, customerId }) => {
                     }}>
                         <button className="bg-blue-500 text-white py-1 px-3 rounded">Review</button>
                     </Link>
-                    <button className="bg-gray-200 text-gray-700 py-1 px-3 rounded">Order Detail</button>
+                    <Link href={`/user-profile/orderdetail/${order.id}`}>
+                        <button className="bg-gray-200 text-gray-700 py-1 px-3 rounded">Order Detail</button>
+                    </Link>
                 </div>
             </div>
         </div>
