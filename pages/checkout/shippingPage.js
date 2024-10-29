@@ -34,7 +34,11 @@ const ShippingPage = () => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     const storedCustomerInfo = JSON.parse(localStorage.getItem("customerInfo"));
-    setCustomerInfo(storedCustomerInfo)
+    
+    if (storedCustomerInfo) {
+      setCustomerInfo(storedCustomerInfo);
+      console.log("Customer Info loaded from localStorage:", storedCustomerInfo);
+    }
 
     if (storedFormData) setFormData(storedFormData); // Set user form data
     setCart(cartItems); // Set cart items
