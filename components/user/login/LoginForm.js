@@ -117,9 +117,21 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
 
         console.log('Google Login Success:', user);
 
-        // 可以在这里调用后端 API，将 Firebase 获取到的用户信息存储到你的数据库中
-
-        onSuccess(); // 登录成功后调用 onSuccess 进行后续处理
+        // Verify if the email exists in the backend database
+        axios.post('http://localhost:3001/api/verify-email', { email: userEmail })
+        .then((response) => {
+          if (response.data.exists) {
+            // If the email exists, proceed with the login logic
+            onSuccess(); // Continue to login
+          } else {
+            // If the email does not exist, send the email to parent component for registration
+            onRegisterWithGoogle(userEmail);
+          }
+        })
+        .catch((error) => {
+          setError('Google login failed. Please try again.');
+          console.error('Error verifying email:', error);
+        });
       })
       .catch((error) => {
         setError('Google login failed. Please try again.');
