@@ -1,9 +1,10 @@
 // C:\CPRG306\CapstoneV1\server\index.js
-
 const express = require("express");
+const passport = require("passport");
+require("./passportConfig")(passport); 
+
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const passport = require("passport");
 const expressSession = require("express-session");
 const cookieParser = require("cookie-parser");
 const events = require("events");
@@ -20,7 +21,7 @@ const {
   uploadProductImage,
   updateProductImage,
 } = require("../pages/functions/imageController");
-require("./passportConfig")(passport); // Correctly import passportConfig.js
+
 const {
   loginFunction,
   registerFunction,
@@ -30,7 +31,8 @@ const {
   getNewUsers,
   verifyEmail,
   sendResetPasswordEmail,
-  resetPassword 
+  resetPassword,
+  loginByEmail 
 } = require("../pages/functions/user/AccountController");
 const {
   getAdminInformation,
@@ -94,12 +96,7 @@ const app = express();
 //Middleware in Express is a function used to process requests and responses, acting between receiving the request and sending the final response.
 // Middleware functions can modify, validate, or process data during a request’s lifecycle.
 //They play a central role in Express, enabling chained processing of requests,
-//where each middleware performs specific tasks before passing control to the next one.
 
-//This middleware parses incoming request bodies in JSON format, making the parsed data available on req.body.
-app.use(bodyParser.json());
-//This middleware parses incoming request bodies with URL-encoded data. When { extended: true } is set, like "name=John&age=30"
-app.use(bodyParser.urlencoded({ extended: true }));
 //expressSession manages user sessions by creating a unique session for each user and storing it on the server.
 //High performance because only the sessionID is passed
 //High data consistency, updated in real time
@@ -108,8 +105,23 @@ app.use(
     secret: "mySecretKey",
     resave: false,
     saveUninitialized: false,
+    cookie: { httpOnly: true, secure: false },
   })
 );
+
+//Sets up Passport to manage authentication workflows like logging in and registering users.
+//Passport is an authentication middleware for Node.js applications
+app.use(passport.initialize());
+//Allows Passport to manage persistent login sessions, so users remain logged in even after refreshing or navigating to different pages.
+//Works with expressSession to store user data in the session.
+app.use(passport.session());
+//where each middleware performs specific tasks before passing control to the next one.
+app.use(express.json());
+//This middleware parses incoming request bodies in JSON format, making the parsed data available on req.body.
+app.use(bodyParser.json());
+//This middleware parses incoming request bodies with URL-encoded data. When { extended: true } is set, like "name=John&age=30"
+app.use(bodyParser.urlencoded({ extended: true }));
+
 //CORS (Cross-Origin Resource Sharing) middleware allows your server to handle requests from different origins.
 //origin: Restricts access to requests coming from http://localhost:3000.
 //credentials: true: Enables cross-origin requests to include credentials, like cookies, with the request.
@@ -117,12 +129,6 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 //Enabling you to read and use cookie data on req.cookies.
 //The 'mySecretKey' argument signs cookies to protect against tampering.
 app.use(cookieParser("mySecretKey"));
-//Sets up Passport to manage authentication workflows like logging in and registering users.
-//Passport is an authentication middleware for Node.js applications
-app.use(passport.initialize());
-//Allows Passport to manage persistent login sessions, so users remain logged in even after refreshing or navigating to different pages.
-//Works with expressSession to store user data in the session.
-app.use(passport.session());
 
 app.use("/images", express.static("public/images"));
 
@@ -147,8 +153,6 @@ app.use(
     },
   })
 );
-
-require("./passportConfig")(passport); // Initialize Passport for authentication
 
 //app.js is the parent route, router.post is the child route, 
 //you can aggregate many router.posts together modularly, and then use app.use to call all the routes of this module
@@ -349,6 +353,8 @@ app.post('/api/send-reset-password-email', sendResetPasswordEmail);
 
 // Update password
 app.post('/api/reset-password', resetPassword );
+
+app.post('/api/loginByEmail', (req, res, next) => loginByEmail(req, res, next, passport));
 
 // 定义物流追踪状态的 API 路由
 app.get('/api/shipping/status', async (req, res) => {

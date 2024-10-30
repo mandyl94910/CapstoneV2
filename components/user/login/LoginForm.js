@@ -110,22 +110,23 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-
-        // 用户信息
         const userEmail = user.email;
-        const userName = user.displayName;
+        const userName = user.displayName || ''; // 获取用户名，若不存在则为空字符串
 
         console.log('Google Login Success:', user);
 
         // Verify if the email exists in the backend database
         axios.post('http://localhost:3001/api/verify-email', { email: userEmail })
-        .then((response) => {
+        .then(async (response) => {
           if (response.data.exists) {
-            // If the email exists, proceed with the login logic
-            onSuccess(); // Continue to login
+            // If the email exists, authenticate and fetch user information
+            await loginWithEmail(userEmail);
           } else {
-            // If the email does not exist, send the email to parent component for registration
-            onRegisterWithGoogle(userEmail);
+            // If email doesn't exist, initiate registration flow
+            router.push({
+              pathname: '/register',
+              query: { email: userEmail, username: userName }
+            });
           }
         })
         .catch((error) => {
@@ -137,6 +138,22 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
         setError('Google login failed. Please try again.');
         console.error('Google Login Error:', error);
       });
+  };
+
+  // Function to automatically log in using email
+  const loginWithEmail = async (email) => {
+    try {
+      const response = await axios.post('http://localhost:3001/api/loginByEmail', { email },{ withCredentials: true });
+
+      if (response.data.success) {
+        onSuccess(response.data.data);
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } catch (err) {
+      console.error("Error response from server:", err.response?.data); 
+      setError(err.response?.data?.message || 'Login failed, please try again later.');
+    }
   };
 
   return (
@@ -188,7 +205,10 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
           {/* Google Login Button */}
           <button
             className="flex items-center justify-center w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
-            onClick={handleGoogleLogin}
+            onClick={(e) => {
+              e.preventDefault(); // 阻止默认表单提交行为
+              handleGoogleLogin();
+            }}
           >
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Google" className="h-6 w-6 mr-3" />
             <span>Sign up with Google</span>
