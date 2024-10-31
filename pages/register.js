@@ -106,11 +106,9 @@ export default function Register() {
     })
     .then((res) => {
       setIsLoading(false);
-      if (res.data.message=="User created") {
+      if (res.data.message) {
         setError(res.data.message);
-        setTimeout(() => {
-          router.push('/login'); // 5秒后跳转到登录页面
-        }, 5000);
+        router.push('/login');
       } else {
         setError('');
       }
