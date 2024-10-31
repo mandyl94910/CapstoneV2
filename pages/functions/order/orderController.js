@@ -99,6 +99,42 @@ const getAllOrdersByCustomerId = async (req, res) => {
 };
 
 
+// Function name: getOrderDetailByOrderId
+// Description: Retrieves orderDetails with related order id.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object used to return the orders or an error message.
+// Functionality:
+//   This function retrieves order details of one specific order, including all products information included in that order, 
+//   The data is returned in JSON format.
+const getOrderDetailByOrderId = async (req, res) => {
+  const {orderId} = req.params;
+  try {
+    const order = await Order.findOne({
+      where:{
+        id: orderId,
+      },
+      include: [
+        {
+          model: OrderDetail,
+          attributes: ['product_id', 'quantity', 'name', 'price'], 
+          include: [
+            {
+              model: Product,
+              attributes: ['image', 'product_description'],
+              visiblity: true
+            }
+          ]
+        }
+      ],
+    });
+    res.json(order);
+  } catch (error) {
+    console.error('Error fetching orders:', error.message);
+    res.status(500).send('Error fetching orders');
+  }
+};
+
 // Function name: getTotalSales
 // Description: Calculates the total sales amount by summing the 'total' field in the Order table.
 // Parameters:
@@ -312,5 +348,6 @@ module.exports = {
   updateOrderById,
   updateOrderStatus,
   getOrderProducts,
-  createOrder
+  createOrder,
+  getOrderDetailByOrderId
 };

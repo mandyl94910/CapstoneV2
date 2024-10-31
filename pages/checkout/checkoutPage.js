@@ -5,6 +5,7 @@ import OrderSummary from "../../components/user/checkout/OrderSummary";
 import Image from "next/image";
 import CheckoutNav from "../../components/user/checkout/CheckoutNav";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const CheckoutPage = () => {
   const [formData, setFormData] = useState({
@@ -124,7 +125,9 @@ const CheckoutPage = () => {
     <div className="container mx-auto lg:px-40 p-6 grid grid-cols-1 lg:grid-cols-2 gap-12">
       <div>
         <div className="mb-4">
-          <Image src="/logo.png" alt="Logo" width={165} height={52} priority />
+          <Link href="/">
+            <Image src="/logo.png" alt="Logo" width={165} height={52} priority />
+          </Link>
         </div>
 
         <CheckoutNav />
