@@ -1,12 +1,12 @@
 // C:\CPRG306\CapstoneV2\pages\api\user\AccountController.js
+const passport = require('passport');
+
 const axios = require('axios'); 
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const passport = require('passport');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
-require('../../../server/passportConfig')(passport); // Correctly import passportConfig.js
 const redisClient = require('../../../lib/redis'); // Import Redis client
 const { saveSession, getSession, updateSession, deleteSession, incrementLoginAttempts } = require('../../../lib/redisUtils/userOps');
 const { setCache, getCache,deleteCache } = require('../../../lib/redisUtils/cacheOps');
@@ -19,9 +19,6 @@ const RESET_URL_BASE = 'http://localhost:3000/resetpassword';
 
 const { verifyRecaptchaToken } = require('./recaptcha');
 
-
-
-require("../../../server/passportConfig")(passport);  // Initialize Passport for authentication
 
 // Function name: loginFunction
 // Description: Authenticates a user using their login credentials and manages login attempts.
@@ -81,6 +78,44 @@ async function loginFunction(req, res, next) {
   })(req, res, next);
 }
 
+const loginByEmail = async (req, res, next) => {
+  console.log("Request body:", req.body);
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ message: "Missing email for login" });
+  }
+  
+  passport.authenticate('email-login', async (err, user, info) => {
+    if (err) {
+      console.error("Authentication error:", err);
+      return res.status(500).json({ message: 'Authentication error' });
+    }
+
+    if (!user) {
+      console.log("No user found with the provided email:", req.body.email);
+      return res.status(400).json({ message: info.message || 'No user found' });
+    }
+
+    // 登录并保存用户信息到会话
+    req.logIn(user, async (err) => {
+      if (err) {
+        console.error("Login error:", err);
+        return res.status(500).json({ message: 'Login error' });
+      }
+      console.log("Login successful, req.user:", req.user);
+      // Save the session to ensure persistence
+      req.session.save((err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Session save error' });
+        }
+        // 返回成功响应
+        res.json({ success: true, message: 'User logged in' });
+      });
+    });
+  })(req, res, next);
+};
+
 // Function name: registerFunction
 // Description: Registers a new user in the database after validating the recaptcha token and checking for existing users.
 // Parameters:
@@ -109,7 +144,7 @@ async function registerFunction(req, res) {
 
     const insertQuery = "INSERT INTO customer (customer_name, password, email, phone) VALUES ($1, $2, $3, $4)";
     await db.query(insertQuery, [username, password, email, phone]);
-    res.send({ message: "User created" });
+    res.send({ message: "User created and the page will be returned to Login page" });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).send('Unexpected server error');
@@ -330,6 +365,7 @@ const resetPassword = async (req, res) => {
 
   module.exports = {
     loginFunction,
+    loginByEmail,
     registerFunction,
     getUserInformation,
     getAllUsers,

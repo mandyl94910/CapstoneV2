@@ -14,9 +14,22 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
-
+  const [isEmailFixed, setIsEmailFixed] = useState(false);
+  const [isUsernameFixed, setIsUsernameFixed] = useState(false);
 //6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ
   useEffect(() => {
+    if (router.isReady) {
+      const { email, username } = router.query; // 仅在 router 已准备好时访问 query
+      if (email) {
+        setRegisterEmail(email); // 设置 email
+        setIsEmailFixed(true);    // 设置 email 为只读
+      }
+      if (username) {
+        setRegisterUsername(username); // 设置 username
+        setIsUsernameFixed(true);      // 设置 username 为只读
+      }
+    }
+
     if (typeof window !== 'undefined') {
       setIsClient(true);
   
@@ -33,7 +46,7 @@ export default function Register() {
         }, 100);   // Check every 100ms if the element is available
       });
     }
-  }, []);
+  }, [router.isReady, router.query]);
 
   const validateForm = () => {
     // Form validation for empty fields, password match, and formats
@@ -95,6 +108,7 @@ export default function Register() {
       setIsLoading(false);
       if (res.data.message) {
         setError(res.data.message);
+        router.push('/login');
       } else {
         setError('');
       }
@@ -113,20 +127,23 @@ export default function Register() {
           <img src="/logo.png" alt="Logo" className="h-16 my-3 cursor-pointer" />
         </Link>
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Create Account</h1>
+        {(isEmailFixed || isUsernameFixed) && (
+          <p className="text-gray-600 text-sm mt-2 text-center">
+            This email address hasn't been registered yet. Please complete the registration to continue with third-party login in the future.
+          </p>
+        )}
         <form className="w-full max-w-sm" onSubmit={register}>
           <div className="mb-3">
             <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username">
               Username
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
               type="text"
-              placeholder="Username"
               value={registerUsername}
               onChange={(e) => setRegisterUsername(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
-          </div>
+                      </div>
           <div className="mb-3">
             <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
               Password
@@ -158,12 +175,11 @@ export default function Register() {
               Email
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
               type="email"
-              placeholder="Email"
               value={registerEmail}
               onChange={(e) => setRegisterEmail(e.target.value)}
+              disabled={isEmailFixed} // 仅在从 Google 登录传递的邮箱时禁用
+              className={`shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline ${isEmailFixed ? 'bg-gray-200 cursor-not-allowed' : 'text-gray-700'}`}
             />
           </div>
           <div className="mb-3">
