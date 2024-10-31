@@ -64,8 +64,10 @@ const ProfileDropdown = () => {
               <span>Account Settings</span>
             </Link>
             <Link
-              href="/device-management"
+              href="https://dashboard.stripe.com/login?redirect=%2Ftest%2Fdashboard"
               className="flex items-center space-x-2 w-full p-2 text-gray-700 hover:bg-slate-300 rounded-md"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <FaMoneyCheck className="text-lg" />
               <span>Payment System</span>
