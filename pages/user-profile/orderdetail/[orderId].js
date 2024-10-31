@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Header from "../../../components/common/Header";
 import OrderProgress from '../../../components/user/order/OrderProgess';
 import OrderMap from '../../../components/user/order/OrderMap';
+import OrderDetailTable from '../../../components/user/order/OrderDetailTable';
 import { FaCircleExclamation, FaLocationDot } from 'react-icons/fa6';
 
 export default function OrderDetail() {
@@ -19,8 +20,9 @@ export default function OrderDetail() {
         // 延迟加载（Debounce）和重试机制
         const fetchOrder = async (retryCount = 3 ) => {
             try {
-                const response = await axios.get(`http://localhost:3001/api/get-orders-for-admin/${orderId}`);
+                const response = await axios.get(`http://localhost:3001/api/order/order-detail/${orderId}`);
                 setOrder(response.data);
+                console.log('order fetched', response.data);
             } catch (error) {
                 if (retryCount > 0) {
                     setTimeout(() => fetchOrder(retryCount - 1), 1000); // 重试请求，延迟1秒
@@ -37,6 +39,7 @@ export default function OrderDetail() {
     // Get tracking info
     useEffect(() => {
         if (order && order.tracking_number && order.shipping_method) {
+            console.log('shipping_method: ', order.shipping_method);
             async function fetchTrackingData() {
             try {
                 const response = await axios.get(`http://localhost:3001/api/shipping/status`, {
@@ -45,9 +48,9 @@ export default function OrderDetail() {
                         shipping_method: order.shipping_method,
                     },
                 });
-                
+                console.log('Tracking API response:', response.data); // 检查完整的 API 响应
                 setTrackingData(response.data.shipments[0]);
-                console.log('Response data:', response.data.shipments[0]);
+                
             } catch (error) {
                 console.error("Error fetching tracking data:", error);
             }
@@ -120,7 +123,7 @@ export default function OrderDetail() {
                         </div>
                     </div>
                     
-
+                    <OrderDetailTable order={order}/>
                     {/* Proof of Delivery (if available) */}
                     {/* {details?.proofOfDelivery && (
                     <div className="bg-white border rounded-lg shadow-md p-6 mb-6">

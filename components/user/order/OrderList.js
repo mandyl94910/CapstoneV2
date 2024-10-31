@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import OrderCard from './OrderCard';
-import axios from 'axios';
+
   
 /**
  * Helped by chatGPT

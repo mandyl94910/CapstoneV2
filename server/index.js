@@ -67,7 +67,8 @@ const {getAllOrders,
     updateOrderStatus,
     getOrderProducts, 
     getAllOrdersByCustomerId,
-    createOrder} = require('../pages/functions/order/orderController');
+    createOrder,
+    getOrderDetailByOrderId} = require('../pages/functions/order/orderController');
 
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
@@ -236,6 +237,9 @@ app.get("/api/user-admin/datatable", (req, res) => {
 
 // Route to get orders for customer
 app.get('/api/orders/customer/:customerId', getAllOrdersByCustomerId);
+
+// Route to get order details for one specific order
+app.get('/api/order/order-detail/:orderId', getOrderDetailByOrderId);
 
 // Route to update order shipping status based on order Id
 app.put('/api/order/:orderId/ship', updateOrderStatus);
