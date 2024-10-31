@@ -154,6 +154,11 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
 //app.js is the parent route, router.post is the child route, 
 //you can aggregate many router.posts together modularly, and then use app.use to call all the routes of this module
 

@@ -144,7 +144,7 @@ async function registerFunction(req, res) {
 
     const insertQuery = "INSERT INTO customer (customer_name, password, email, phone) VALUES ($1, $2, $3, $4)";
     await db.query(insertQuery, [username, password, email, phone]);
-    res.send({ message: "User created" });
+    res.send({ message: "User created and the page will be returned to Login page" });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).send('Unexpected server error');
