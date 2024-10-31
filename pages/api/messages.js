@@ -1,34 +1,34 @@
-let messages = []; // Temporary in-memory message storage
+import db from "../../server/db"; // db.js 파일 경로에 맞게 수정하세요
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    res.status(200).json(messages); // Return all messages
-  } else if (req.method === "POST") {
+  if (req.method === "POST") {
+    // 새로운 메시지 추가
     const { firstName, lastName, email, message } = req.body;
 
-    const newMessage = {
-      id: messages.length + 1,
-      firstName,
-      lastName,
-      email,
-      message,
-      isRead: false, // Message read status
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const result = await db.query(
+        `INSERT INTO public.message (first_name, last_name, email, message, is_read, sent_time) 
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [firstName, lastName, email, message, false, new Date().toISOString()]
+      );
 
-    messages.push(newMessage);
-    res.status(201).json(newMessage);
+      const newMessage = result.rows[0]; // 삽입된 메시지 반환
+      res.status(201).json(newMessage);
+    } catch (error) {
+      console.error("Error saving message:", error);
+      res.status(500).json({ message: "Error saving message" });
+    }
   } else if (req.method === "PUT") {
-    const { id } = req.body;
-    // Update the message to mark it as read
-    const message = messages.find((msg) => msg.id === id);
-    if (message) {
-      message.isRead = true;
-      res.status(200).json({ message: "Message marked as read" });
-    } else {
-      res.status(404).json({ message: "Message not found" });
+    // 모든 메시지를 읽음 상태로 표시
+    try {
+      await db.query("UPDATE public.message SET is_read = TRUE");
+      res.status(200).json({ message: "All messages marked as read" });
+    } catch (error) {
+      console.error("Failed to mark messages as read:", error);
+      res.status(500).json({ message: "Failed to mark messages as read" });
     }
   } else {
+    // POST와 PUT 이외의 메서드 요청 처리
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

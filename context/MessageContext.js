@@ -8,9 +8,9 @@ export function MessageProvider({ children }) {
   // Function to fetch the number of messages
   const fetchMessageCount = async () => {
     try {
-      const response = await fetch("/api/messages");
+      const response = await fetch("/api/message");
       const data = await response.json();
-      const unreadCount = data.filter((msg) => !msg.isRead).length; // Calculate the number of unread messages
+      const unreadCount = data.filter((msg) => !msg.is_read).length; // Calculate the number of unread messages
       setMessageCount(unreadCount);
     } catch (error) {
       console.error("Failed to fetch message count:", error);

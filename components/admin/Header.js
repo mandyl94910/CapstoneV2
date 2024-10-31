@@ -1,3 +1,4 @@
+// Header.js 파일에서
 import React from "react";
 import Link from "next/link";
 import { FaShieldAlt, FaEnvelope, FaBell } from "react-icons/fa";
@@ -7,13 +8,13 @@ import { useMessageContext } from "../../context/MessageContext"; // Importing c
 const Header = ({ title }) => {
   const { messageCount, refreshMessageCount } = useMessageContext(); // State and refresh function
 
-  // Function to mark messages as read
+  // Function to mark all messages as read
   const markMessagesAsRead = async () => {
     try {
       await fetch("/api/messages", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: 1 }), // Example: Mark first message as read
+        body: JSON.stringify({ markAllAsRead: true }), // 서버에서 모든 메시지 읽음 처리
       });
 
       await refreshMessageCount(); // Refresh state
