@@ -101,13 +101,13 @@ const ShippingPage = () => {
   const handlePaymentSuccess = async (paymentIntent) => {
     console.log("Payment Intent:", paymentIntent); // Log successful payment
 
-    const orderDate = new Date().toLocaleString(); // 결제 완료 시간
+    const orderDate = new Date().toLocaleString();
 
     const formDataToSend = {
       customer_id: customerInfo.customer_id,
       address_id: formData.addressId,
-      total: subtotal, // 총 금액
-      total_tax: parseFloat((subtotal * TAX_RATE).toFixed(2)), // 세금
+      total: subtotal,
+      total_tax: parseFloat((subtotal * TAX_RATE).toFixed(2)),
       shipping_method: selectedShippingMethod,
       address_data: {
         street: formData.street,
@@ -133,7 +133,6 @@ const ShippingPage = () => {
         formDataToSend
       );
       if (response.status === 201) {
-        // 주문 정보와 사용자 입력 데이터를 로컬 스토리지에 저장
         localStorage.setItem(
           "orderData",
           JSON.stringify({
@@ -146,7 +145,7 @@ const ShippingPage = () => {
         );
 
         alert(`Order created successfully! Order ID: ${response.data.orderId}`);
-        router.push("/checkout/success"); // 성공 페이지로 리다이렉트
+        router.push("/checkout/success");
       }
     } catch (error) {
       console.error("Error creating order:", error);
