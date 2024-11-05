@@ -90,6 +90,7 @@ const {
   getDHLOrderStatus, 
   getCanadaPostOrderStatus 
 } = require('../pages/functions/ShippingService');
+const db = require("./db");
 
 const app = express();
 
@@ -260,6 +261,19 @@ app.get("/api/order-admin/datatable", (req, res) => {
 
 // Route to get Sub Categories
 app.get("/api/subcategories", getSubCategories);
+
+// Retrieve messages from the database
+app.get('/api/message', async (req, res) => {
+  try {
+    console.log("Received request for /api/message"); // Log request receipt
+    const result = await db.query('SELECT id, first_name, last_name, email, message, is_read, sent_time FROM public.message ORDER BY sent_time DESC');
+    console.log("Query result:", result.rows); // Log query result
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Database query error:', error); // Log detailed error
+    res.status(500).send('Error fetching messages');
+  }
+});
 
 // Product Image Upload Routing
 app.post("/api/products/add", addProduct);

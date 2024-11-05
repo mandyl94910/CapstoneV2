@@ -24,7 +24,7 @@ const ShippingPage = () => {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(""); // Selected shipping method
   const [subtotal, setSubtotal] = useState(0); // Subtotal before tax
   const [totalAmount, setTotalAmount] = useState(0); // Total amount including tax
-  const [customerInfo, setCustomerInfo] = useState('');
+  const [customerInfo, setCustomerInfo] = useState("");
   const paymentCreated = useRef(false); // Prevent duplicate PaymentIntent creation
   const TAX_RATE = 0.05; // Tax rate (5%)
   const router = useRouter(); // Router for navigation
@@ -34,10 +34,13 @@ const ShippingPage = () => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
     const storedCustomerInfo = JSON.parse(localStorage.getItem("customerInfo"));
-    
+
     if (storedCustomerInfo) {
       setCustomerInfo(storedCustomerInfo);
-      console.log("Customer Info loaded from localStorage:", storedCustomerInfo);
+      console.log(
+        "Customer Info loaded from localStorage:",
+        storedCustomerInfo
+      );
     }
 
     if (storedFormData) setFormData(storedFormData); // Set user form data
@@ -98,11 +101,13 @@ const ShippingPage = () => {
   const handlePaymentSuccess = async (paymentIntent) => {
     console.log("Payment Intent:", paymentIntent); // Log successful payment
 
-    const formDataToSend  = {
+    const orderDate = new Date().toLocaleString();
+
+    const formDataToSend = {
       customer_id: customerInfo.customer_id,
       address_id: formData.addressId,
-      total: subtotal,  // 总金额
-      total_tax: parseFloat((subtotal * TAX_RATE).toFixed(2)),  // 税额
+      total: subtotal,
+      total_tax: parseFloat((subtotal * TAX_RATE).toFixed(2)),
       shipping_method: selectedShippingMethod,
       address_data: {
         street: formData.street,
@@ -110,25 +115,37 @@ const ShippingPage = () => {
         province: formData.province,
         postal: formData.postal,
         country: formData.country,
-        phone: formData.phone,             
-        first_name: formData.first_name,   
-        last_name: formData.last_name, 
+        phone: formData.phone,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
       },
-      products: cart.map(item => ({
+      products: cart.map((item) => ({
         product_id: item.product_id,
         name: item.product_name,
         price: item.price,
         quantity: item.quantity,
-      }))
+      })),
     };
 
     try {
-      // 通过 axios 向后端发送 POST 请求创建订单
-      const response = await axios.post('http://localhost:3001/api/create-orders', formDataToSend);
-  
+      const response = await axios.post(
+        "http://localhost:3001/api/create-orders",
+        formDataToSend
+      );
       if (response.status === 201) {
+        localStorage.setItem(
+          "orderData",
+          JSON.stringify({
+            orderId: response.data.orderId,
+            items: formDataToSend.products,
+            orderDate: orderDate,
+            shippingMethod: selectedShippingMethod,
+            address: `${formData.street}, ${formData.city}, ${formData.province}, ${formData.postal}, ${formData.country}`,
+          })
+        );
+
         alert(`Order created successfully! Order ID: ${response.data.orderId}`);
-        router.push("/checkout/success"); // 重定向到成功页面
+        router.push("/checkout/success");
       }
     } catch (error) {
       console.error("Error creating order:", error);

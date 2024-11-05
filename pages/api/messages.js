@@ -1,34 +1,38 @@
-let messages = []; // Temporary in-memory message storage
+import db from "../../server/db";
 
+// API route handler for managing messages
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    res.status(200).json(messages); // Return all messages
-  } else if (req.method === "POST") {
+  if (req.method === "POST") {
+    // Handle adding a new message
     const { firstName, lastName, email, message } = req.body;
 
-    const newMessage = {
-      id: messages.length + 1,
-      firstName,
-      lastName,
-      email,
-      message,
-      isRead: false, // Message read status
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      // Insert a new message into the database
+      const result = await db.query(
+        `INSERT INTO public.message (first_name, last_name, email, message, is_read, sent_time) 
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [firstName, lastName, email, message, false, new Date().toISOString()]
+      );
 
-    messages.push(newMessage);
-    res.status(201).json(newMessage);
+      // Retrieve the newly inserted message
+      const newMessage = result.rows[0];
+      res.status(201).json(newMessage); // Send the new message as a response
+    } catch (error) {
+      console.error("Error saving message:", error);
+      res.status(500).json({ message: "Error saving message" }); // Error handling for failed insertion
+    }
   } else if (req.method === "PUT") {
-    const { id } = req.body;
-    // Update the message to mark it as read
-    const message = messages.find((msg) => msg.id === id);
-    if (message) {
-      message.isRead = true;
-      res.status(200).json({ message: "Message marked as read" });
-    } else {
-      res.status(404).json({ message: "Message not found" });
+    // Handle marking all messages as read
+    try {
+      // Update all messages to set is_read to true
+      await db.query("UPDATE public.message SET is_read = TRUE");
+      res.status(200).json({ message: "All messages marked as read" }); // Response on success
+    } catch (error) {
+      console.error("Failed to mark messages as read:", error);
+      res.status(500).json({ message: "Failed to mark messages as read" }); // Error handling for failed update
     }
   } else {
+    // Handle unsupported HTTP methods
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

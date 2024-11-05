@@ -21,7 +21,7 @@ const CheckoutPage = () => {
   });
 
   const [cart, setCart] = useState([]); // State to store cart items
-  const [totalAmount, setTotalAmount] = useState(0); // 총 금액 상태 추가
+  const [totalAmount, setTotalAmount] = useState(0);
   const router = useRouter();
   const { customer_id } = router.query;
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -29,7 +29,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     const storedFormData = JSON.parse(localStorage.getItem("formData"));
-    console.log('customer id is :', customer_id)
+    console.log("customer id is :", customer_id);
 
     if (storedFormData) {
       setFormData(storedFormData); // If formData exists in localStorage, set it
@@ -58,16 +58,16 @@ const CheckoutPage = () => {
     try {
       const [userResponse, addressResponse] = await Promise.all([
         fetch(`http://localhost:3001/api/getUser?customer_id=${customer_id}`, {
-          method: 'GET',
-          credentials: 'include'  // 确保传递 Cookies
+          method: "GET",
+          credentials: "include", // 确保传递 Cookies
         }),
         fetch(`http://localhost:3001/api/addresses/${customer_id}`, {
-          method: 'GET',
-          credentials: 'include'
-        })
+          method: "GET",
+          credentials: "include",
+        }),
       ]);
       if (!userResponse.ok || !addressResponse.ok) {
-        throw new Error('Failed to fetch customer data');
+        throw new Error("Failed to fetch customer data");
       }
       // 获取用户信息和地址信息
       const userData = await userResponse.json();
@@ -77,7 +77,10 @@ const CheckoutPage = () => {
         setAddresses(addressData);
         localStorage.setItem("customerInfo", JSON.stringify(userData));
         localStorage.setItem("addresses", JSON.stringify(addressData));
-        console.log("Customer info and addresses loaded:", { userData, addressData });
+        console.log("Customer info and addresses loaded:", {
+          userData,
+          addressData,
+        });
       } else {
         console.warn("Received empty data:", { userData, addressData });
       }
@@ -103,7 +106,7 @@ const CheckoutPage = () => {
   };
 
   const handleTotalCalculated = (amount) => {
-    setTotalAmount(amount); // 총 금액을 상태로 저장
+    setTotalAmount(amount);
     console.log("Total Amount Calculated:", amount);
   };
 
@@ -158,7 +161,6 @@ const CheckoutPage = () => {
 
       <div className="border p-6 rounded-lg shadow-md bg-white sticky top-6">
         <OrderSummary cart={cart} onTotalCalculated={handleTotalCalculated} />{" "}
-        {/* 함수 전달 */}
       </div>
     </div>
   );
