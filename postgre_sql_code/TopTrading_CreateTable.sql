@@ -32,7 +32,7 @@ CREATE TABLE category (
 
 -- Create product table
 CREATE TABLE product (
-    product_id SERIAL PRIMARY KEY, 
+    product_id VARCHAR(255) PRIMARY KEY, 
     product_name VARCHAR(255) NOT NULL, 
     price DECIMAL(10, 2) NOT NULL, 
     product_description TEXT, 
@@ -60,7 +60,7 @@ CREATE TABLE admin (
 CREATE TABLE review (
     id SERIAL PRIMARY KEY,            
     customer_id INT NOT NULL,       
-    product_id INT NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     rating INT DEFAULT 5 NOT NULL,
     review_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -103,7 +103,7 @@ CREATE TABLE orders (
 CREATE TABLE orders_detail (
     id SERIAL PRIMARY KEY,            
     order_id INT NOT NULL,            
-    product_id INT NOT NULL,          
+    product_id VARCHAR(255) NOT NULL,          
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     quantity INT NOT NULL DEFAULT 1
