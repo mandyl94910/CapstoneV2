@@ -219,17 +219,18 @@ const changeProductVisibility = async (req, res) => {
 //   It also handles image upload if an image file is included in the request.
 //uncompleted because the images need to be four
 const addProduct = async (req, res) => {
-  const { product_name, product_description, price, quantity, category_id, visibility } = req.body;
+  const { product_id, product_name, product_description, price, quantity, category_id, visibility } = req.body;
   try {
       // First, create the product in the database and retrieve the product_id
       const newProduct = await Product.create({
-          product_name,
-          product_description,
-          price,
-          quantity,
-          category_id,
-          visibility,
-          folder: category_id  // Use category_id as the folder name
+        product_id,  
+        product_name,
+        product_description,
+        price,
+        quantity,
+        category_id,
+        visibility,
+        folder: category_id  // Use category_id as the folder name
       });
       res.status(201).json({ product_id: newProduct.product_id });
   } catch (error) {

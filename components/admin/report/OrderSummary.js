@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+  /**
+   * helped by chatGPT
+   * prompt: 
+   */
 const OrderSummary = () => {
   const [orderCount, setOrderCount] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
