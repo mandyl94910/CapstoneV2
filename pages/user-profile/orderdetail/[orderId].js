@@ -8,6 +8,14 @@ import OrderMap from '../../../components/user/order/OrderMap';
 import OrderDetailTable from '../../../components/user/order/OrderDetailTable';
 import { FaCircleExclamation, FaLocationDot } from 'react-icons/fa6';
 
+/**
+ * Helped by chatGPT
+ * Fetches and displays detailed information about a specific order using its ID
+ * It retrieves order data and tracking information from the server
+ * It includes a progress bar for order status and a table displaying order details
+ * 
+ * --need to be improved
+ */
 export default function OrderDetail() {
     const router = useRouter();
     const { orderId } = router.query;
@@ -62,7 +70,12 @@ export default function OrderDetail() {
 
     if (!order) return <p>Loading...</p>;
     if (!trackingData) {
-        return <p>Loading tracking data...</p>;
+        return(
+            <>
+                 <p>Loading tracking data...</p>
+                 <OrderDetailTable order={order}/>
+            </>
+        );
     }
 
     // 从trackingData中提取不同的时间戳
@@ -87,41 +100,50 @@ export default function OrderDetail() {
                 <div className="bg-white p-6 border shadow-md rounded-lg">
                     <h1 className="text-2xl font-semibold text-gray-800 mb-4">Order ID: {orderId}</h1>
                     <hr/>
-                    <div className="flex justify-center w-full px-10">
-                        <OrderProgress 
-                            status={order.status} 
-                            timestamps={timestamps} />
-                    </div> 
-                    {/* Status and Location */}
-                    <hr/>
-                    <div className='flex justify-between'>
-                        {/* status info */}
-                        <div className="p-6 mb-6">
-                            <div className='flex text-slate-500 items-center'>
-                                <FaCircleExclamation className='w-6 h-6 pr-2'/>
-                                <p>Status</p>
-                            </div>
-                            <h2 className="text-lg font-bold text-yellow-600">Status: {statusDescription}</h2>
-                            <p className="text-gray-700">Current Location: {statusLocation}</p>
-                            <p className="text-gray-500 text-sm">Last Update: {statusTimestamp}</p>
-                        </div>
+                    {trackingData? (
+                        <>
+                            <div className="flex justify-center w-full px-10">
+                                <OrderProgress 
+                                    status={order.status} 
+                                    timestamps={timestamps} />
+                            </div> 
+                            {/* Status and Location */}
+                            <hr/>
+                            <div className='flex justify-between'>
+                                {/* status info */}
+                                <div className="p-6 mb-6">
+                                    <div className='flex text-slate-500 items-center'>
+                                        <FaCircleExclamation className='w-6 h-6 pr-2'/>
+                                        <p>Status</p>
+                                    </div>
+                                    <h2 className="text-lg font-bold text-yellow-600">Status: {statusDescription}</h2>
+                                    <p className="text-gray-700">Current Location: {statusLocation}</p>
+                                    <p className="text-gray-500 text-sm">Last Update: {statusTimestamp}</p>
+                                </div>
 
-                        {/* Location info */}
-                        <div className="bg-white border shadow-md rounded-lg p-6 my-6">
-                            <div className='flex text-slate-500 items-center mb-2'>
-                                <FaLocationDot className='w-6 h-6 pr-2'/>
-                                <p>Location</p>
+                                {/* Location info */}
+                                <div className="bg-white border shadow-md rounded-lg p-6 my-6">
+                                    <div className='flex text-slate-500 items-center mb-2'>
+                                        <FaLocationDot className='w-6 h-6 pr-2'/>
+                                        <p>Location</p>
+                                    </div>
+                                    <p className="text-gray-700 text-sm">Current Location: </p>
+                                    <p className='font-bold mb-2 text-blue-500'>{statusLocation}</p>
+                                    <p className="text-gray-700 text-sm">Pick Up Location: </p>
+                                    <p className='font-bold mb-2'>{origin?.address?.addressLocality || 'N/A'}</p>
+                                    <p className="text-gray-700 text-sm">Destination: </p>
+                                    <p className='font-bold mb-2'>{destination?.address?.addressLocality || 'N/A'}</p>
+                                    <p className="text-gray-700 text-sm">Service: </p>
+                                    <p className="font-bold mb-2">{trackingData.service || 'N/A'}</p>
+                                </div>
                             </div>
-                            <p className="text-gray-700 text-sm">Current Location: </p>
-                            <p className='font-bold mb-2 text-blue-500'>{statusLocation}</p>
-                            <p className="text-gray-700 text-sm">Pick Up Location: </p>
-                            <p className='font-bold mb-2'>{origin?.address?.addressLocality || 'N/A'}</p>
-                            <p className="text-gray-700 text-sm">Destination: </p>
-                            <p className='font-bold mb-2'>{destination?.address?.addressLocality || 'N/A'}</p>
-                            <p className="text-gray-700 text-sm">Service: </p>
-                            <p className="font-bold mb-2">{trackingData.service || 'N/A'}</p>
-                        </div>
-                    </div>
+                        </>
+                    ) : (
+                        <>
+                        Loading tracking data...
+                        </>
+                    )}
+                    
                     
                     <OrderDetailTable order={order}/>
                     {/* Proof of Delivery (if available) */}
@@ -139,7 +161,7 @@ export default function OrderDetail() {
                     </div>
                     )} */}
 
-                    {/* 追踪事件部分 */}
+                    {/* events tracking */}
                     <hr/>
                     <div className="p-6 mb-6">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Tracking Events</h3>

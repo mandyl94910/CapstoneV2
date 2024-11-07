@@ -6,6 +6,7 @@ import DataTable from "./DataTable";
 import InfoCards from "./InfoCards";
 import Switch from "../Switch";
 import { saveAs } from "file-saver";
+import Quagga from "quagga";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]); // Initial state for storing product data
@@ -161,6 +162,50 @@ const ProductManagement = () => {
     router.push("/admin/addProduct");
   };
 
+  const handleScanProduct = () => {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        document.body.appendChild(video);
+        console.log("Camera is active and video stream is playing.");
+
+        Quagga.init({
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: video
+          },
+          decoder: {
+            readers: ["code_128_reader"] // 根据需要选择条形码类型
+          }
+        }, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          Quagga.start();
+        });
+
+        Quagga.onDetected((data) => {
+          console.log("Detected data:", data);
+          const code = data.codeResult.code;
+          Quagga.stop();
+          stream.getTracks().forEach(track => track.stop());
+          video.remove();
+
+          // 跳转到新的添加产品页面，并传递条形码作为产品ID
+          router.push({
+            pathname: '/admin/addProductFromScan',
+            query: { barcode: code },
+          });
+        });
+      })
+      .catch(err => console.error("Error accessing camera: ", err));
+  };
+
+
   const downloadExcel = () => {
     window.location.href = "http://localhost:3001/api/export-products";
   };
@@ -170,7 +215,7 @@ const ProductManagement = () => {
       {/* Container for product data table */}
       <div className="bg-white p-4 rounded shadow-md">
         {/* Search Bar above the DataTable */}
-        <div className="mb-4">
+        <div className="flex justify-between space-x-2 mb-4">
           {/* Input field to capture search query */}
           <input
             type="text"
@@ -179,6 +224,12 @@ const ProductManagement = () => {
             placeholder="🔍 Search by Product Name or Category"
             className="border p-2 rounded w-full"
           />
+          <button
+            onClick={handleScanProduct}
+            className="bg-blue-500 text-white py-2 px-4 w-40 rounded"
+          >
+            Scan to Add
+          </button>
         </div>
 
         {/* Render DataTable with filtered products based on search query */}
@@ -214,12 +265,12 @@ const ProductManagement = () => {
         />
         {/* Add Product Button */}
         <div className="flex justify-between mt-4">
-        <button
-          onClick={downloadExcel}
-          className="bg-blue-500 text-white py-2 px-4 rounded"
-        >
-          Download Product Table
-        </button>
+          <button
+            onClick={downloadExcel}
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
+            Download Product Table
+          </button>
           <button
             onClick={handleAddProduct}
             className="bg-blue-500 text-white py-2 px-4 rounded"
