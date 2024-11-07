@@ -86,7 +86,7 @@ const OrderCard = ({ order, customerId }) => {
                         query: { 
                             orderData: JSON.stringify(order),
                             customerId: customerId
-                         } // 将订单信息作为查询参数传递
+                         } // pass the order info and customerId as query
                     }}>
                         <button className="bg-blue-500 text-white py-1 px-3 rounded">Review</button>
                     </Link>

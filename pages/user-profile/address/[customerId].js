@@ -12,7 +12,7 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { useAuth } from "../../../hooks/useAuth";
 
 /**
- * Helped with chatGPT
+ * Helped by chatGPT
  * prompt: How can I create a popup for edit/add new address, 
  * and it can be closed by click cancel or close button on the right top
  * How can I adjust my code to implement when I add or edit an address with default status true
