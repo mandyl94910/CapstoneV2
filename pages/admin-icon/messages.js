@@ -8,26 +8,42 @@ export default function MessagesPage() {
 
   // Fetch messages from API when component mounts
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        console.log("Fetching messages from API...");
-        const response = await fetch("/api/message");
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Data received:", data);
-        setMessages(data);
-      } catch (error) {
-        console.error("Failed to fetch messages:", error);
-      }
-    };
-
     fetchMessages();
   }, []);
+
+  const fetchMessages = async () => {
+    try {
+      console.log("Fetching messages from API...");
+      const response = await fetch("/api/message");
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Data received:", data);
+      setMessages(data);
+    } catch (error) {
+      console.error("Failed to fetch messages:", error);
+    }
+  };
+
+  // Delete a message by ID
+  const deleteMessage = async (id) => {
+    try {
+      const response = await fetch(`/api/message/${id}`, { method: "DELETE" });
+      if (!response.ok)
+        throw new Error(`Failed to delete message: ${response.statusText}`);
+
+      // Update the message list by filtering out the deleted message
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== id)
+      );
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+    }
+  };
 
   // Calculate indexes for current page
   const indexOfLastMessage = currentPage * messagesPerPage;
@@ -108,14 +124,31 @@ export default function MessagesPage() {
                   <p className="break-words">
                     <strong>Message:</strong> {msg.message}
                   </p>
-                  {/* Reply button to open email client */}
+                  {/* Reply button */}
                   <button
-                    onClick={() =>
-                      (window.location.href = `mailto:${msg.email}`)
-                    }
-                    className="absolute top-4 right-4 px-3 py-1 bg-slate-500 text-white rounded hover:bg-blue-300"
+                    onClick={() => {
+                      const email = msg.email;
+                      const mailtoLink = `mailto:${email}`;
+                      window.location.href = mailtoLink;
+                    }}
+                    className="absolute top-4 right-24 px-3 py-1 bg-slate-500 text-white rounded hover:bg-blue-300"
                   >
                     Reply
+                  </button>
+                  {/* Delete button */}
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this message?"
+                        )
+                      ) {
+                        deleteMessage(msg.id);
+                      }
+                    }}
+                    className="absolute top-4 right-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500"
+                  >
+                    Delete
                   </button>
                 </li>
               );

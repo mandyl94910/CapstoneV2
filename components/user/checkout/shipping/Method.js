@@ -5,6 +5,7 @@ const Method = ({ selectedMethod, setSelectedMethod }) => {
     { id: "UPS", label: "UPS", price: 0 },
     { id: "Canada Post", label: "Canada Post", price: 0 },
     { id: "Fedex", label: "Fedex", price: 0 },
+    { id: "DHL", label: "DHL", price: 0 },
   ];
 
   return (
