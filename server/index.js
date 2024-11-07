@@ -275,6 +275,28 @@ app.get('/api/message', async (req, res) => {
   }
 });
 
+// Delete a message by ID
+app.delete('/api/message/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    console.log(`Received request to delete message with ID: ${id}`); // Log request
+
+    // Delete the message from the database
+    const result = await db.query('DELETE FROM public.message WHERE id = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) {
+      console.log("Message not found");
+      return res.status(404).send('Message not found'); // If no rows are deleted, send 404
+    }
+
+    console.log("Deleted message:", result.rows[0]); // Log deleted message
+    res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting message:', error); // Log detailed error
+    res.status(500).send('Error deleting message');
+  }
+});
+
 // Product Image Upload Routing
 app.post("/api/products/add", addProduct);
 

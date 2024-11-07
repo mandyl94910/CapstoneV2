@@ -1,22 +1,20 @@
+// pages/admin/OrderDetails.js
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { Player } from "@lottiefiles/react-lottie-player";
 
 const OrderDetails = () => {
   const router = useRouter();
-  const { orderId } = router.query; // URL에서 orderId 추출
+  const { orderId } = router.query;
   const [isAnimationVisible, setIsAnimationVisible] = useState(true);
-  const [orderData, setOrderData] = useState(null); // 주문 정보
-  const [userInfo, setUserInfo] = useState(null); // 사용자 정보
+  const [orderData, setOrderData] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
-  // 애니메이션을 2초 후에 숨기기
   useEffect(() => {
     const timer = setTimeout(() => setIsAnimationVisible(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  // 로컬 스토리지에서 사용자 정보와 주문 정보 불러오기
   useEffect(() => {
     const storedUserInfo = localStorage.getItem("customerInfo");
     const storedOrderData = localStorage.getItem("orderData");
@@ -28,6 +26,23 @@ const OrderDetails = () => {
       setOrderData(JSON.parse(storedOrderData));
     }
   }, []);
+
+  // Save all items in the order as a notification to localStorage
+  useEffect(() => {
+    if (orderData && userInfo) {
+      const notification = {
+        customerName: userInfo.customer_name,
+        orderId: orderData.orderId,
+        items: orderData.items.map((item) => item.name), // 모든 아이템 이름 저장
+        orderTime: new Date().toISOString(),
+      };
+
+      const notifications =
+        JSON.parse(localStorage.getItem("notifications")) || [];
+      notifications.unshift(notification); // 최신 알림을 맨 앞에 추가
+      localStorage.setItem("notifications", JSON.stringify(notifications));
+    }
+  }, [orderData, userInfo]);
 
   return (
     <div className="container mx-auto px-6 py-12 bg-white rounded-lg shadow-md max-w-lg relative">
@@ -56,27 +71,32 @@ const OrderDetails = () => {
             </h1>
           </div>
 
-          <div className="flex justify-center mb-8">
-            {orderData.items[0] && orderData.items[0].imageUrl ? (
-              <img
-                src={`/images/${orderData.items[0].imageUrl.split(",")[0]}`}
-                alt={orderData.items[0].name}
-                className="w-16 h-16 object-cover rounded-lg"
-                width={150}
-                height={150}
-              />
-            ) : (
-              <p className="text-gray-500">No image available</p>
-            )}
-          </div>
-
           <div className="text-left">
             <h2 className="text-2xl font-bold text-gray-500 mb-2">
               Order #{orderData.orderId}
             </h2>
-            <p className="text-lg font-medium text-gray-500 mb-2">
-              Item: {orderData.items[0]?.name}
-            </p>
+            <p className="text-lg font-medium text-gray-500 mb-2">Items:</p>
+            <ul className="list-disc ml-5 mb-4">
+              {orderData.items.map((item, index) => (
+                <li
+                  key={index}
+                  className="text-gray-500 flex items-center mb-2"
+                >
+                  {item.imageUrl ? (
+                    <img
+                      src={`/images/${item.imageUrl.split(",")[0]}`}
+                      alt={item.name}
+                      className="w-10 h-10 object-cover rounded-lg mr-3"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3 flex items-center justify-center">
+                      <span className="text-gray-500 text-xs">No Image</span>
+                    </div>
+                  )}
+                  {item.name}
+                </li>
+              ))}
+            </ul>
             <p className="text-gray-500 mb-1">
               Start time: {orderData.orderDate}
             </p>

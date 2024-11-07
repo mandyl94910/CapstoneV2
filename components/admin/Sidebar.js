@@ -7,6 +7,7 @@ import {
   FaDollarSign,
   FaTruck,
   FaClipboardList,
+  FaBarcode,
 } from "react-icons/fa";
 
 const Sidebar = () => {
@@ -78,6 +79,18 @@ const Sidebar = () => {
             >
               <FaDollarSign className="mr-2" />
               <span>Reports</span>
+            </div>
+          </Link>
+        </li>
+        <li>
+          <Link href="/admin/scanner" className="flex items-center">
+            <div
+              className={`flex items-center space-x-2 ${
+                isActive("/admin/scanner") ? "text-yellow-300" : "text-white"
+              }`}
+            >
+              <FaBarcode className="mr-2" />
+              <span>Scanner</span>
             </div>
           </Link>
         </li>
