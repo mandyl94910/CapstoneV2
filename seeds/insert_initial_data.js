@@ -6,6 +6,7 @@ exports.seed = async function(knex) {
   // Insert categories
   await knex.raw(`
     -- Insert 'All Products' as the main parent category
+    -- Insert 'All Products' as the main parent category
     INSERT INTO category (id, name, sub_for, image) VALUES (1, 'All Products', 1, 'category/all_products.webp');
 
     -- Insert subcategories under 'All Products'
@@ -62,74 +63,75 @@ exports.seed = async function(knex) {
 
     ----------------------------------------------------------------------------
     -- Smartphones (folder 9)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 9, 50, 9, 'product/9/1/1.webp,product/9/1/2.webp,product/9/1/3.webp,product/9/1/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678901', 'Smartphone X1', 699.99, 'A high-end smartphone with advanced features.', 9, 50, 9, 'product/9/1/1.webp,product/9/1/2.webp,product/9/1/3.webp,product/9/1/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 9, 40, 9, 'product/9/2/1.webp,product/9/2/2.webp,product/9/2/3.webp,product/9/2/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678902', 'Smartphone Y1', 799.99, 'A powerful smartphone with a sleek design.', 9, 40, 9, 'product/9/2/1.webp,product/9/2/2.webp,product/9/2/3.webp,product/9/2/4.webp', TRUE);
 
     -- Phone Cases (folder 10)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Phone Case A', 19.99, 'Durable and stylish phone case.', 10, 200, 10, 'product/10/3/1.webp,product/10/3/2.webp,product/10/3/3.webp,product/10/3/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678903', 'Phone Case A', 19.99, 'Durable and stylish phone case.', 10, 200, 10, 'product/10/3/1.webp,product/10/3/2.webp,product/10/3/3.webp,product/10/3/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 10, 150, 10, 'product/10/4/1.webp,product/10/4/2.webp,product/10/4/3.webp,product/10/4/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678904', 'Phone Case B', 15.99, 'Sleek phone case with a minimalist design.', 10, 150, 10, 'product/10/4/1.webp,product/10/4/2.webp,product/10/4/3.webp,product/10/4/4.webp', TRUE);
 
     -- Headphones (folder 11)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 11, 100, 11, 'product/11/5/1.webp,product/11/5/2.webp,product/11/5/3.webp,product/11/5/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678905', 'Wireless Headphones', 89.99, 'Noise-canceling wireless headphones.', 11, 100, 11, 'product/11/5/1.webp,product/11/5/2.webp,product/11/5/3.webp,product/11/5/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 11, 300, 11, 'product/11/6/1.webp,product/11/6/2.webp,product/11/6/3.webp,product/11/6/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678906', 'In-Ear Headphones', 29.99, 'Comfortable in-ear headphones.', 11, 300, 11, 'product/11/6/1.webp,product/11/6/2.webp,product/11/6/3.webp,product/11/6/4.webp', TRUE);
 
     -- Laptops (folder 13)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 13, 30, 13, 'product/13/7/1.webp,product/13/7/2.webp,product/13/7/3.webp,product/13/7/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678907', 'Laptop Pro 15', 1299.99, 'A powerful laptop for professionals.', 13, 30, 13, 'product/13/7/1.webp,product/13/7/2.webp,product/13/7/3.webp,product/13/7/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 13, 25, 13, 'product/13/8/1.webp,product/13/8/2.webp,product/13/8/3.webp,product/13/8/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678908', 'Gaming Laptop Z1', 1599.99, 'A high-performance gaming laptop.', 13, 25, 13, 'product/13/8/1.webp,product/13/8/2.webp,product/13/8/3.webp,product/13/8/4.webp', TRUE);
 
     -- Keyboards (folder 15)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 15, 120, 15, 'product/15/9/1.webp,product/15/9/2.webp,product/15/9/3.webp,product/15/9/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678909', 'Mechanical Keyboard', 79.99, 'A mechanical keyboard with RGB lighting.', 15, 120, 15, 'product/15/9/1.webp,product/15/9/2.webp,product/15/9/3.webp,product/15/9/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 15, 80, 15, 'product/15/10/1.webp,product/15/10/2.webp,product/15/10/3.webp,product/15/10/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678910', 'Wireless Keyboard', 49.99, 'A wireless keyboard with long battery life.', 15, 80, 15, 'product/15/10/1.webp,product/15/10/2.webp,product/15/10/3.webp,product/15/10/4.webp', TRUE);
 
     -- Monitors (folder 17)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 17, 60, 17, 'product/17/11/1.webp,product/17/11/2.webp,product/17/11/3.webp,product/17/11/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678911', '4K Monitor', 299.99, 'A 27-inch 4K monitor for work and gaming.', 17, 60, 17, 'product/17/11/1.webp,product/17/11/2.webp,product/17/11/3.webp,product/17/11/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 17, 45, 17, 'product/17/12/1.webp,product/17/12/2.webp,product/17/12/3.webp,product/17/12/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678912', 'Ultrawide Monitor', 399.99, 'A 34-inch ultrawide monitor.', 17, 45, 17, 'product/17/12/1.webp,product/17/12/2.webp,product/17/12/3.webp,product/17/12/4.webp', TRUE);
 
     -- Televisions (folder 18)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 18, 40, 18, 'product/18/13/1.webp,product/18/13/2.webp,product/18/13/3.webp,product/18/13/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678913', 'Smart TV 55"', 599.99, 'A 55-inch 4K smart TV.', 18, 40, 18, 'product/18/13/1.webp,product/18/13/2.webp,product/18/13/3.webp,product/18/13/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 18, 20, 18, 'product/18/14/1.webp,product/18/14/2.webp,product/18/14/3.webp,product/18/14/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678914', 'OLED TV 65"', 1299.99, 'A 65-inch OLED 4K TV.', 18, 20, 18, 'product/18/14/1.webp,product/18/14/2.webp,product/18/14/3.webp,product/18/14/4.webp', TRUE);
 
     -- Gaming Consoles (folder 21)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Next-Gen Console X', 499.99, 'A next-generation gaming console.', 21, 100, 21, 'product/21/15/1.webp,product/21/15/2.webp,product/21/15/3.webp,product/21/15/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678915', 'Next-Gen Console X', 499.99, 'A next-generation gaming console.', 21, 100, 21, 'product/21/15/1.webp,product/21/15/2.webp,product/21/15/3.webp,product/21/15/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 21, 120, 21, 'product/21/16/1.webp,product/21/16/2.webp,product/21/16/3.webp,product/21/16/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678916', 'Gaming Console Y', 399.99, 'A budget-friendly gaming console.', 21, 120, 21, 'product/21/16/1.webp,product/21/16/2.webp,product/21/16/3.webp,product/21/16/4.webp', TRUE);
 
     -- Cameras (folder 24)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 24, 35, 24, 'product/24/17/1.webp,product/24/17/2.webp,product/24/17/3.webp,product/24/17/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678917', 'DSLR Camera A1', 899.99, 'A high-quality DSLR camera for photography.', 24, 35, 24, 'product/24/17/1.webp,product/24/17/2.webp,product/24/17/3.webp,product/24/17/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 24, 25, 24, 'product/24/18/1.webp,product/24/18/2.webp,product/24/18/3.webp,product/24/18/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678918', 'Mirrorless Camera B1', 1199.99, 'A mirrorless camera with advanced features.', 24, 25, 24, 'product/24/18/1.webp,product/24/18/2.webp,product/24/18/3.webp,product/24/18/4.webp', TRUE);
 
     -- Smartwatches (folder 27)
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 27, 90, 27, 'product/27/19/1.webp,product/27/19/2.webp,product/27/19/3.webp,product/27/19/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678919', 'Smartwatch Pro', 199.99, 'A smartwatch with fitness tracking features.', 27, 90, 27, 'product/27/19/1.webp,product/27/19/2.webp,product/27/19/3.webp,product/27/19/4.webp', TRUE);
 
-    INSERT INTO product (product_name, price, product_description, category_id, quantity, folder, image, visibility) 
-    VALUES ('Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 27, 120, 27, 'product/27/20/1.webp,product/27/20/2.webp,product/27/20/3.webp,product/27/20/4.webp', TRUE);
+    INSERT INTO product (product_id, product_name, price, product_description, category_id, quantity, folder, image, visibility) 
+    VALUES ('012345678920', 'Smartwatch Lite', 149.99, 'A lightweight smartwatch for everyday use.', 27, 120, 27, 'product/27/20/1.webp,product/27/20/2.webp,product/27/20/3.webp,product/27/20/4.webp', TRUE);
+
 
 
     ----------------------------------------------------------------------------------
@@ -141,16 +143,16 @@ exports.seed = async function(knex) {
     -- Insert 10 product reviews with customer_id ranging from 1 to 10
     INSERT INTO review (customer_id, product_id, content, rating, review_time, visibility, pin_top)
     VALUES 
-    (1, 9, 'Great product! Works as expected.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (2, 9, 'Good quality but overpriced.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (3, 10, 'The case fits perfectly and looks stylish.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (4, 11, 'Sound quality is decent for the price.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (5, 13, 'Highly recommend this laptop for productivity.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (6, 15, 'Excellent mechanical keyboard for gaming.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (7, 18, 'The TV has an amazing display quality.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (8, 17, 'Next-gen console delivers a smooth experience.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (9, 19, 'Camera is good but battery life is short.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
-    (10, 20, 'Smartwatch Pro has all the features I need.', 5, CURRENT_TIMESTAMP, TRUE, FALSE);
+    (1, '012345678909', 'Great product! Works as expected.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (2, '012345678909', 'Good quality but overpriced.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (3, '012345678910', 'The case fits perfectly and looks stylish.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (4, '012345678911', 'Sound quality is decent for the price.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (5, '012345678913', 'Highly recommend this laptop for productivity.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (6, '012345678915', 'Excellent mechanical keyboard for gaming.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (7, '012345678918', 'The TV has an amazing display quality.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (8, '012345678917', 'Next-gen console delivers a smooth experience.', 5, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (9, '012345678919', 'Camera is good but battery life is short.', 4, CURRENT_TIMESTAMP, TRUE, FALSE),
+    (10, '012345678920', 'Smartwatch Pro has all the features I need.', 5, CURRENT_TIMESTAMP, TRUE, FALSE);
 
 
     -----------------------------------------------------------------------------------
@@ -277,29 +279,29 @@ exports.seed = async function(knex) {
     -- Corrected orders_detail data with order_id values not exceeding 28
     INSERT INTO orders_detail (order_id, product_id, name, price, quantity)
     VALUES
-    (1, 1, 'Smartphone X1', 699.99, 2),
-    (1, 3, 'Phone Case A', 19.99, 1),
-    (2, 5, 'Laptop Pro 15', 1299.99, 1),
-    (2, 7, 'Mechanical Keyboard', 79.99, 1),
-    (3, 11, 'Smart TV 55"', 599.99, 1),
-    (4, 13, 'DSLR Camera A1', 899.99, 1),
-    (5, 9, '4K Monitor', 299.99, 1),
-    (5, 5, 'Laptop Pro 15', 1299.99, 1),
-    (6, 17, 'Next-Gen Console X', 499.99, 1),
-    (7, 10, 'Ultrawide Monitor', 399.99, 1),
-    (8, 18, 'VR Devices', 499.99, 1),
-    (9, 13, 'DSLR Camera A1', 899.99, 2),
-    (10, 4, 'Phone Case B', 15.99, 3),
-    (11, 7, 'Mechanical Keyboard', 79.99, 2),
-    (12, 6, 'Gaming Laptop Z1', 1599.99, 1),
-    (13, 2, 'Smartphone Y1', 799.99, 1),
-    (14, 16, 'Gaming Console Y', 399.99, 2),
-    (15, 19, 'Printers', 199.99, 1),
-    (16, 8, 'Wireless Headphones', 89.99, 1),
-    (17, 20, 'Scanners', 99.99, 1),
-    (18, 5, 'Laptop Pro 15', 1299.99, 1),
-    (19, 14, 'Smartwatch Pro', 199.99, 2),
-    (20, 15, 'Lenses', 299.99, 1);
+    (1, '012345678901', 'Smartphone X1', 699.99, 2),
+    (1, '012345678903', 'Phone Case A', 19.99, 1),
+    (2, '012345678905', 'Laptop Pro 15', 1299.99, 1),
+    (2, '012345678907', 'Mechanical Keyboard', 79.99, 1),
+    (3, '012345678911', 'Smart TV 55"', 599.99, 1),
+    (4, '012345678913', 'DSLR Camera A1', 899.99, 1),
+    (5, '012345678909', '4K Monitor', 299.99, 1),
+    (5, '012345678905', 'Laptop Pro 15', 1299.99, 1),
+    (6, '012345678917', 'Next-Gen Console X', 499.99, 1),
+    (7, '012345678910', 'Ultrawide Monitor', 399.99, 1),
+    (8, '012345678918', 'VR Devices', 499.99, 1),
+    (9, '012345678913', 'DSLR Camera A1', 899.99, 2),
+    (10, '012345678904', 'Phone Case B', 15.99, 3),
+    (11, '012345678907', 'Mechanical Keyboard', 79.99, 2),
+    (12, '012345678906', 'Gaming Laptop Z1', 1599.99, 1),
+    (13, '012345678902', 'Smartphone Y1', 799.99, 1),
+    (14, '012345678916', 'Gaming Console Y', 399.99, 2),
+    (15, '012345678919', 'Printers', 199.99, 1),
+    (16, '012345678908', 'Wireless Headphones', 89.99, 1),
+    (17, '012345678920', 'Scanners', 99.99, 1),
+    (18, '012345678905', 'Laptop Pro 15', 1299.99, 1),
+    (19, '012345678914', 'Smartwatch Pro', 199.99, 2),
+    (20, '012345678915', 'Lenses', 299.99, 1);
 
     -- Update the orders_detail table with the correct name and price based on the product_id from the product table
     UPDATE orders_detail
@@ -389,8 +391,6 @@ exports.seed = async function(knex) {
     ('Laura', 'Martinez', 'lauramartinez@example.com', 'I forgot my account password. Can you help?', TRUE, '2023-10-08 09:00:00'),
     ('James', 'Anderson', 'jamesanderson@example.com', 'Do you ship internationally?', TRUE, '2023-10-09 10:30:00'),
     ('Anna', 'Taylor', 'annataylor@example.com', 'I received a defective product, what should I do?', FALSE, '2023-10-10 11:45:00');
-
-
-
+    
   `);
 };

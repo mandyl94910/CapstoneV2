@@ -18,7 +18,10 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
+/**
+ * helped by chatGPT
+ * prompt: 
+ */
 const TopSalesByCategory = () => {
   const [sortOrder, setSortOrder] = useState("highToLow");
   const [categoryData, setCategoryData] = useState([]);

@@ -6,6 +6,7 @@ import axios from "axios";
 const AddProduct = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
+    product_id: "",
     product_name: "",
     product_description: "",
     price: "",
@@ -85,6 +86,7 @@ const AddProduct = () => {
     //Converting data to JSON format improves standardization, 
     //compatibility, clarity of data structure and transmission efficiency.
     const jsonData = ({
+      product_id: formData.product_id,
       product_name: formData.product_name,
       product_description: formData.product_description,
       price: formData.price,
@@ -146,6 +148,10 @@ const AddProduct = () => {
 
   // Validate form fields
   const validateForm = () => {
+    if (!formData.product_id) {
+      setValidationMessage("Product ID cannot be empty.");
+      return false;
+    }
     if (!formData.product_name) {
       setValidationMessage("Product name cannot be empty.");
       return false;
@@ -203,6 +209,19 @@ const AddProduct = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Product ID */}
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2">Product ID</label>
+          <input
+            type="text"
+            name="product_id"
+            value={formData.product_id}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
         </div>
 
         {/* Product Name */}

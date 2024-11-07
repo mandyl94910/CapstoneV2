@@ -3,7 +3,10 @@ import SalesReport from "./SalesReport";
 import TopSalesByCategory from "./TopSalesByCategory";
 import TopSalesByProduct from "./TopSalesByProduct";
 import OrderSummary from "./OrderSummary";
-
+/**
+ * helped by chatGPT
+ * prompt: 
+ */
 const ReportContent = ({ selectedReport, setSelectedReport }) => {
   return (
     <div className="bg-white shadow-md rounded-t-lg border border-gray-300">
