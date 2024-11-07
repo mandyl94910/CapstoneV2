@@ -8,6 +8,12 @@ import OrderMap from '../../../components/user/order/OrderMap';
 import OrderDetailTable from '../../../components/user/order/OrderDetailTable';
 import { FaCircleExclamation, FaLocationDot } from 'react-icons/fa6';
 
+/**
+ * Helped by chatGPT
+ * Fetches and displays detailed information about a specific order using its ID
+ * It retrieves order data and tracking information from the server
+ * It includes a progress bar for order status and a table displaying order details
+ */
 export default function OrderDetail() {
     const router = useRouter();
     const { orderId } = router.query;
