@@ -1,5 +1,25 @@
 import db from "../../server/db";
 
+/**
+ * Helped by chatGPT
+ * Messages API Route
+ *
+ * Handles message creation and marking messages as read.
+ *
+ * Methods:
+ * - POST: Adds a new message to the database.
+ * - PUT: Marks all messages as read.
+ *
+ * Request Body (POST):
+ * - firstName, lastName, email, message: Information for the new message.
+ *
+ * Responses:
+ * - 201: New message created successfully.
+ * - 200: All messages marked as read.
+ * - 500: Database error occurred.
+ * - 405: Method not allowed.
+ */
+
 // API route handler for managing messages
 export default async function handler(req, res) {
   if (req.method === "POST") {

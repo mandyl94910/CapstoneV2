@@ -1,3 +1,13 @@
+/**
+ * In-memory Message Store
+ *
+ * Functions:
+ * - createMessage: Adds a new message to the in-memory array.
+ * - getAllMessages: Retrieves all messages from the array.
+ *
+ * Note: This is a temporary storage solution; data will not persist across sessions.
+ */
+
 // Temporary in-memory array
 let messages = [];
 

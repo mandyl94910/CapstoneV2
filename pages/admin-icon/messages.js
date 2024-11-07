@@ -1,6 +1,31 @@
 import { useEffect, useState } from "react";
 import PaginationButton from "../../components/admin/management/PaginationButton";
 
+/**
+ * Helped by chatGPT
+ * MessagesPage
+ *
+ * This page displays a paginated list of user messages for admin management.
+ * It provides options to view, reply to, and delete individual messages.
+ * The page fetches messages from an API and manages pagination.
+ *
+ * Features:
+ * - Fetches messages on page load and displays them in two columns.
+ * - Includes pagination controls to navigate through pages of messages.
+ * - Allows admins to delete messages and confirm the action with a prompt.
+ * - Provides a "Reply" button for each message, linking to the user's email.
+ * - Formats the message sent time for better readability.
+ *
+ * State:
+ * - messages (Array): Stores the list of messages fetched from the API.
+ * - currentPage (Number): Tracks the current page for pagination.
+ *
+ * Methods:
+ * - fetchMessages: Fetches messages from the API and sets the state.
+ * - deleteMessage: Deletes a message by ID and updates the message list.
+ * - formatSentTime: Formats the sent time of each message for display.
+ */
+
 export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
