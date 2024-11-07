@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import Header from "../../components/admin/Header";
 import ReportContent from "../../components/admin/report/ReportContent";
-
+/**
+ * helped by chatGPT
+ * prompt: 
+ */
 const Report = () => {
   const [selectedReport, setSelectedReport] = useState("sales");
 
