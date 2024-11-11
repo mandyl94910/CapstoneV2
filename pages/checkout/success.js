@@ -1,4 +1,3 @@
-// pages/admin/OrderDetails.js
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Player } from "@lottiefiles/react-lottie-player";
@@ -9,12 +8,20 @@ const OrderDetails = () => {
   const [isAnimationVisible, setIsAnimationVisible] = useState(true);
   const [orderData, setOrderData] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  const [cart, setCart] = useState([]);
+
+  // Load cart data from localStorage
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("orderCart")) || [];
+    setCart(storedCart);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsAnimationVisible(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Load user and order data from localStorage
   useEffect(() => {
     const storedUserInfo = localStorage.getItem("customerInfo");
     const storedOrderData = localStorage.getItem("orderData");
@@ -23,26 +30,11 @@ const OrderDetails = () => {
       setUserInfo(JSON.parse(storedUserInfo));
     }
     if (storedOrderData) {
-      setOrderData(JSON.parse(storedOrderData));
+      const parsedOrderData = JSON.parse(storedOrderData);
+      console.log("Parsed Order Data:", parsedOrderData); // Log for debugging
+      setOrderData(parsedOrderData);
     }
   }, []);
-
-  // Save all items in the order as a notification to localStorage
-  useEffect(() => {
-    if (orderData && userInfo) {
-      const notification = {
-        customerName: userInfo.customer_name,
-        orderId: orderData.orderId,
-        items: orderData.items.map((item) => item.name), // 모든 아이템 이름 저장
-        orderTime: new Date().toISOString(),
-      };
-
-      const notifications =
-        JSON.parse(localStorage.getItem("notifications")) || [];
-      notifications.unshift(notification); // 최신 알림을 맨 앞에 추가
-      localStorage.setItem("notifications", JSON.stringify(notifications));
-    }
-  }, [orderData, userInfo]);
 
   return (
     <div className="container mx-auto px-6 py-12 bg-white rounded-lg shadow-md max-w-lg relative">
@@ -77,23 +69,17 @@ const OrderDetails = () => {
             </h2>
             <p className="text-lg font-medium text-gray-500 mb-2">Items:</p>
             <ul className="list-disc ml-5 mb-4">
-              {orderData.items.map((item, index) => (
+              {cart.map((item, index) => (
                 <li
                   key={index}
                   className="text-gray-500 flex items-center mb-2"
                 >
-                  {item.imageUrl ? (
-                    <img
-                      src={`/images/${item.imageUrl.split(",")[0]}`}
-                      alt={item.name}
-                      className="w-10 h-10 object-cover rounded-lg mr-3"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-gray-200 rounded-lg mr-3 flex items-center justify-center">
-                      <span className="text-gray-500 text-xs">No Image</span>
-                    </div>
-                  )}
-                  {item.name}
+                  <img
+                    src={`/images/${item.image.split(",")[0]}`} // Adjusted image path
+                    alt={item.product_name}
+                    className="w-10 h-10 object-cover rounded-lg mr-3"
+                  />
+                  {item.product_name}
                 </li>
               ))}
             </ul>
