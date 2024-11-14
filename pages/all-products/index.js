@@ -6,6 +6,7 @@ import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { useRouter } from 'next/router';
+import OnSaleSection from '../../components/category/OnSaleSection';
 
 // Dynamically load ProductGrid component, disable SSR
 // only load this component when being visited
@@ -86,6 +87,11 @@ export default function Products() {
           setSelectedCategory('');
           const searchResponse = await axios.get(`http://localhost:3001/api/productsName?query=${routerSearchQuery}`)
           productsResponseData = searchResponse.data;
+        } else if (categoryId === "sale") {
+          // Sale 카테고리가 선택되었을 때 하드코딩된 onSaleProducts 데이터 사용
+          setSelectedCategory("Sale");
+          productsResponseData = onSaleProducts;
+        
         } else if(categoryId && parseInt(categoryId, 10) !== 1) {
           
           if (!categories.length) {
@@ -210,6 +216,10 @@ export default function Products() {
           onCategorySelect={handleCategorySelect}  // Handle category selection
         />
         <div className="flex-1 p-6">
+        {selectedCategory === "Sale" ? (
+            <OnSaleSection /> // "Sale" 선택 시 OnSaleSection만 표시
+          ) : (
+            <>
           <div className='flex items-center justify-between'>
             <div className="flex justify-between mb-6">
               {/* Display the appropriate title according to the different situations */}
@@ -258,6 +268,8 @@ export default function Products() {
               </button>
             ))}
           </div>
+          </>
+          )}
         </div>
       </div>
       <Footer />  {/* Render the Footer component */}
