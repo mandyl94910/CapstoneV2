@@ -33,7 +33,7 @@ export default function OrderDetail() {
                 console.log('order fetched', response.data);
             } catch (error) {
                 if (retryCount > 0) {
-                    setTimeout(() => fetchOrder(retryCount - 1), 1000); // 重试请求，延迟1秒
+                    setTimeout(() => fetchOrder(retryCount - 1), 1000); // retry request, delay 1 second
                 } else {
                     console.error("Error fetching order:", error);
                 }
@@ -68,17 +68,17 @@ export default function OrderDetail() {
     },[order]);
 
 
-    if (!order) return <p>Loading...</p>;
-    if (!trackingData) {
-        return(
-            <>
-                 <p>Loading tracking data...</p>
-                 <OrderDetailTable order={order}/>
-            </>
-        );
-    }
+    if (!order) return <p className='m-auto'>Loading order details...</p>;
+    // if (!trackingData) {
+    //     return(
+    //         <>
+    //              <p>Loading tracking data...</p>
+    //              <OrderDetailTable order={order}/>
+    //         </>
+    //     );
+    // }
 
-    // 从trackingData中提取不同的时间戳
+    // Prepare timestamps for OrderProgress
     const timestamps = {
         orderDate: order.order_date,
         shippedDate: order.ship_date,
@@ -88,7 +88,10 @@ export default function OrderDetail() {
     };
 
     // 确保从 trackingData 中提取了具体字段
-    const { origin, destination, events, status, details } = trackingData;
+    const origin = trackingData?.origin || {};
+    const destination = trackingData?.destination || {};
+    const events = trackingData?.events || [];
+    const status = trackingData?.status || {};
     const statusDescription = status?.description || 'N/A';
     const statusTimestamp = status?.timestamp ? new Date(status.timestamp).toLocaleString() : 'N/A';
     const statusLocation = status?.location?.address?.addressLocality || 'N/A';
@@ -100,13 +103,14 @@ export default function OrderDetail() {
                 <div className="bg-white p-6 border shadow-md rounded-lg">
                     <h1 className="text-2xl font-semibold text-gray-800 mb-4">Order ID: {orderId}</h1>
                     <hr/>
+                    
+                    <div className="flex justify-center w-full px-10">
+                        <OrderProgress 
+                            status={order.status} 
+                            timestamps={timestamps} />
+                    </div> 
                     {trackingData? (
                         <>
-                            <div className="flex justify-center w-full px-10">
-                                <OrderProgress 
-                                    status={order.status} 
-                                    timestamps={timestamps} />
-                            </div> 
                             {/* Status and Location */}
                             <hr/>
                             <div className='flex justify-between'>
