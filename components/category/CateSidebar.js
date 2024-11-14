@@ -107,6 +107,13 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
           .filter(category => category.name !== 'All Products') // Filter out the "All Products" category
           .map(category => renderCategories(category)) // Render each category in the list
         }
+        {/* Sale 카테고리 추가 */}
+        <li
+          className={`p-2 mt-4 rounded ${selectedCategory === 'Sale' ? 'bg-red-500 text-white' : 'hover:bg-red-100'} cursor-pointer`}
+          onClick={() => onCategorySelect({ id: 'sale', name: 'Sale' })}
+        >
+          Sale
+        </li>
       </ul>
     </div>
   );

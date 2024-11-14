@@ -1,20 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router"; // useRouter import
 import Header from "../../components/admin/Header";
 
-const ProtectionPage = () => {
+const ProtectionPage = ({ correctPin, onSuccess, onFailure }) => {
   const [pin, setPin] = useState(["", "", "", ""]);
+  const router = useRouter(); // router 객체 생성
 
-  // PIN input
+  // PIN 입력 핸들러
   const handlePinChange = (e, index) => {
     const newPin = [...pin];
     newPin[index] = e.target.value;
     setPin(newPin);
 
-    // focus moving after pin input
+    // 다음 입력란으로 자동 이동
     if (e.target.value && index < 3) {
       document.getElementById(`pin-${index + 1}`).focus();
     }
   };
+
+  useEffect(() => {
+    // 모든 PIN이 입력되었을 때만 검증
+    if (pin.every((digit) => digit !== "")) {
+      if (pin.join("") === correctPin) {
+        alert("PIN verified successfully!");
+        if (onSuccess) onSuccess(); // 성공 콜백 호출
+        router.back(); // 이전 화면으로 돌아가기
+      } else {
+        if (onFailure) onFailure(); // 실패 콜백 호출
+        setPin(["", "", "", ""]); // PIN이 틀리면 초기화
+      }
+    }
+  }, [pin, correctPin, onSuccess, onFailure, router]);
 
   return (
     <div className="flex">
