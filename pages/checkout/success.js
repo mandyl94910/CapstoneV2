@@ -36,6 +36,22 @@ const OrderDetails = () => {
     }
   }, []);
 
+  // Save all items in the order as a notification to localStorage
+  useEffect(() => {
+    if (orderData && userInfo) {
+      const notification = {
+        customerName: userInfo.customer_name,
+        orderId: orderData.orderId,
+        items: orderData.items.map((item) => item.name), // Save all item names
+        orderTime: new Date().toISOString(),
+      };
+      const notifications =
+        JSON.parse(localStorage.getItem("notifications")) || [];
+      notifications.unshift(notification); // Add the latest notification at the top
+      localStorage.setItem("notifications", JSON.stringify(notifications));
+    }
+  }, [orderData, userInfo]);
+
   return (
     <div className="container mx-auto px-6 py-12 bg-white rounded-lg shadow-md max-w-lg relative">
       <div className="absolute top-4 right-4">

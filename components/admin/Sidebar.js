@@ -82,7 +82,7 @@ const Sidebar = () => {
             </div>
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link href="/admin/scanner" className="flex items-center">
             <div
               className={`flex items-center space-x-2 ${
@@ -93,7 +93,7 @@ const Sidebar = () => {
               <span>Scanner</span>
             </div>
           </Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );
