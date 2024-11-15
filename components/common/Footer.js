@@ -42,7 +42,7 @@ export default function Footer() {
             <p className="mb-1 text-gray-500">768 street NW City Prov</p>
             <button
               onClick={openModal}
-              className="bg-blue-600 text-white text-base mt-2 px-5 py-1 rounded-lg hover:bg-blue-500"
+              className="bg-blue-600 text-white text-base mt-2 px-5 py-1.5 rounded-lg hover:bg-blue-500"
             >
               Contact Us
             </button>
