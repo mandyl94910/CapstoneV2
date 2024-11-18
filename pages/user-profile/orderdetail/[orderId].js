@@ -92,6 +92,7 @@ export default function OrderDetail() {
     const destination = trackingData?.destination || {};
     const events = trackingData?.events || [];
     const status = trackingData?.status || {};
+    const details = trackingData?.details || {}; // For proof of shipping
     const statusDescription = status?.description || 'N/A';
     const statusTimestamp = status?.timestamp ? new Date(status.timestamp).toLocaleString() : 'N/A';
     const statusLocation = status?.location?.address?.addressLocality || 'N/A';
@@ -109,7 +110,7 @@ export default function OrderDetail() {
                             status={order.status} 
                             timestamps={timestamps} />
                     </div> 
-                    {trackingData? (
+                    {trackingData &&
                         <>
                             {/* Status and Location */}
                             <hr/>
@@ -141,12 +142,7 @@ export default function OrderDetail() {
                                     <p className="font-bold mb-2">{trackingData.service || 'N/A'}</p>
                                 </div>
                             </div>
-                        </>
-                    ) : (
-                        <>
-                        Loading tracking data...
-                        </>
-                    )}
+                        </>}
                     
                     
                     <OrderDetailTable order={order}/>
@@ -168,7 +164,7 @@ export default function OrderDetail() {
                     {/* events tracking */}
                     <hr/>
                     <div className="p-6 mb-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Tracking Events</h3>
+                        {events && <h3 className="text-lg font-semibold text-gray-800 mb-4">Tracking Events</h3>}
                         <ul className="space-y-4">
                             {events.map((event, index) => (
                             <li key={index} className="p-4 border rounded-md">
