@@ -219,8 +219,8 @@ exports.seed = async function(knex) {
     -- Insert order records without address_data
     INSERT INTO orders (customer_id, address_id, total, total_tax, status, order_date, ship_date, shipping_method, tracking_number, complete_date)
     VALUES
-    (1, 10, 1719.97, 1805.97, 'completed', '2024-10-23 08:22:12', '2023-09-05 11:22:12', 'UPS', '123456789', '2023-09-20 14:30:00'),
-    (1, 15, 1379.98, 1448.98, 'completed', '2024-10-01 14:45:55', '2023-09-07 10:25:20', 'FedEx', '234567891', '2023-09-22 13:15:10'),
+    (1, 10, 1719.97, 1805.97, 'pending', '2024-10-23 08:22:12', NULL, NULL, NULL, NULL),
+    (1, 15, 1379.98, 1448.98, 'pending', '2024-10-01 14:45:55', NULL, NULL, NULL, NULL),
     (1, 23, 1300.40, 1365.42, 'shipped', '2024-10-15 12:10:15', '2023-09-09 16:12:50', 'DHL', '345678912', NULL),
     (12, 6, 1845.32, 1937.59, 'completed', '2023-09-10 09:23:55', '2023-09-13 11:18:45', 'UPS', '456789123', '2023-09-29 15:45:00'),
     (9, 18, 1799.98, 1889.98, 'pending', '2023-09-12 16:05:42', NULL, NULL, NULL, NULL),
