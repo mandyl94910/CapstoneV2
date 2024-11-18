@@ -224,12 +224,12 @@ const ProductManagement = () => {
             placeholder="🔍 Search by Product Name or Category"
             className="border p-2 rounded w-full"
           />
-          <button
+          {/* <button
             onClick={handleScanProduct}
             className="bg-blue-500 text-white py-2 px-4 w-40 rounded"
           >
             Scan to Add
-          </button>
+          </button> */}
         </div>
 
         {/* Render DataTable with filtered products based on search query */}
