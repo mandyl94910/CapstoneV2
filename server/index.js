@@ -70,7 +70,8 @@ const {getAllOrders,
     getOrderProducts, 
     getAllOrdersByCustomerId,
     createOrder,
-    getOrderDetailByOrderId} = require('../pages/functions/order/orderController');
+    getOrderDetailByOrderId,
+    getOrderStatsByCustomerId } = require('../pages/functions/order/orderController');
 
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
@@ -247,6 +248,9 @@ app.get("/api/user-admin/datatable", (req, res) => {
 
 // Route to get orders for customer
 app.get('/api/orders/customer/:customerId', getAllOrdersByCustomerId);
+
+// Route to get orders stats for customer
+app.get('/api/orders/stats/:customerId', getOrderStatsByCustomerId );
 
 // Route to get order details for one specific order
 app.get('/api/order/order-detail/:orderId', getOrderDetailByOrderId);

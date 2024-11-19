@@ -7,7 +7,7 @@ const ItemTable = ({ order }) => {
             <table className="w-full text-left border border-gray-200 rounded-lg overflow-hidden">
                 <thead className="bg-gray-100">
                     <tr>
-                        <th className="px-4 py-2 text-sm font-medium text-gray-600">No</th>
+                        <th className="px-4 py-2 text-sm font-medium text-gray-600">No.</th>
                         <th className="px-4 py-2 text-sm font-medium text-gray-600">Item Name</th>
                         <th className="px-4 py-2 text-sm font-medium text-gray-600">Quantity</th>
                         <th className="px-4 py-2 text-sm font-medium text-gray-600">Price</th>

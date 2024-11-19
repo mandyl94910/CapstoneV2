@@ -16,25 +16,57 @@ import axios from "axios";
  */
 export default function OrderPage() {
     const router = useRouter();
-    const { customerId } = router.query;
+    const { customerId,tab } = router.query;
 
     const [orders, setOrders] = useState([]);
-    const [activeTab, setActiveTab] = useState("allOrders");
+    const [activeTab, setActiveTab] = useState(tab || "allOrders");
+
+    // useEffect(() => {
+    //     const fetchOrders = async () => {
+    //         // if there is no customerId, do not send request
+    //         if (!customerId) return;
+    //         try {
+    //             const response = await axios.get(`http://localhost:3001/api/orders/customer/${customerId}`);
+    //             setOrders(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching orders by customerId:', error); 
+    //         }
+    //     }
+    //     fetchOrders();
+    // }, [customerId]);
 
     useEffect(() => {
         const fetchOrders = async () => {
-            // if there is no customerId, do not send request
-            if (!customerId) return;
-            try {
-                const response = await axios.get(`http://localhost:3001/api/orders/customer/${customerId}`);
-                setOrders(response.data);
-            } catch (error) {
-                console.error('Error fetching orders by customerId:', error); 
-            }
+          if (!customerId) return;
+          try {
+            const response = await axios.get(`http://localhost:3001/api/orders/customer/${customerId}`);
+            setOrders(response.data);
+          } catch (error) {
+            console.error('Error fetching orders by customerId:', error); 
+          }
+        };
+      
+        // 获取查询参数并设置初始Tab
+        if (router.query.tab) {
+          setActiveTab(router.query.tab);
         }
+      
         fetchOrders();
-    }, [customerId]);
+      }, [customerId, router.query.tab]);
 
+      useEffect(() => {
+        if (tab) {
+          setActiveTab(tab);
+        }
+      }, [tab]);
+
+      const handleTabChange = (tabKey) => {
+        setActiveTab(tabKey);
+        router.push({
+          pathname: `/user-profile/order/${customerId}`,
+          query: { tab: tabKey },
+        });
+      };
 
     return(
         <>
@@ -51,7 +83,7 @@ export default function OrderPage() {
                 <div className="container flex">
                     <Sidebar/>
                     <div>
-                        <Tabs activeTab={activeTab} setActiveTab={setActiveTab}/>
+                        <Tabs activeTab={activeTab} setActiveTab={handleTabChange}/>
                         <OrderList activeTab={activeTab} orders={orders} customerId={customerId}/>
                     </div>
                     

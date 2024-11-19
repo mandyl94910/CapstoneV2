@@ -5,22 +5,37 @@ import Sidebar from "../../components/user/Sidebar";
 import RecommendedProducts from "../../components/common/RecommendedProducts";
 import Link from "next/link";
 import DefaultAddress from "../../components/user/DefaultAddress";
+import axios from "axios";
 
 
 /**
- * Helped with chatGPT
+ * Helped By chatGPT
  * Create a page to display the user's basic information and order statistics
+ * Fetches and shows order statistics (e.g., pending, shipped, completed) using an API call.
+ * Creates dynamic links to order pages based on customer_id and order status.
  */
 export default function UserProfile() {
 
     const { user } = useAuth();
 
-    const [stats, setStats] = useState({
-    pendingPayment: 0,
-    pendingShipment: 0,
-    pendingReview: 0,
-    returns: 0,
-    });
+    const [stats, setStats] = useState({});
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!user || !user.customer_id) return;
+            try {
+                const response = await axios.get(`http://localhost:3001/api/orders/stats/${user.customer_id}`);
+                setStats(response.data); // return data format：{ pending: 2, shipped: 5, returns: 1 }
+                console.log('stats result: ', response.data);
+            } catch (error) {
+                console.error("Error fetching order stats:", error);
+            }
+        };
+      
+        if (user && user.customer_id) {
+            fetchStats();
+        }
+      }, [user]);
 
     
     if (!user){
@@ -65,8 +80,10 @@ export default function UserProfile() {
                             <div className="flex justify-around w-full">
                             {Object.keys(stats).map((key, index) => (
                                 <div key={index} className="text-center">
-                                <h4 className="font-bold">{stats[key]}</h4>
-                                <p>{key}</p>
+                                    <Link href={`/user-profile/order/${user.customer_id}?tab=${key}`}>
+                                        <h4 className={`font-bold ${stats[key] > 0 ? 'text-blue-600' : ''}`}>{stats[key]}</h4>
+                                    </Link>
+                                    <p>{key}</p>
                                 </div>
                             ))}
                             </div>
@@ -76,8 +93,8 @@ export default function UserProfile() {
                         <DefaultAddress customer_id={user.customer_id}/>
 
                         {/* Order tracking */}
-                        <h3 className="font-bold mb-4">Track order</h3>
-                        <p className="text-gray-500">No available</p>
+                        {/* <h3 className="font-bold mb-4">Track order</h3>
+                        <p className="text-gray-500">No available</p> */}
 
                         <RecommendedProducts />
                     </main>
