@@ -9,8 +9,10 @@ import axios from "axios";
 
 
 /**
- * Helped with chatGPT
+ * Helped By chatGPT
  * Create a page to display the user's basic information and order statistics
+ * Fetches and shows order statistics (e.g., pending, shipped, completed) using an API call.
+ * Creates dynamic links to order pages based on customer_id and order status.
  */
 export default function UserProfile() {
 
@@ -23,7 +25,7 @@ export default function UserProfile() {
             if (!user || !user.customer_id) return;
             try {
                 const response = await axios.get(`http://localhost:3001/api/orders/stats/${user.customer_id}`);
-                setStats(response.data); // 假设API返回格式：{ pending: 2, shipped: 5, returns: 1 }
+                setStats(response.data); // return data format：{ pending: 2, shipped: 5, returns: 1 }
                 console.log('stats result: ', response.data);
             } catch (error) {
                 console.error("Error fetching order stats:", error);
@@ -79,7 +81,7 @@ export default function UserProfile() {
                             {Object.keys(stats).map((key, index) => (
                                 <div key={index} className="text-center">
                                     <Link href={`/user-profile/order/${user.customer_id}?tab=${key}`}>
-                                        <h4 className="font-bold">{stats[key]}</h4>
+                                        <h4 className={`font-bold ${stats[key] > 0 ? 'text-blue-600' : ''}`}>{stats[key]}</h4>
                                     </Link>
                                     <p>{key}</p>
                                 </div>

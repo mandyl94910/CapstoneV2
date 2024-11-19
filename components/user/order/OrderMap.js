@@ -7,6 +7,14 @@ import mapboxgl from 'mapbox-gl';
 // API accessToken for Mapbox
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaW5nc3VtbWVyIiwiYSI6ImNtMnR2a3pwajA3MTEyaXExcWplMzZuaWYifQ.i9HjquSgUMs8qZGDxK2emw';
 
+
+/**
+ * Helped by chatGPT
+ * Display the map according the order's current location that read from delivery API
+ * Uses Mapbox Geocoding API to convert the location (e.g., address or place name) 
+ *      into geographical coordinates (longitude and latitude).
+ * Loads a custom marker image (marker_map_icon.png) to represent the location.
+ */
 const OrderMap = ({ location }) => {
     const mapContainer = useRef(null);
     const map = useRef(null);

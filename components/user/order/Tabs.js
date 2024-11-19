@@ -32,7 +32,7 @@ const Tabs = ({ activeTab, setActiveTab }) => {
             setActiveTab(tab.key);
             router.push({
               pathname: `/user-profile/order/${customerId}`,
-              query: { tab: tab.key }, // 更新 URL 参数
+              query: { tab: tab.key }, // update URL params
             });
           }}
         >

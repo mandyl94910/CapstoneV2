@@ -12,10 +12,10 @@ import { FaCircleExclamation, FaLocationDot } from 'react-icons/fa6';
 /**
  * Helped by chatGPT
  * Fetches and displays detailed information about a specific order using its ID
- * It retrieves order data and tracking information from the server
+ * It retrieves order data from the server and fetches tracking data from delivery API
  * It includes a progress bar for order status and a table displaying order details
+ * It will display the map of the location of the order if applicable
  * 
- * --need to be improved
  */
 export default function OrderDetail() {
     const router = useRouter();

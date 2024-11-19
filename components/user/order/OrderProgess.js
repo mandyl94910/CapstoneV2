@@ -3,6 +3,14 @@
 import React from 'react';
 import { FaBox, FaCartShopping, FaCircleCheck, FaHouse, FaTruckFast } from 'react-icons/fa6';
 
+
+/**
+ * Helped by chatGPT
+ * Lists the progress stages (Ordered, Processed, Pick Up, etc.) with their corresponding keys, icons, and data sources.
+ * Filters the stages to display based on the rules:
+        Always show stages with a timestamp.
+        Show stages without a timestamp only if they come after the last completed stage.
+ */
 const OrderProgress = ({ timestamps }) => {
 
     // Define stages with name, key, source, and icon
