@@ -10,10 +10,19 @@ export default function RecommendedProducts() {
     
     // fetch product info
     useEffect(() => {
-    const fetchRecommendedProducts = async () => {
-        // hardcode the condition for testing
-        const response = await axios.get('http://localhost:3001/api/products/recommended_products?minPrice=500&maxPrice=800&limit=6');
-        setRecommendedProducts(response.data);
+    const fetchRecommendedProducts = async ( retryCount = 3 ) => {
+        try {
+            // hardcode the condition for testing
+            const response = await axios.get('http://localhost:3001/api/products/recommended_products?minPrice=500&maxPrice=800&limit=6');
+            setRecommendedProducts(response.data);
+        } catch (error) {
+            if (retryCount > 0) {
+                setTimeout(() => fetchRecommendedProducts(retryCount - 1), 1000); // retry request, delay 1 second
+            } else {
+                console.error("Error fetching recommendedProduct:", error);
+            }
+        }
+        
     };
 
     fetchRecommendedProducts();

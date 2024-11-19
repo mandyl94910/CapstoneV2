@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 
 /**
  * Helped by chatGPT
@@ -6,8 +7,12 @@
  * Also, it will set new active tab and pass that value to the parent's component when being clicked
  */
 const Tabs = ({ activeTab, setActiveTab }) => {
+  const router = useRouter();
+  const { customerId } = router.query;
+
   const tabs = [
     { key: "allOrders", label: "All Orders" },
+    { key: "pending", label: "Pending" },
     { key: "shipped", label: "Shipped" },
     { key: "completed", label: "Completed" },
     { key: "cancelled", label: "Cancelled" },
@@ -23,7 +28,13 @@ const Tabs = ({ activeTab, setActiveTab }) => {
               ? "text-blue-500 font-bold border-blue-500 border-b-2"
               : "text-black hover:text-blue-500 border-b-gray-600"
           }`}
-          onClick={() => setActiveTab(tab.key)}
+          onClick={() => {
+            setActiveTab(tab.key);
+            router.push({
+              pathname: `/user-profile/order/${customerId}`,
+              query: { tab: tab.key }, // 更新 URL 参数
+            });
+          }}
         >
           {tab.label}
         </div>

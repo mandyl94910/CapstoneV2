@@ -1,4 +1,5 @@
-const { Order,Customer,OrderDetail,Product } = require('../../../server/models'); 
+const { sequelize,Order,Customer,OrderDetail,Product } = require('../../../server/models'); 
+
 
 // Function name: getAllOrders
 // Description: Retrieves all orders with related customer names and product IDs in each order.
@@ -95,6 +96,50 @@ const getAllOrdersByCustomerId = async (req, res) => {
   } catch (error) {
     console.error('Error fetching orders:', error.message);
     res.status(500).send('Error fetching orders');
+  }
+};
+
+
+// Function name: getOrderStatsByCustomerId 
+// Description: Retrieves all orders with specific stats for customer.
+// Parameters:
+//   req (object): The HTTP request object.
+//   res (object): The HTTP response object used to return the orders or an error message.
+// Functionality:
+//   This function retrieves order stats, including all stats and the number of the stats for the customer, 
+//   The data is returned in JSON format.
+const getOrderStatsByCustomerId  = async (req, res) =>{
+  const { customerId } = req.params;
+
+  try {
+    // 查询数据库，按状态分组统计订单数量
+    const stats = await Order.findAll({
+      where: { customer_id: customerId },
+      attributes: [
+        'status',
+        [sequelize.fn('COUNT', sequelize.col('status')), 'count'],
+      ],
+      group: ['status'],
+    });
+
+    // 格式化结果为对象
+    const result = stats.reduce((acc, row) => {
+      acc[row.status] = parseInt(row.dataValues.count, 10);
+      return acc;
+    }, {});
+
+    // 确保返回所有可能的状态，未出现的状态初始化为 0
+    const allStatuses = ['pending', 'shipped', 'completed'];
+    allStatuses.forEach((status) => {
+      if (!result[status]) {
+        result[status] = 0;
+      }
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching orders stats by status:', error.message);
+    res.status(500).send('Error fetching orders stats');
   }
 };
 
@@ -349,5 +394,6 @@ module.exports = {
   updateOrderStatus,
   getOrderProducts,
   createOrder,
-  getOrderDetailByOrderId
+  getOrderDetailByOrderId,
+  getOrderStatsByCustomerId 
 };

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Header from "../../../components/common/Header";
+import Footer from "../../../components/common/Footer";
 import OrderProgress from '../../../components/user/order/OrderProgess';
 import OrderMap from '../../../components/user/order/OrderMap';
 import OrderDetailTable from '../../../components/user/order/OrderDetailTable';
@@ -25,7 +26,7 @@ export default function OrderDetail() {
     // Get order info
     useEffect(() => {
         if (!orderId) return;
-        // 延迟加载（Debounce）和重试机制
+        // 延迟加载（Debounce）and retry strategy
         const fetchOrder = async (retryCount = 3 ) => {
             try {
                 const response = await axios.get(`http://localhost:3001/api/order/order-detail/${orderId}`);
@@ -99,7 +100,11 @@ export default function OrderDetail() {
             <div className='container mx-auto my-8 px-16 min-w-[800px]'>
                 <div className="bg-white p-6 border shadow-md rounded-lg">
                     <h1 className="text-2xl font-semibold text-gray-800">Order ID: {orderId}</h1>
-                    <p className='mb-4'>Tracking Number: {order.tracking_number}</p>
+                    {order.tracking_number? (
+                        <p className='mb-4'>Tracking Number: {order.tracking_number}</p>
+                    ) : (
+                        <p className='mb-4'>Pending</p>
+                    )}
                     <hr/>
                     
                     <div className="flex justify-center w-full px-10">
@@ -190,6 +195,7 @@ export default function OrderDetail() {
                    
                 </div>
             </div>
+            <Footer />
         </>
     );
 }
