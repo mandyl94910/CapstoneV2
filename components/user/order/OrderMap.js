@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState  } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-// 设置 Mapbox 的 API 密钥
+// API accessToken for Mapbox
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaW5nc3VtbWVyIiwiYSI6ImNtMnR2a3pwajA3MTEyaXExcWplMzZuaWYifQ.i9HjquSgUMs8qZGDxK2emw';
 
 const OrderMap = ({ location }) => {
@@ -14,7 +14,7 @@ const OrderMap = ({ location }) => {
 
 
     useEffect(() => {
-        // 使用 Mapbox Geocoding API 将地址转换为经纬度
+        // Use Mapbox Geocoding API tranfer the location to coordinates
         const fetchCoordinates = async () => {
         try {
             const response = await fetch(
@@ -22,7 +22,7 @@ const OrderMap = ({ location }) => {
             );
             const data = await response.json();
 
-            // 检查响应并提取第一个结果的坐标
+            // get coordinates from the first result
             if (data.features && data.features.length > 0) {
             const [lng, lat] = data.features[0].center;
             setCoordinates({ longitude: lng, latitude: lat });
@@ -54,30 +54,59 @@ const OrderMap = ({ location }) => {
                 zoom: 10
             });
             
-            // 添加标记和弹出窗口
-            const marker = new mapboxgl.Marker({ color: "red" })
-                .setLngLat([coordinates.longitude, coordinates.latitude])
-                .addTo(map.current);
+            map.current.on('load', () => {
+                // 添加自定义图标（使用 URL 或内置 SVG）
+                map.current.loadImage(
+                    '/marker_map_icon.png', 
+                    (error, image) => {
+                        if (error) throw error;
+                        if (!map.current.hasImage('custom-marker')) {
+                            map.current.addImage('custom-marker', image);
+                        }
+    
+                        // 添加图层，使用自定义图标
+                        map.current.addSource('point', {
+                            type: 'geojson',
+                            data: {
+                                type: 'FeatureCollection',
+                                features: [
+                                    {
+                                        type: 'Feature',
+                                        geometry: {
+                                            type: 'Point',
+                                            coordinates: [coordinates.longitude, coordinates.latitude],
+                                        },
+                                        properties: {},
+                                    },
+                                ],
+                            },
+                        });
+    
+                        map.current.addLayer({
+                            id: 'custom-marker-layer',
+                            type: 'symbol',
+                            source: 'point',
+                            layout: {
+                                'icon-image': 'custom-marker', // 使用自定义图标
+                                'icon-size': 0.1, // 调整图标大小
+                                'icon-anchor': 'bottom', // 图标锚点
+                            },
+                        });
 
-            const popup = new mapboxgl.Popup({ offset: 15 })
-                .setLngLat([coordinates.longitude, coordinates.latitude])
-                .setHTML(`<h3>Current Location</h3><p>${location}</p>`)
-                .addTo(map.current);
+                    }
+                );
+            });
 
-            // 清理标记和弹出窗口（如果组件卸载）
-            return () => {
-                marker.remove();
-                popup.remove();
-            };
         } else {
             // 如果地图已经存在，更新地图的中心
             map.current.setCenter([coordinates.longitude, coordinates.latitude]);
         }
 
     }, [coordinates]);
+    
 
     return (
-        <div ref={mapContainer} className="w-full h-64" />
+        <div ref={mapContainer} className="w-full h-72 relative" />
     );
 };
 

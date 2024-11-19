@@ -16,17 +16,35 @@ const OrderProgress = ({ timestamps }) => {
 
     console.log('timestamps', timestamps);
     
-    // Calculate currentStageIndex based on available timestamps
-    let currentStageIndex = -1;
+    // Calculate lastStageIndex based on available timestamps
+    let lastStageIndex = -1;
     stages.forEach((stage, index) => {
         if (timestamps[stage.key]) {
-            currentStageIndex = index; // Update to the latest available stage with a timestamp
+            lastStageIndex = index; // Update to the latest available stage with a timestamp
         }
     });
 
+    // 过滤状态
+    const filteredStages = stages.filter((stage, index) => {
+        // display rules:
+        // 1. always appear if there is timestamp
+        // 2. if no timestamp, only display those with index > than currentIndex
+        return timestamps[stage.key] || index > lastStageIndex;
+    });
+
+    // Calculate currentStageIndex based on available timestamps
+    let currentStageIndex = -1;
+    filteredStages.forEach((stage, index) => {
+        if (timestamps[stage.key]) {
+            currentStageIndex = index; 
+        }
+    });
+
+
+
     return (
         <div className="flex justify-between w-full my-8">
-            {stages.map((stage, index) => (
+            {filteredStages.map((stage, index) => (
               // React.Fragment won't create new DOM element to affect the layout
                 <React.Fragment key={index}>
                     {/* each stages -- icon + name + time */}
@@ -34,13 +52,15 @@ const OrderProgress = ({ timestamps }) => {
                         {/* status icon */}
                         <div
                             className={`w-6 h-6 flex items-center justify-center ${
-                            index <= currentStageIndex ? "text-blue-600" : "text-gray-300"
+                                timestamps[stage.key] ? "text-blue-600" : "text-gray-300"
                             }`}
                         >
                             {stage.icon}
                         </div>
                         {/* status name */}
-                        <p className={`mt-2 ${index <= currentStageIndex ? "text-blue-600" : "text-gray-400"}`}>
+                        <p className={`mt-2 ${
+                                timestamps[stage.key] ? "text-blue-600" : "text-gray-400"
+                            }`}>
                             {stage.name}
                         </p>
                         {/* timestamp */}
@@ -50,7 +70,7 @@ const OrderProgress = ({ timestamps }) => {
                     </div>
                     
                     {/* draw a line between each stage */}
-                    {index < stages.length - 1 && (
+                    {index < filteredStages.length - 1 && (
                             <div
                             className={`flex-1 h-[2px] mt-3 rounded ${
                                 index < currentStageIndex ? "bg-blue-600" : "bg-gray-300"
@@ -61,6 +81,9 @@ const OrderProgress = ({ timestamps }) => {
             ))}
         </div>
     );
+
+    
+
 };
 
 export default OrderProgress;
