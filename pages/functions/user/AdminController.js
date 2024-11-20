@@ -154,8 +154,44 @@ const changeCredentials = async (req, res) => {
     }
   };
 
+  const adminLogin = async (req, res, username, password) => {
+    try {
+        console.log('Admin Login API called'); // 初步确认API是否被调用
+        console.log('Received username:', username); // 打印接收到的用户名
+        console.log('Received password:', password); // 打印接收到的密码
+        // 检查用户名是否符合管理员规则
+        const adminRegex = /^Admin\d{2}.*$/;
+        if (!adminRegex.test(username)) {
+        console.log('Username format invalid:', username); // 打印用户名格式错误
+        return res.status(400).json({ message: 'Invalid admin username format.' });
+        }
+  
+      // Query database for admin credentials
+      const query = 'SELECT id, name, password FROM admin WHERE name = $1';
+      const result = await db.query(query, [username]);
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Admin not found.' });
+      }
+  
+      const admin = result.rows[0];
+  
+      // Check if the password matches
+      if (password !== admin.password) {
+        return res.status(401).json({ message: 'Incorrect password.' });
+      }
+  
+      // If successful, respond with admin details
+      res.json({ success: true, adminName: admin.name });
+    } catch (error) {
+      console.error('Error during admin login:', error);
+      res.status(500).json({ message: 'Internal server error. Please try again later.' });
+    }
+  };
+
 module.exports = {
     getAdminInformation,
     updateAdminDetails,
-    changeCredentials
+    changeCredentials,
+    adminLogin
   };

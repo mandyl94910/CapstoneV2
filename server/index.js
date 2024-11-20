@@ -38,6 +38,7 @@ const {
   getAdminInformation,
   updateAdminDetails,
   changeCredentials,
+  adminLogin
 } = require("../pages/functions/user/AdminController");
 const {
   getCategories,
@@ -434,6 +435,12 @@ app.get('/api/shipping/status', async (req, res) => {
     console.error('Error fetching tracking data:', error);
     res.status(500).json({ message: 'Error fetching tracking data' });
   }
+});
+
+// Admin login route
+app.post('/api/admin-login', (req, res) => {
+  const { username, password } = req.body;
+  require('../pages/functions/user/AdminController').adminLogin(req, res, username, password);
 });
 
 // Start the server
