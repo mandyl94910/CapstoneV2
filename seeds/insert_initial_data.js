@@ -138,7 +138,7 @@ exports.seed = async function(knex) {
 
     -- Insert a super admin account named 'Chris'
     INSERT INTO admin (password, name, pin, title, status, image, register_date, last_login) 
-    VALUES ('securepassword123', 'Chris', '1234', 'Super Admin', TRUE, 'admin/chris.webp', CURRENT_TIMESTAMP, NULL);
+    VALUES ('securepassword123', 'AdminChris', '1234', 'Super Admin', TRUE, 'admin/chris.webp', CURRENT_TIMESTAMP, NULL);
 
     -- Insert 10 product reviews with customer_id ranging from 1 to 10
     INSERT INTO review (customer_id, product_id, content, rating, review_time, visibility, pin_top)
@@ -247,6 +247,7 @@ exports.seed = async function(knex) {
         -- Select a random address ID for the corresponding customer
         SELECT a.id
         FROM address a
+        
         WHERE a.customer_id = orders.customer_id
         ORDER BY RANDOM()  -- Randomly order the matching addresses
         LIMIT 1            -- Pick one random address
