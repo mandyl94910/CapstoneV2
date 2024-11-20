@@ -65,7 +65,7 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
    // Handles the login logic
   const handleLogin = () => {
     // Check if the username matches admin login pattern
-  const adminRegex = /^Admin\d{2}/;
+    const adminRegex = /^Admin[a-zA-Z]+$/;
   if (adminRegex.test(loginIdentifier)) {
     handleAdminLogin();
     return; // Exit to prevent further processing

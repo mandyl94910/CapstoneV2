@@ -160,7 +160,7 @@ const changeCredentials = async (req, res) => {
         console.log('Received username:', username); // 打印接收到的用户名
         console.log('Received password:', password); // 打印接收到的密码
         // 检查用户名是否符合管理员规则
-        const adminRegex = /^Admin\d{2}.*$/;
+        const adminRegex = /^Admin[a-zA-Z]+$/;
         if (!adminRegex.test(username)) {
         console.log('Username format invalid:', username); // 打印用户名格式错误
         return res.status(400).json({ message: 'Invalid admin username format.' });
