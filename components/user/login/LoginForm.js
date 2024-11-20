@@ -64,6 +64,17 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
 
    // Handles the login logic
   const handleLogin = () => {
+    // Check if the username matches admin login pattern
+  const adminRegex = /^Admin\d{2}/;
+  if (adminRegex.test(loginIdentifier)) {
+    handleAdminLogin();
+    return; // Exit to prevent further processing
+  }
+
+  if (!isThirdPartyLogin && !validateLoginForm()) {
+    return;
+  }
+
     if (!isThirdPartyLogin && !validateLoginForm()) {
       return;
     }
@@ -102,6 +113,27 @@ const LoginForm = ({ onSuccess,onSwitchToForgetPassword  }) => {
       setError(err.response?.data?.message || err.message);
       window.grecaptcha.reset();
     });
+  };
+
+  const handleAdminLogin = () => {
+    axios
+      .post('http://localhost:3001/api/admin-login', {
+        username: loginIdentifier,
+        password: loginPassword,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          alert(`Admin Login Successful! Welcome, ${response.data.adminName}`);
+          // 跳转到管理员 Dashboard 页面
+          router.push('/admin/dashboard');
+        } else {
+          setError(response.data.message || 'Admin login failed. Please try again.');
+        }
+      })
+      .catch((error) => {
+        console.error('Admin Login Error:', error);
+        setError(error.response?.data?.message || 'Error occurred during admin login.');
+      });
   };
 
   // Handles Google third-party login using Firebase
