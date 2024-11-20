@@ -47,6 +47,16 @@ function Header() {
         </Link>
         <nav className="flex space-x-6">
           <Link
+            href="/all-products?categoryId=1"
+            className={`${
+              router.pathname === "/all-products"
+                ? "text-blue-600"
+                : "hover:text-blue-600"
+            }`}
+          >
+            All Products
+          </Link>
+          <Link
             href="/admin-dashboard"
             className="text-white hover:text-blue-500"
           >
