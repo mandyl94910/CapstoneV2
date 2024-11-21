@@ -21,7 +21,7 @@ export default function Footer() {
     <div>
       <hr className="border-gray-300" />
       <div className="flex flex-wrap justify-between h-auto px-16">
-        <div className="mb-6">
+        <div className="mb-4">
           <Image src="/new-logo.png" alt="Logo" width={120} height={60} />
           <p className="text-gray-500 text-sm max-w-96">
             Top Tradings delivers cutting-edge electronics to enhance everyday

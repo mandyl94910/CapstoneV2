@@ -37,12 +37,12 @@ export default function Login() {
       <div className="flex h-[700px] mx-16 my-6 rounded-2xl border-2">
         <div className="w-2/3 h-full bg-blue-500 rounded-l-2xl">
           <img
-            src="/login-bg.png"
+            src="/log-bg1.png"
             alt="Login Background"
             className="w-full h-full object-cover rounded-l-2xl"
           ></img>
         </div>
-        <div className="w-1/3 min-w-[410px] h-full flex flex-col justify-center items-center bg-white p-8 rounded-r-2xl">
+        <div className="w-1/3 min-w-[500px] h-full flex flex-col justify-center items-center bg-white p-8 rounded-r-2xl">
           <img
             src="/new-logo.png"
             alt="Logo"
@@ -64,14 +64,6 @@ export default function Login() {
           <Link href="/register" legacyBehavior>
             <a className="text-blue-600 hover:underline mt-2">Create Account</a>
           </Link>
-
-          {/* Add button to jump to reset password page */}
-          {/* <button
-            className="text-blue-600 hover:underline mt-4"
-            onClick={() => router.push('/resetpassword')}
-          >
-            Reset Password
-          </button> */}
         </div>
       </div>
     </main>

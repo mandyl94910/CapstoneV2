@@ -9,7 +9,7 @@ import { FaCartShopping } from "react-icons/fa6";
 
 const buttonStyles = `
   inline-block rounded-lg border-transparent px-4 py-2 text-center border border-blue-100 
-  hover:bg-blue-100 hover:border-black hover:ring-1 hover:ring-black
+  hover:bg-blue-500 hover:border-black hover:ring-1 hover:ring-black
 `;
 
 function Header() {
@@ -43,8 +43,8 @@ function Header() {
             <Image
               src="/new-logo.png"
               alt="Logo"
-              width={165}
-              height={52}
+              width={170}
+              height={55}
               style={{ objectFit: "cover" }}
               priority
             />
@@ -58,7 +58,7 @@ function Header() {
       </div>
       <div className="flex items-center space-x-8 pr-4">
         <SearchBar />
-        <div className="relative">
+        <div className="relative" style={{ marginLeft: "-50px" }}>
           <FaCartShopping
             className="text-2xl cursor-pointer hover:text-blue-600 text-gray-700"
             onClick={handleCartClick}
