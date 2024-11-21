@@ -7,6 +7,11 @@ import SearchBar from "../common/SearchBar";
 import { useRouter } from "next/router";
 import { FaCartShopping } from "react-icons/fa6";
 
+const buttonStyles = `
+  inline-block rounded-lg border-transparent px-4 py-2 text-center border border-blue-100 
+  hover:bg-blue-100 hover:border-black hover:ring-1 hover:ring-black
+`;
+
 function Header() {
   const { user, onLogout } = useAuth();
   const router = useRouter();
@@ -46,21 +51,8 @@ function Header() {
           </div>
         </Link>
         <nav className="flex space-x-6">
-          <Link
-            href="/all-products?categoryId=1"
-            className={`${
-              router.pathname === "/all-products"
-                ? "text-blue-600"
-                : "hover:text-blue-600"
-            }`}
-          >
+          <Link href="/all-products?categoryId=1" className={buttonStyles}>
             All Products
-          </Link>
-          <Link
-            href="/admin-dashboard"
-            className="text-white hover:text-blue-500"
-          >
-            admin dashboard
           </Link>
         </nav>
       </div>
@@ -92,17 +84,15 @@ function Header() {
               />
             </Link>
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm w-24"
+              className="bg-blue-10 px-4 py-2 border border-black rounded-lg text-sm w-24 hover:text-orange-400 hover:bg-orange-200 hover:bg-transparent hover:ring-1 hover:ring-black"
               onClick={onLogout}
             >
-              Log Out
+              Log out
             </button>
           </div>
         ) : (
           <Link href="/login">
-            <button className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium hover:bg-blue-700 w-24">
-              LOG IN
-            </button>
+            <button className={buttonStyles}>LOG IN</button>
           </Link>
         )}
       </div>

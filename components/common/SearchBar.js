@@ -2,6 +2,11 @@ import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useRouter } from "next/router";
 
+const buttonStyles = `
+  inline-block border-transparent px-4 py-2 text-center border border-blue-100 rounded-r-lg
+  hover:bg-blue-400 hover:border-black  hover:ring-black 
+`;
+
 const SearchBar = () => {
   const [query, setQuery] = useState("");
   const router = useRouter();
@@ -41,7 +46,7 @@ const SearchBar = () => {
       {/* buttons */}
       <button
         onClick={() => handleSearchQueryChange(query)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 focus:outline-none"
+        className={buttonStyles}
       >
         Search
       </button>
