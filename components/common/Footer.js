@@ -20,10 +20,10 @@ export default function Footer() {
   return (
     <div>
       <hr className="border-gray-300" />
-      <div className="flex flex-wrap justify-between h-auto pt-8 px-16">
-        <div className="mb-6">
-          <Image src="/logo.png" alt="Logo" width={120} height={60} />
-          <p className="text-gray-500 pt-4 text-sm max-w-96">
+      <div className="flex flex-wrap justify-between h-auto px-16">
+        <div className="mb-4">
+          <Image src="/new-logo.png" alt="Logo" width={120} height={60} />
+          <p className="text-gray-500 text-sm max-w-96">
             Top Tradings delivers cutting-edge electronics to enhance everyday
             convenience, empowering people to live smarter and more connected
             lives.
@@ -33,7 +33,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex space-x-10">
+        <div className="flex space-x-10 pt-8">
           {/* Contact Us Section */}
           <div className="text-sm">
             <h2 className="text-base font-bold mb-3">Contact Us</h2>
@@ -42,7 +42,7 @@ export default function Footer() {
             <p className="mb-1 text-gray-500">768 street NW City Prov</p>
             <button
               onClick={openModal}
-              className="bg-blue-600 text-white text-base mt-2 px-5 py-1 rounded-lg hover:bg-blue-500"
+              className="bg-blue-600 text-white text-base mt-2 px-5 py-1.5 rounded-lg hover:bg-blue-500"
             >
               Contact Us
             </button>
