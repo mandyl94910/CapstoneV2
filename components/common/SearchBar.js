@@ -3,7 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import { useRouter } from "next/router";
 
 const buttonStyles = `
-  inline-block border-transparent px-4 py-2 text-center border border-blue-100 rounded-r-lg
+  inline-block px-4 py-2 text-center border border-gray-500 text-gray-700 rounded-r-lg
   hover:bg-blue-400 hover:border-black  hover:ring-black 
 `;
 
@@ -36,7 +36,7 @@ const SearchBar = () => {
           type="text"
           placeholder="Search"
           value={query} // Bind the value of the search input box
-          className="p-2 border rounded-l-lg pl-10 w-[450px]" // Adjusted width to w-72
+          className="p-2 border border-gray-400 rounded-l-lg pl-10 w-[450px]" // Adjusted width to w-72
           onChange={handleInputChange}
           onKeyDown={handleKeyDown} // Trigger search on Enter key press
         />
