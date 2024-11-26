@@ -8,8 +8,9 @@ import { useRouter } from "next/router";
 import { FaCartShopping } from "react-icons/fa6";
 
 const buttonStyles = `
-  inline-block rounded-lg border-transparent px-4 py-2 text-center border border-blue-100 
-  hover:bg-blue-500 hover:border-black hover:ring-1 hover:ring-black
+  bg-none text-gray-500 border-2 border-gray-500 px-4 py-2 text-base rounded-full mr-2 
+  transition duration-150 ease-in-out hover:border-blue-500 hover:text-blue-500
+  hover:shadow-[0_0.5em_0.5em_-0.4em_#007BFF] hover:-translate-y-1
 `;
 
 function Header() {
@@ -27,7 +28,7 @@ function Header() {
   const handleCartClick = () => {
     if (router.pathname === "/cart") {
       window.location.reload();
-    } else {
+    } else {s
       router.push("/cart");
     }
   };
