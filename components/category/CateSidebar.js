@@ -45,12 +45,13 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
         key={category.id}
         // lever > 0 means it is a child category, and it will have pl-6
         className={`p-2 mb-2 rounded ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} ${level > 0 ? 'pl-6 cursor-pointer' : 'cursor-pointer'}`}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation(); // 防止冒泡 - avoid the clicking in child cate being passed to the parent
           {/* if it is a parent category, toggle its expansion status */}
           if (isParent) {
             toggleCategory(category.id);
-          }
-          onCategorySelect(category); 
+          } 
+            onCategorySelect(category); 
         }}
       >
 
@@ -76,17 +77,18 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
         {/* if it is an expanded parent category, show its subcategories */}
         {isParent && isExpanded && (
           <ul className="ml-4 mt-2"> {/* Only display subcategories if the parent is expanded */}
-            {category.subcategories.map(subcategory => (
+            {/* {category.subcategories.map(subcategory => (
               <li
                 key={subcategory.id}
                 className={`p-2 mb-2 rounded ${selectedCategory === subcategory.name ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'} pl-6 cursor-pointer`}
                 onClick={() => {
-                  onCategorySelect(subcategory); // Select the clicked subcategory
+                  onCategorySelect(subcategory, false); // Select the clicked subcategory
                 }}
               >
                 {subcategory.name}
               </li>
-            ))} 
+            ))}  */}
+            {category.subcategories.map((subcategory) => renderCategories(subcategory, level + 1))}
           </ul>
         )}
       </li>
@@ -104,7 +106,7 @@ const CateSidebar = ({ categories, selectedCategory, onCategorySelect }) => {
           All Products
         </li>
         {categories
-          .filter(category => category.name !== 'All Products') // Filter out the "All Products" category
+          .filter(category => category.id !== 1) // Filter out the "All Products" category
           .map(category => renderCategories(category)) // Render each category in the list
         }
         {/* Sale 카테고리 추가 */}
