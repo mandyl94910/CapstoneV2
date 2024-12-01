@@ -1,7 +1,12 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category,Review,OrderDetail,Order} = require('../../../server/models');  
-const { getCachedProductInfo, 
-  cacheProductInfo } = require('../../../lib/redisUtils');
+const { Product, Category, Review, OrderDetail, Order } = require('../../../server/models');
+const { 
+  getCachedProducts, 
+  cacheAllProducts,
+  getCachedProductInfo,
+  cacheProductInfo,
+  invalidateProductCache
+} = require('../../../lib/redisUtils/productOps');
 const { Sequelize, Op } = require('sequelize');
 const path = require('path');
 
@@ -17,14 +22,30 @@ const { uploadProductImages } = require('../imageController');
 //   It responds with a JSON array of products or an error message if the retrieval fails.
 const getAllProducts = async (req, res) => {
   try {
+    // 首先尝试从缓存获取
+    const cachedProducts = await getCachedProducts();
+    if (cachedProducts) {
+      return res.json({
+        source: 'redis',
+        data: cachedProducts
+      });
+    }
+
+    // 如果缓存中没有，从数据库获取
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
       }
     });
-    res.json(products);  // Send the products data as a JSON response
+
+    // 将结果存入缓存
+    await cacheAllProducts(products);
+    res.json({
+      source: 'database',
+      data: products
+    });
   } catch (error) {
-    res.status(500).send({ message: "Error retrieving products: " + error.message });  // Return an error message if retrieval fails
+    res.status(500).send({ message: "Error retrieving products: " + error.message });
   }
 };
 
@@ -126,30 +147,27 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
 //   It responds with the product data as a JSON response or an error message if retrieval fails.
 const getProductById = async (req, res) => {
   try {
-    //params are the path parameters (or dynamic parameters) in the request path
     const { productId } = req.params;
-    // console.log('Product ID:', productId);
-    // let product = await getCachedProductInfo(productId);
-    // console.log('Cached Product:', product);
-    // if (!product) {
-      //await is used to wait for an asynchronous operation to complete before continuing to execute the code behind it. 
-      //It pauses function execution until an asynchronous operation, such as fetching product information from a database or cache, complete.
+    
+    // 首先尝试从缓存获取
+    let product = await getCachedProductInfo(productId);
+    
+    if (!product) {
+      // 如果缓存中没有，从数据库获取
       const dbProduct = await Product.findOne({
         where: {
           product_id: productId,
         }
       });
+
       if (!dbProduct) {
         return res.status(404).send({ message: "Product not found" });
       }
-      console.log('product information from backend is :',dbProduct)
+
       product = dbProduct.toJSON();
-      try {
-        await cacheProductInfo(productId, product); // Trying to cache product information
-      } catch (cacheError) {
-        console.error("Error caching product:", cacheError); // Logging cache errors
-      }
-    // }
+      // 存入缓存
+      await cacheProductInfo(productId, product);
+    }
     
     res.json(product);
   } catch (error) {
@@ -268,8 +286,8 @@ async function nameProductImages(req, res) {
     // Update the image field in the database
     await Product.update(
       { image: imagePathsString },
-      { where: { product_id: productId } }
-    );
+      { where: { product_id: productId }
+    });
     res.status(200).send({ message: 'Images uploaded successfully.' });
   } catch (error) {
       res.status(500).send({ message: 'Failed to upload images.', error: error.message });
@@ -286,6 +304,11 @@ const updateProductById = async (req, res) => {
     await Product.update(updates, {
       where: { product_id: productId }
     });
+
+    // 更新后清除该产品的缓存
+    await invalidateProductCache(productId);
+    // 同时清除所有产品的缓存，因为产品列表已变化
+    await cacheAllProducts(null, 0);
 
     res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
   } catch (error) {
