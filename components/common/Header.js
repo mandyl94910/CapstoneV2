@@ -28,7 +28,7 @@ function Header() {
   const handleCartClick = () => {
     if (router.pathname === "/cart") {
       window.location.reload();
-    } else {s
+    } else {
       router.push("/cart");
     }
   };

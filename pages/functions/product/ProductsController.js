@@ -7,7 +7,9 @@ const {
   cacheProductInfo,
   invalidateProductCache,
   cacheCategoryProducts,
-  getCachedCategoryProducts
+  getCachedCategoryProducts,
+  cacheProductDetails,
+  getCachedProductDetails
 } = require('../../../lib/redisUtils/productOps');
 const { Sequelize, Op } = require('sequelize');
 const path = require('path');
@@ -167,27 +169,40 @@ const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
     
-    // 首先尝试从缓存获取
-    let product = await getCachedProductInfo(productId);
-    
-    if (!product) {
-      // 如果缓存中没有，从数据库获取
-      const dbProduct = await Product.findOne({
-        where: {
-          product_id: productId,
-        }
+    // First try to get from Redis cache
+    const cachedProduct = await getCachedProductDetails(productId);
+    if (cachedProduct) {
+      return res.json({
+        source: 'redis',
+        data: cachedProduct
       });
-
-      if (!dbProduct) {
-        return res.status(404).send({ message: "Product not found" });
-      }
-
-      product = dbProduct.toJSON();
-      // 存入缓存
-      await cacheProductInfo(productId, product);
     }
+
+    // If not in cache, get from database with all necessary relations
+    const product = await Product.findOne({
+      where: {
+        product_id: productId,
+      },
+      include: [{
+        model: Category,
+        attributes: ['name']
+      }],
+      raw: false
+    });
+
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    const productData = product.toJSON();
     
-    res.json(product);
+    // Cache the product details
+    await cacheProductDetails(productId, productData);
+    
+    res.json({
+      source: 'database',
+      data: productData
+    });
   } catch (error) {
     console.error("Error retrieving product:", error);
     res.status(500).send({ message: "Error retrieving product: " + error.message });
@@ -550,9 +565,23 @@ const cacheProducts = async (req, res) => {
   }
 };
 
+// Function to cache product details
+const cacheProductDetailsHandler = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const productData = req.body;
+    
+    await cacheProductDetails(productId, productData);
+    res.status(200).json({ message: 'Product details cached successfully' });
+  } catch (error) {
+    console.error('Error caching product details:', error);
+    res.status(500).json({ error: 'Failed to cache product details' });
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
   getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
   addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages,updateProductById,
-  getAllProductsWithCache, cacheProducts };
+  getAllProductsWithCache, cacheProducts, cacheProductDetailsHandler };

@@ -63,7 +63,8 @@ const {
   nameProductImages,
   updateProductById,
   getAllProductsWithCache,  // 添加新导入
-  cacheProducts           // 添加新导入
+  cacheProducts,           // 添加新导入
+  cacheProductDetailsHandler  // Add this to the imports
 } = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
@@ -80,7 +81,9 @@ const {getAllOrders,
 const searchProductsByName = require('../pages/functions/product/search');
 const {getReviewByProductId, 
   addReview, 
-  checkReviewStatus} = require('../pages/functions/product/review');
+  checkReviewStatus,
+  cacheReviewsHandler
+} = require('../pages/functions/product/review');
 const { getAddresses, deleteAddress, addAddress, updateAddress } = require('../pages/functions/user/AddressController');
 
 const { 
@@ -455,6 +458,12 @@ app.post('/api/admin-login', (req, res) => {
 
 // Route to cache all products
 app.post('/api/cache/products', cacheProducts);
+
+// Add new route for caching product details
+app.post('/api/cache/product-details/:productId', cacheProductDetailsHandler);
+
+// Replace the route handler with the imported function
+app.post('/api/cache/reviews/:productId', cacheReviewsHandler);
 
 // Start the server
 app.listen(3001, () => {
