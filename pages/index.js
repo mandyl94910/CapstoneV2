@@ -11,13 +11,24 @@ function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
-  // useEffect to fetch products
+  // useEffect to fetch products and cache them
   useEffect(() => {
-    axios.get('http://localhost:3001/api/products')
-      .then(response => {
-        setItems(response.data); // Set state to store product data
-      })
-      .catch(error => console.error('Error fetching products:', error));
+    const fetchAndCacheProducts = async () => {
+      try {
+        // Get products
+        const response = await axios.get('http://localhost:3001/api/products');
+        const products = response.data;
+        
+        // Cache the products using a dedicated API endpoint
+        await axios.post('http://localhost:3001/api/cache/products', products);
+        
+        setItems(products.data);
+      } catch (error) {
+        console.error('Error fetching or caching products:', error);
+      }
+    };
+
+    fetchAndCacheProducts();
   }, []);
   
   // Add a new product

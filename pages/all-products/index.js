@@ -123,10 +123,17 @@ export default function Products() {
           productsResponseData = productsResponse.data.data;
         }
 
-        setProducts(productsResponseData);
+        if (productsResponseData && Array.isArray(productsResponseData)) {
+          setProducts(productsResponseData);
+        } else if (productsResponseData?.data) {
+          setProducts(productsResponseData.data);
+        } else {
+          setProducts([]);
+        }
 
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
       } finally {
         setLoading(false); // set loading to false after fetching data
       }
@@ -161,7 +168,19 @@ export default function Products() {
     setSelectedCategory(category.name); // Update the selected category
     setCurrentPage(1); 
 
-    router.push(`/all-products?categoryId=${category.id}`);
+    // 修改这里：当选择 "All Products" 时，使用不同的 API 端点
+    if (category.name === 'All Products') {
+      try {
+        const response = await axios.get('http://localhost:3001/api/products');
+        // 确保正确处理返回的数据结构
+        const productsData = response.data.data || response.data;
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error fetching all products:', error);
+      }
+    } else {
+      router.push(`/all-products?categoryId=${category.id}`);
+    }
   };
 
   

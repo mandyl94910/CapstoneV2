@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 const events = require("events");
 
 events.EventEmitter.defaultMaxListeners = 20; // Set to a higher value for listening to more router
-const { createPaymentIntent } = require("./services/paymentService"); // 서비스 로직 불러오기
+const { createPaymentIntent } = require("./services/paymentService"); // 服务 로직 불러오기
 const helmet = require("helmet");
 // To use info from .env.local
 const dotenv = require("dotenv");
@@ -61,7 +61,10 @@ const {
   getTopSellingProducts,
   getTotalValue,
   nameProductImages,
-  updateProductById } = require('../pages/functions/product/ProductsController');
+  updateProductById,
+  getAllProductsWithCache,  // 添加新导入
+  cacheProducts           // 添加新导入
+} = require('../pages/functions/product/ProductsController');
 const {getAllOrders,
     getTotalSales,
     getOrderTotalNumber,
@@ -93,6 +96,13 @@ const {
   getCanadaPostOrderStatus 
 } = require('../pages/functions/ShippingService');
 const db = require("./db");
+const { 
+  cacheAllProducts,
+  getCachedProducts,  // 添加这一行
+  invalidateProductCache 
+} = require('../lib/redisUtils/productOps');
+
+const { Product, Category } = require('./models');  // 添加这行在文件顶部的导入部分
 
 const app = express();
 
@@ -191,7 +201,7 @@ app.post("/api/address/add", addAddress);
 app.get("/api/categories", getCategories);
 
 // Get all products
-app.get("/api/products", getAllProducts);
+app.get("/api/products", getAllProductsWithCache);
 
 // Get reviews
 app.get("/api/reviews/:productId", getReviewByProductId);
@@ -442,6 +452,9 @@ app.post('/api/admin-login', (req, res) => {
   const { username, password } = req.body;
   require('../pages/functions/user/AdminController').adminLogin(req, res, username, password);
 });
+
+// Route to cache all products
+app.post('/api/cache/products', cacheProducts);
 
 // Start the server
 app.listen(3001, () => {
