@@ -43,7 +43,9 @@ const OrderCard = ({ order, customerId }) => {
                             <div className="flex-shrink-0 w-20 h-20">
                                 <Link href={`/product/${order_detail.product_id}`}>
                                     <img
-                                        src={`/images/${order_detail.Product.image.split(',')[0]}`}
+                                        src={order_detail.Product && order_detail.Product.image
+                                        ? `/images/${order_detail.Product.image.split(',')[0]}` 
+                                        : '/images/default-placeholder.png'}
                                         alt="product"
                                         className="object-cover w-full h-full rounded" />
                                 </Link>

@@ -50,14 +50,14 @@ export default function Sidebar() {
                     )}
                     
                     {/* Favorite link */}
-                    <NavItem href="/user-profile/" icon={<FaHeart />} label="Favorite" />
+                    {/* <NavItem href="/user-profile/" icon={<FaHeart />} label="Favorite" /> */}
                     
                     {/* Notifications link */}
-                    <li className="flex items-center space-x-3 py-2 border-b cursor-pointer hover:text-blue-600">
-                        <FaBell /> {/* Notification icon */}
-                        <p>Notification</p> {/* Notification label */}
+                    {/* <li className="flex items-center space-x-3 py-2 border-b cursor-pointer hover:text-blue-600">
+                        <FaBell /> 
+                        <p>Notification</p> 
                     </li>
-                    
+                     */}
                     {/* Settings link */}
                     <NavItem href="/user-profile/settings" icon={<FaGear />} label="Settings" />
                 </ul>

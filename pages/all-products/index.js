@@ -6,6 +6,7 @@ import CateSidebar from '../../components/category/CateSidebar';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer';
 import { useRouter } from 'next/router';
+import onSaleProducts from '../../components/category/onSaleProducts';
 import OnSaleSection from '../../components/category/OnSaleSection';
 
 // Dynamically load ProductGrid component, disable SSR
