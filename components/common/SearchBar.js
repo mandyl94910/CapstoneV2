@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTimes } from "react-icons/fa"; // 添加 FaTimes 图标
 import { useRouter } from "next/router";
 
 const buttonStyles = `
@@ -77,6 +77,13 @@ const SearchBar = () => {
     });
   };
 
+  // 添加清除输入的处理函数
+  const handleClearInput = () => {
+    setQuery("");
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   return (
     <div className="flex items-center mr-20" ref={searchRef}>
       <div className="relative">
@@ -84,11 +91,22 @@ const SearchBar = () => {
           type="text"
           placeholder="Search products..."
           value={query}
-          className="p-2 border border-gray-400 rounded-l-lg pl-10 w-[450px]"
+          className="p-2 border border-gray-400 rounded-l-lg pl-10 pr-10 w-[450px]" // 添加 pr-10 为清除按钮留出空间
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
         <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        
+        {/* 添加���除按钮 */}
+        {query && (
+          <button
+            onClick={handleClearInput}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            aria-label="Clear search"
+          >
+            <FaTimes />
+          </button>
+        )}
         
         {/* 搜索建议下拉菜单 */}
         {showSuggestions && suggestions.length > 0 && (
