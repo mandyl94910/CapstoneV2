@@ -16,12 +16,6 @@ const path = require('path');
 
 const { uploadProductImages } = require('../imageController'); 
 
-// Common error handler
-const handleError = (error, res, message) => {
-  console.error(message, error);
-  res.status(500).send({ message: `${message}: ${error.message}` });
-};
-
 // Function name: getAllProducts
 // Description: Retrieves all products that are marked as visible in the database.
 // Parameters: 
@@ -32,6 +26,7 @@ const handleError = (error, res, message) => {
 //   It responds with a JSON array of products or an error message if the retrieval fails.
 const getAllProducts = async (req, res) => {
   try {
+    // 首先尝试从缓存获取
     const cachedProducts = await getCachedProducts();
     if (cachedProducts) {
       return res.json({
@@ -40,6 +35,7 @@ const getAllProducts = async (req, res) => {
       });
     }
 
+    // 如果缓存中没有，从数据库获取
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
@@ -48,10 +44,10 @@ const getAllProducts = async (req, res) => {
       include: [{
         model: Category,
         attributes: ['name']
-      }],
-      raw: true
+      }]
     });
 
+    // 将结果存入缓存
     await cacheAllProducts(products);
     
     // 确保返回格式一致
@@ -60,7 +56,8 @@ const getAllProducts = async (req, res) => {
       data: products
     });
   } catch (error) {
-    handleError(error, res, 'Error retrieving products');
+    console.error('Error retrieving products:', error);
+    res.status(500).send({ message: "Error retrieving products: " + error.message });
   }
 };
 
@@ -101,23 +98,16 @@ const getAllProductsForDataTable = async (req, res) => {
 const getProductsByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;  // Extract category ID from request parameters
-    const cachedProducts = await getCachedCategoryProducts(categoryId);
-    
-    if (cachedProducts) {
-      return res.json({ source: 'redis', data: cachedProducts });
-    }
-
     const products = await Product.findAll({
       where: {
         category_id: categoryId,  // Retrieve products that match the category ID
         visibility: true  // Only retrieve products that are visible
       }
     });
-
-    await cacheCategoryProducts(categoryId, products);
-    res.json({ source: 'database', data: products });
+    //JSON（JavaScript Object Notation）from chatgpt
+    res.json(products);  // Send the filtered products as a JSON response
   } catch (error) {
-    handleError(error, res, 'Error retrieving products by category');
+    res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
   }
 };
 
@@ -197,21 +187,25 @@ const getProductById = async (req, res) => {
         model: Category,
         attributes: ['name']
       }],
-      raw: true
+      raw: false
     });
 
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
     }
 
-    await cacheProductDetails(productId, product);
+    const productData = product.toJSON();
+    
+    // Cache the product details
+    await cacheProductDetails(productId, productData);
     
     res.json({
       source: 'database',
-      data: product
+      data: productData
     });
   } catch (error) {
-    handleError(error, res, 'Error retrieving product');
+    console.error("Error retrieving product:", error);
+    res.status(500).send({ message: "Error retrieving product: " + error.message });
   }
 };
 
@@ -334,29 +328,25 @@ async function nameProductImages(req, res) {
 }
 
 const updateProductById = async (req, res) => {
-  const { productId } = req.params;
-  const updates = req.body;
-  
   try {
+    const { productId } = req.params;
+    const updates = req.body;
+
     delete updates.image;
+
     await Product.update(updates, {
       where: { product_id: productId }
     });
 
-    // Invalidate all related caches
-    await Promise.all([
-      invalidateCache(`${PRODUCT_DETAILS_PREFIX}${productId}`),
-      invalidateCache(PRODUCT_LIST_KEY),
-      invalidateCache(`${CATEGORY_PRODUCTS_PREFIX}*`),
-      invalidateCache(`${SEARCH_PREFIX}*`)
-    ]);
+    // 更新后清除该产品的缓存
+    await invalidateProductCache(productId);
+    // 同时清除所有产品的缓存，因为产品列表已变化
+    await cacheAllProducts(null, 0);
 
-    res.status(200).json({ 
-      message: 'Product updated successfully', 
-      updatedFields: updates 
-    });
+    res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
   } catch (error) {
-    handleError(error, res, 'Error updating product');
+    console.error('Error updating product:', error);
+    res.status(500).send({ message: 'Error updating product' });
   }
 };
 
@@ -394,15 +384,9 @@ const deleteProduct = async (req, res) => {
     if (allCompleted || action === 'delete') {
     // Delete all product-related reviews
       await Review.destroy({ where: { product_id: productId } });
+
+      // Delete the product
       await Product.destroy({ where: { product_id: productId } });
-      
-      // Invalidate all related caches
-      await Promise.all([
-        invalidateCache(`${PRODUCT_DETAILS_PREFIX}${productId}`),
-        invalidateCache(PRODUCT_LIST_KEY),
-        invalidateCache(`${CATEGORY_PRODUCTS_PREFIX}*`),
-        invalidateCache(`${SEARCH_PREFIX}*`)
-      ]);
 
       // Send success response
       res.json({ success: true, message: "Product deleted successfully" });
@@ -419,7 +403,8 @@ const deleteProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    handleError(error, res, 'Error deleting product');
+    console.error("Error deleting product:", error);
+    res.status(500).send({ message: "Error deleting product: " + error.message });
   }
 };
 
@@ -520,7 +505,50 @@ const getTotalValue = async (req, res) => {
 };
 
 // Function to get all products with caching
-const getAllProductsWithCache = getAllProducts;  // Use the improved getAllProducts function
+const getAllProductsWithCache = async (req, res) => {
+  try {
+    // 尝试从缓存获取
+    const cachedProducts = await getCachedProducts();
+    
+    if (cachedProducts) {
+      return res.json({
+        source: 'redis',
+        data: cachedProducts
+      });
+    }
+
+    // 如果缓存中没有，从数据库获取
+    const products = await Product.findAll({
+      where: {
+        visibility: true
+      },
+      include: [{
+        model: Category,
+        attributes: ['name']
+      }],
+      raw: true  // 添加这行以获取纯 JSON 数据
+    });
+
+    if (products && products.length > 0) {
+      // 缓存产品数据
+      try {
+        await cacheAllProducts(products);
+      } catch (error) {
+        console.error('Cache operation failed:', error);
+        // 继续执行，即使缓存失败
+      }
+    }
+
+    // 返回统一格式的数据
+    res.json({
+      source: 'database',
+      data: products
+    });
+  } catch (error) {
+    console.error('Error retrieving products:', error);
+    res.status(500).send({ message: "Error retrieving products: " + error.message });
+  }
+};
 
 // Function to cache products
 const cacheProducts = async (req, res) => {
@@ -532,7 +560,8 @@ const cacheProducts = async (req, res) => {
     await cacheAllProducts(products);
     res.status(200).json({ message: 'Products cached successfully' });
   } catch (error) {
-    handleError(error, res, 'Error caching products');
+    console.error('Error caching products:', error);
+    res.status(500).json({ error: 'Failed to cache products' });
   }
 };
 

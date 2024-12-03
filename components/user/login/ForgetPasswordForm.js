@@ -1,4 +1,3 @@
-// C:\CPRG306\CapstoneV2\components\auth\ForgetPasswordForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -36,23 +35,34 @@ const ForgetPasswordForm = ({ onSwitchToLogin }) => {
   };
 
   return (
-    <form className="w-full max-w-sm" onSubmit={handleSubmit}>
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+    <form 
+      className="flex flex-col flex-1 gap-2.5 w-full" // 改用更小的 gap，使用 flex-1
+      onSubmit={handleSubmit}
+    >
+      <div className="flex-column w-full">
+        <label className="text-[#151717] font-semibold mb-1 block" htmlFor="email">
           Email Address
         </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="email"
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
-        />
+        <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[45px] flex items-center px-3 focus-within:border-[#2d79f3]">
+          <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20}>
+            <g data-name="Layer 3" id="Layer_3">
+              <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" />
+            </g>
+          </svg>
+          <input
+            className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none"
+            id="email"
+            type="email"
+            placeholder="Enter your Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
       </div>
+
       <button
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline mt-3"
+        className="mt-3 bg-[#151717] text-white text-[15px] font-medium rounded-[10px] h-[45px] w-full cursor-pointer"
         type="submit"
         disabled={isLoading}
       >
@@ -63,8 +73,12 @@ const ForgetPasswordForm = ({ onSwitchToLogin }) => {
         <p className="text-center mt-2 text-green-500">{message}</p>
       )}
 
-      <div className="text-center mt-2">
-        <button type="button" className="text-blue-600 hover:underline" onClick={onSwitchToLogin}>
+      <div className="text-center mt-4">
+        <button 
+          type="button" 
+          className="text-[#2d79f3] text-sm hover:underline font-medium"
+          onClick={onSwitchToLogin}
+        >
           Back to Login
         </button>
       </div>
