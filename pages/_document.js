@@ -5,7 +5,6 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        {/* Use the standard reCAPTCHA API, not the Enterprise version */}
         <script
           src="https://www.google.com/recaptcha/api.js"
           async

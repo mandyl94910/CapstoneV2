@@ -26,8 +26,14 @@ const ProductPage = () => {
       // Fetch product data dynamically based on product ID when the page loads
       try {
         const response = await axios.get(`http://localhost:3001/api/products/${id}`);
-        console.log('Fetched product by id: ', response.data);
-        setProduct(response.data);
+        console.log('Product data source:', response.data.source);  // Log if data came from cache or database
+        
+        // Update product state with the data from the response
+        if (response.data.data) {
+          setProduct(response.data.data);
+        } else {
+          console.error('Invalid product data format:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching product by id:', error); 
       }
@@ -53,7 +59,7 @@ const ProductPage = () => {
     return [];
   };
 
-  const addToCart = (product) => {
+  const addToCart = async (product) => {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     const productExists = cart.find((item) => item.product_id === product.product_id);
 
@@ -64,6 +70,18 @@ const ProductPage = () => {
     }
 
     localStorage.setItem('cart', JSON.stringify(cart)); 
+
+    // 可选：更新产品缓存以反映新的库存量
+    try {
+      await axios.post(`http://localhost:3001/api/cache/product-details/${product.product_id}`, {
+        ...product,
+        quantity: product.quantity - quantity // 更新库存
+      });
+    } catch (error) {
+      console.error('Error updating product cache:', error);
+      // 继续执行，即使缓存更新失败
+    }
+
     alert('Product added to cart!');
     router.push('/cart');
   };

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Link from 'next/link';  // Add this import
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
@@ -12,6 +13,7 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPartyLogin, setIsThirdPartyLogin] = useState(false);
+  const [recaptchaWidget, setRecaptchaWidget] = useState(null);
   const router = useRouter();
   const firebaseConfig = {
     apiKey: "AIzaSyA7bDhRsQS2W_wqIH8ZqLxoAhfaKcoVQW0",
@@ -31,19 +33,47 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
     if (typeof window !== "undefined") {
       setIsClient(true);
 
-      const renderRecaptcha = () => {
-        const container = document.getElementById("login-recaptcha-container");
-
-        // reCAPTCHA가 이미 렌더링되었는지 확인
-        if (window.grecaptcha && container && !container.hasChildNodes()) {
-          window.grecaptcha.render(container, {
-            sitekey: "6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ", // 반드시 올바른 sitekey를 입력
-          });
+      const initRecaptcha = () => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          try {
+            const container = document.getElementById("login-recaptcha");
+            if (container && !container.hasChildNodes()) {
+              const widgetId = window.grecaptcha.render("login-recaptcha", {
+                sitekey: "6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ",
+                callback: () => {
+                  setError(""); // Clear error when user completes captcha
+                },
+                "expired-callback": () => {
+                  window.grecaptcha.reset(recaptchaWidget);
+                },
+              });
+              setRecaptchaWidget(widgetId);
+            }
+          } catch (e) {
+            console.error("reCAPTCHA render error:", e);
+          }
+        } else {
+          setTimeout(initRecaptcha, 100);
         }
       };
 
-      // renderRecaptcha를 100ms 후에 실행
-      setTimeout(renderRecaptcha, 100);
+      // Wait for grecaptcha to be ready
+      if (window.grecaptcha && window.grecaptcha.ready) {
+        window.grecaptcha.ready(initRecaptcha);
+      } else {
+        setTimeout(initRecaptcha, 100);
+      }
+
+      // Cleanup function
+      return () => {
+        if (recaptchaWidget !== null && window.grecaptcha) {
+          try {
+            window.grecaptcha.reset(recaptchaWidget);
+          } catch (e) {
+            console.error("Error resetting reCAPTCHA:", e);
+          }
+        }
+      };
     }
   }, []);
 
@@ -86,7 +116,13 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
     }
 
     setIsLoading(true);
-    const recaptchaResponse = window.grecaptcha.getResponse();
+    let recaptchaResponse = "";
+    
+    try {
+      recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidget);
+    } catch (e) {
+      console.error("Error getting reCAPTCHA response:", e);
+    }
 
     if (!recaptchaResponse) {
       setError("Please complete the reCAPTCHA.");
@@ -201,89 +237,117 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   };
 
   return (
-    <form
-      className="w-full max-w-sm -mt-20"
+    <form 
+      className="flex flex-col flex-1 gap-2.5" // 改用更小的 gap，使用 flex-1
       onSubmit={(e) => {
         e.preventDefault();
         handleLogin();
       }}
     >
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="identifier"
-        >
+      {/* 输入框组件 - 减小高度和间距 */}
+      <div className="flex-column">
+        <label className="text-[#151717] font-semibold mb-1" htmlFor="identifier">
           Username
         </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="identifier"
-          type="text"
-          placeholder="Username"
-          value={loginIdentifier}
-          onChange={(e) => setLoginIdentifier(e.target.value)}
-          disabled={isLoading}
-        />
+        <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[45px] flex items-center px-3 focus-within:border-[#2d79f3]">
+          <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="0 0 32 32" height={20}>
+            <g data-name="Layer 3" id="Layer_3">
+              <path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z" />
+            </g>
+          </svg>
+          <input
+            className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none"
+            id="identifier"
+            type="text"
+            placeholder="Enter your Username"
+            value={loginIdentifier}
+            onChange={(e) => setLoginIdentifier(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
       </div>
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="password"
-        >
+
+      {/* Password field */}
+      <div className="flex-column">
+        <label className="text-[#151717] font-semibold mb-2" htmlFor="password">
           Password
         </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="password"
-          // type="password"
-          placeholder="Password"
-          value={loginPassword}
-          onChange={(e) => setLoginPassword(e.target.value)}
-          disabled={isLoading}
-        />
-      </div>
-      {isClient && (
-        <div id="login-recaptcha-container" className="g-recaptcha ml-6"></div>
-      )}
-      <button
-        className="border border-blue-200 text-white bg-blue-500 py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline mt-3 hover:bg-blue-500"
-        type="submit"
-        disabled={isLoading}
-      >
-        {isLoading ? "Please wait..." : "LOG IN"}
-      </button>
-
-      {error && <p className="text-center mt-2 text-red-500">{error}</p>}
-
-      <div className="text-center mt-4">
-        {/* Google Login Button */}
-        <button
-          className="flex items-center justify-center w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
-          onClick={(e) => {
-            e.preventDefault(); // 阻止默认表单提交行为
-            handleGoogleLogin();
-          }}
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png"
-            alt="Google"
-            className="h-6 w-6 mr-3"
+        <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[50px] flex items-center px-3 focus-within:border-[#2d79f3]">
+          <svg xmlns="http://www.w3.org/2000/svg" width={20} viewBox="-64 0 512 512" height={20}>
+            <path d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0" />
+            <path d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969-16-16-16s-16 7.167969-16 16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0" />
+          </svg>
+          <input
+            className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none"
+            id="password"
+            type="password"
+            placeholder="Enter your Password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+            disabled={isLoading}
           />
-          <span>Sign up with Google</span>
-        </button>
+        </div>
       </div>
 
-      <div className="text-center mt-2">
+      {/* Forgot Password */}
+      <div className="flex justify-end">
         <button
           type="button"
-          className="text-blue-600 hover:underline"
+          className="text-[#2d79f3] text-sm hover:underline font-medium"
           onClick={onSwitchToForgetPassword}
         >
           Forgot Password?
         </button>
       </div>
+
+      {/* reCAPTCHA */}
+      {isClient && (
+        <div className="flex justify-center w-full">
+          <div id="login-recaptcha" className="g-recaptcha"></div>
+        </div>
+      )}
+
+      {/* Sign In Button */}
+      <button
+        className="mt-2 bg-[#151717] text-white text-[15px] font-medium rounded-[10px] h-[45px] w-full cursor-pointer"
+        type="submit"
+        disabled={isLoading}
+      >
+        {isLoading ? "Please wait..." : "Sign In"}
+      </button>
+
+      {/* Error Message */}
+      {error && <p className="text-center text-red-400">{error}</p>}
+
+      {/* Sign Up Link - 修复嵌套 */}
+      <p className="text-center text-black text-sm">
+        Don't have an account?{" "}
+        <Link href="/register" legacyBehavior>
+          <a className="text-[#2d79f3] hover:underline font-medium">Sign Up</a>
+        </Link>
+      </p>
+
+      {/* Or With Divider */}
+      <p className="text-center text-black text-sm">Or With</p>
+
+      {/* Google Login */}
+      <button
+        className="w-full h-[50px] rounded-[10px] flex justify-center items-center font-medium gap-2 border border-[#ededef] bg-white cursor-pointer hover:border-[#2d79f3] transition-all duration-200"
+        onClick={(e) => {
+          e.preventDefault();
+          handleGoogleLogin();
+        }}
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/1280px-Google_Chrome_icon_%28February_2022%29.svg.png"
+          alt="Google"
+          className="h-6 w-6"
+        />
+        <span>Sign in with Google</span>
+      </button>
     </form>
   );
+
 };
 
 export default LoginForm;

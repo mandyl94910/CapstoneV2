@@ -1,7 +1,16 @@
 // C:\CPRG306\CapstoneV2\server\controllers\ProductsController.js
-const { Product,Category,Review,OrderDetail,Order} = require('../../../server/models');  
-const { getCachedProductInfo, 
-  cacheProductInfo } = require('../../../lib/redisUtils');
+const { Product, Category, Review, OrderDetail, Order } = require('../../../server/models');
+const { 
+  getCachedProducts, 
+  cacheAllProducts,
+  getCachedProductInfo,
+  cacheProductInfo,
+  invalidateProductCache,
+  cacheCategoryProducts,
+  getCachedCategoryProducts,
+  cacheProductDetails,
+  getCachedProductDetails
+} = require('../../../lib/redisUtils/productOps');
 const { Sequelize, Op } = require('sequelize');
 const path = require('path');
 
@@ -17,14 +26,38 @@ const { uploadProductImages } = require('../imageController');
 //   It responds with a JSON array of products or an error message if the retrieval fails.
 const getAllProducts = async (req, res) => {
   try {
+    // 首先尝试从缓存获取
+    const cachedProducts = await getCachedProducts();
+    if (cachedProducts) {
+      return res.json({
+        source: 'redis',
+        data: cachedProducts
+      });
+    }
+
+    // 如果缓存中没有，从数据库获取
     const products = await Product.findAll({
       where: {
         visibility: true  // Only retrieve products that are visible
-      }
+      },
+      // 添加需要的关联数据
+      include: [{
+        model: Category,
+        attributes: ['name']
+      }]
     });
-    res.json(products);  // Send the products data as a JSON response
+
+    // 将结果存入缓存
+    await cacheAllProducts(products);
+    
+    // 确保返回格式一致
+    res.json({
+      source: 'database',
+      data: products
+    });
   } catch (error) {
-    res.status(500).send({ message: "Error retrieving products: " + error.message });  // Return an error message if retrieval fails
+    console.error('Error retrieving products:', error);
+    res.status(500).send({ message: "Error retrieving products: " + error.message });
   }
 };
 
@@ -86,31 +119,39 @@ const getProductsByCategory = async (req, res) => {
  */
 const getProductsByCategoryIncludeSubcategory = async (req, res) => {
   try {
-    const { categoryId } = req.params;  // Extract category ID from request parameters
-    // console.log('Category ID:',categoryId);
+    const { categoryId } = req.params;
+    
+    // 先尝试从缓存获取
+    const cachedProducts = await getCachedCategoryProducts(categoryId);
+    if (cachedProducts) {
+      return res.json(cachedProducts); // 直接返回缓存数据，不需要额外的包装
+    }
+
+    // 如果缓存中没有，从数据库获取
     const products = await Product.findAll({
       where: {
-        visibility: true  // Only retrieve products that are visible
+        visibility: true
       },
       include: [{
-        model: Category, // conected to category table
-        //as: 'category',
-        where:{
+        model: Category,
+        where: {
           [Op.or]: [
             { id: categoryId },
             { sub_for: categoryId }
           ]
         }
-      }]
+      }],
+      raw: false  // 确保获取完整的模型实例
     });
-    // console.log('Retrieved products:', products); || is Logical OR Operator
-    if (!products || products.length === 0) {
-      return res.json([]);
-      // return res.status(404).send({ message: "No products found for this category" });
-    }
-    res.json(products);  // Send the filtered products as a JSON response
+
+    // 缓存结果
+    await cacheCategoryProducts(categoryId, products);
+
+    // 直接返回数据，保持与缓存数据相同的格式
+    res.json(products);
   } catch (error) {
-    res.status(500).send({ message: "Error retrieving products by category: " + error.message });  // Return an error message if retrieval fails
+    console.error('Error retrieving products by category:', error);
+    res.status(500).send({ message: "Error retrieving products by category: " + error.message });
   }
 };
 
@@ -126,32 +167,42 @@ const getProductsByCategoryIncludeSubcategory = async (req, res) => {
 //   It responds with the product data as a JSON response or an error message if retrieval fails.
 const getProductById = async (req, res) => {
   try {
-    //params are the path parameters (or dynamic parameters) in the request path
     const { productId } = req.params;
-    // console.log('Product ID:', productId);
-    // let product = await getCachedProductInfo(productId);
-    // console.log('Cached Product:', product);
-    // if (!product) {
-      //await is used to wait for an asynchronous operation to complete before continuing to execute the code behind it. 
-      //It pauses function execution until an asynchronous operation, such as fetching product information from a database or cache, complete.
-      const dbProduct = await Product.findOne({
-        where: {
-          product_id: productId,
-        }
-      });
-      if (!dbProduct) {
-        return res.status(404).send({ message: "Product not found" });
-      }
-      console.log('product information from backend is :',dbProduct)
-      product = dbProduct.toJSON();
-      try {
-        await cacheProductInfo(productId, product); // Trying to cache product information
-      } catch (cacheError) {
-        console.error("Error caching product:", cacheError); // Logging cache errors
-      }
-    // }
     
-    res.json(product);
+    // First try to get from Redis cache
+    const cachedProduct = await getCachedProductDetails(productId);
+    if (cachedProduct) {
+      return res.json({
+        source: 'redis',
+        data: cachedProduct
+      });
+    }
+
+    // If not in cache, get from database with all necessary relations
+    const product = await Product.findOne({
+      where: {
+        product_id: productId,
+      },
+      include: [{
+        model: Category,
+        attributes: ['name']
+      }],
+      raw: false
+    });
+
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    const productData = product.toJSON();
+    
+    // Cache the product details
+    await cacheProductDetails(productId, productData);
+    
+    res.json({
+      source: 'database',
+      data: productData
+    });
   } catch (error) {
     console.error("Error retrieving product:", error);
     res.status(500).send({ message: "Error retrieving product: " + error.message });
@@ -268,8 +319,8 @@ async function nameProductImages(req, res) {
     // Update the image field in the database
     await Product.update(
       { image: imagePathsString },
-      { where: { product_id: productId } }
-    );
+      { where: { product_id: productId }
+    });
     res.status(200).send({ message: 'Images uploaded successfully.' });
   } catch (error) {
       res.status(500).send({ message: 'Failed to upload images.', error: error.message });
@@ -286,6 +337,11 @@ const updateProductById = async (req, res) => {
     await Product.update(updates, {
       where: { product_id: productId }
     });
+
+    // 更新后清除该产品的缓存
+    await invalidateProductCache(productId);
+    // 同时清除所有产品的缓存，因为产品列表已变化
+    await cacheAllProducts(null, 0);
 
     res.status(200).send({ message: 'Product updated successfully', updatedFields: updates });
   } catch (error) {
@@ -448,8 +504,84 @@ const getTotalValue = async (req, res) => {
   }
 };
 
+// Function to get all products with caching
+const getAllProductsWithCache = async (req, res) => {
+  try {
+    // 尝试从缓存获取
+    const cachedProducts = await getCachedProducts();
+    
+    if (cachedProducts) {
+      return res.json({
+        source: 'redis',
+        data: cachedProducts
+      });
+    }
+
+    // 如果缓存中没有，从数据库获取
+    const products = await Product.findAll({
+      where: {
+        visibility: true
+      },
+      include: [{
+        model: Category,
+        attributes: ['name']
+      }],
+      raw: true  // 添加这行以获取纯 JSON 数据
+    });
+
+    if (products && products.length > 0) {
+      // 缓存产品数据
+      try {
+        await cacheAllProducts(products);
+      } catch (error) {
+        console.error('Cache operation failed:', error);
+        // 继续执行，即使缓存失败
+      }
+    }
+
+    // 返回统一格式的数据
+    res.json({
+      source: 'database',
+      data: products
+    });
+  } catch (error) {
+    console.error('Error retrieving products:', error);
+    res.status(500).send({ message: "Error retrieving products: " + error.message });
+  }
+};
+
+// Function to cache products
+const cacheProducts = async (req, res) => {
+  try {
+    const products = req.body;
+    if (!Array.isArray(products)) {
+      return res.status(400).json({ error: 'Products must be an array' });
+    }
+    await cacheAllProducts(products);
+    res.status(200).json({ message: 'Products cached successfully' });
+  } catch (error) {
+    console.error('Error caching products:', error);
+    res.status(500).json({ error: 'Failed to cache products' });
+  }
+};
+
+// Function to cache product details
+const cacheProductDetailsHandler = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const productData = req.body;
+    
+    await cacheProductDetails(productId, productData);
+    res.status(200).json({ message: 'Product details cached successfully' });
+  } catch (error) {
+    console.error('Error caching product details:', error);
+    res.status(500).json({ error: 'Failed to cache product details' });
+  }
+};
+
 // Export the functions
 module.exports = { getAllProducts, getAllProductsForDataTable, 
   getProductsByCategory, getProductById, 
   getRecommendedProducts, getProductsByCategoryIncludeSubcategory,changeProductVisibility,
-  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages,updateProductById  };
+  addProduct,deleteProduct,getProductTotalNumber,getTopSellingProducts,getTotalValue,nameProductImages,updateProductById,
+  getAllProductsWithCache, cacheProducts, cacheProductDetailsHandler };

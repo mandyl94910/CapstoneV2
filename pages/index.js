@@ -11,13 +11,42 @@ function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
-  // useEffect to fetch products
+  // useEffect to fetch products and cache them
   useEffect(() => {
-    axios.get('http://localhost:3001/api/products')
-      .then(response => {
-        setItems(response.data); // Set state to store product data
-      })
-      .catch(error => console.error('Error fetching products:', error));
+    const fetchAndCacheProducts = async () => {
+      try {
+        // Get products with their details
+        const response = await axios.get('http://localhost:3001/api/products');
+        const products = response.data;
+        
+        // Cache the products list
+        await axios.post('http://localhost:3001/api/cache/products', products);
+        
+        // For each product, cache its details and reviews
+        if (products.data && Array.isArray(products.data)) {
+          for (const product of products.data) {
+            try {
+              // Cache product details
+              await axios.post(`http://localhost:3001/api/cache/product-details/${product.product_id}`, product);
+
+              // Fetch and cache reviews
+              const reviewsResponse = await axios.get(`http://localhost:3001/api/reviews/${product.product_id}`);
+              if (reviewsResponse.data) {
+                await axios.post(`http://localhost:3001/api/cache/reviews/${product.product_id}`, reviewsResponse.data);
+              }
+            } catch (error) {
+              console.error(`Error caching data for product ${product.product_id}:`, error);
+            }
+          }
+        }
+        
+        setItems(products.data);
+      } catch (error) {
+        console.error('Error fetching or caching products:', error);
+      }
+    };
+
+    fetchAndCacheProducts();
   }, []);
   
   // Add a new product

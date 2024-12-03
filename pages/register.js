@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Header from "../components/common/Header";  // Add this line
 
 export default function Register() {
-   // State hooks to store input values and control states
   const [registerUsername, setRegisterUsername] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
@@ -16,40 +16,77 @@ export default function Register() {
   const router = useRouter();
   const [isEmailFixed, setIsEmailFixed] = useState(false);
   const [isUsernameFixed, setIsUsernameFixed] = useState(false);
-//6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ
+  const [recaptchaWidget, setRecaptchaWidget] = useState(null);  // 添加这行
+  const [mouseDownTarget, setMouseDownTarget] = useState(null);
+
   useEffect(() => {
     if (router.isReady) {
-      const { email, username } = router.query; // 仅在 router 已准备好时访问 query
+      const { email, username } = router.query;
       if (email) {
-        setRegisterEmail(email); // 设置 email
-        setIsEmailFixed(true);    // 设置 email 为只读
+        setRegisterEmail(email);
+        setIsEmailFixed(true);
       }
       if (username) {
-        setRegisterUsername(username); // 设置 username
-        setIsUsernameFixed(true);      // 设置 username 为只读
+        setRegisterUsername(username);
+        setIsUsernameFixed(true);
       }
     }
 
     if (typeof window !== 'undefined') {
       setIsClient(true);
-  
-      // Ensures reCAPTCHA is loaded and container element is in the DOM
-      window.grecaptcha.ready(() => {
-        const intervalId = setInterval(() => {
-          const recaptchaElement = document.getElementById('recaptcha-container');
-          if (recaptchaElement) {
-            window.grecaptcha.render('recaptcha-container', {
-              sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ',
-            });
-            clearInterval(intervalId);// Clear the interval once reCAPTCHA is rendered
+
+      const initRecaptcha = () => {
+        if (window.grecaptcha && document.getElementById('register-recaptcha')) {
+          try {
+            const recaptchaElement = document.getElementById('register-recaptcha');
+            if (recaptchaElement && !recaptchaElement.hasChildNodes()) {
+              // 重置现有的 widget
+              if (recaptchaWidget !== null) {
+                window.grecaptcha.reset(recaptchaWidget);
+              }
+              
+              // 渲染新的 widget
+              const widgetId = window.grecaptcha.render('register-recaptcha', {
+                sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ'
+              });
+              setRecaptchaWidget(widgetId);
+            }
+          } catch (e) {
+            console.error("Register reCAPTCHA render error:", e);
           }
-        }, 100);   // Check every 100ms if the element is available
-      });
+        } else {
+          setTimeout(initRecaptcha, 500);
+        }
+      };
+
+      // 等待 grecaptcha API 加载完成
+      if (window.grecaptcha?.ready) {
+        window.grecaptcha.ready(initRecaptcha);
+      } else {
+        const checkRecaptcha = setInterval(() => {
+          if (window.grecaptcha?.ready) {
+            window.grecaptcha.ready(initRecaptcha);
+            clearInterval(checkRecaptcha);
+          }
+        }, 100);
+        
+        // 5秒后清除检查
+        setTimeout(() => clearInterval(checkRecaptcha), 5000);
+      }
+
+      return () => {
+        if (recaptchaWidget !== null && window.grecaptcha) {
+          try {
+            window.grecaptcha.reset(recaptchaWidget);
+          } catch (e) {
+            console.error("Error resetting reCAPTCHA:", e);
+          }
+        }
+      };
     }
   }, [router.isReady, router.query]);
 
   const validateForm = () => {
-    // Form validation for empty fields, password match, and formats
     if (!registerEmail || !registerPassword || !registerUsername || !registerPhone || !registerPasswordConfirm) {
       setError('Please fill in all fields.');
       return false;
@@ -75,144 +112,235 @@ export default function Register() {
     return true;
   };
 
-  const register = (e) => {
+  const register = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // 获取 reCAPTCHA token
-  const recaptchaResponse = window.grecaptcha.getResponse();
-  if (!recaptchaResponse) {
-    setError('Please complete the reCAPTCHA.');
-    setIsLoading(false);
-    return;
-  }
-  
+    // 首先验证表单
     if (!validateForm()) {
       setIsLoading(false);
       return;
     }
-  
-    axios({
-      method: 'post',
-      data: {
-        username: registerUsername,
-        password: registerPassword,
-        email: registerEmail,
-        phone: registerPhone,
-        recaptchaToken: recaptchaResponse,  // 提交 reCAPTCHA token
-      },
-      withCredentials: true,
-      url: 'http://localhost:3001/api/register',
-    })
-    .then((res) => {
+
+    // 然后检查 reCAPTCHA
+    let recaptchaResponse = "";
+    try {
+      recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidget);
+    } catch (e) {
+      console.error("Error getting reCAPTCHA response:", e);
+    }
+
+    if (!recaptchaResponse) {
+      setError('Please complete the reCAPTCHA.');
       setIsLoading(false);
-      if (res.data.message) {
-        setError(res.data.message);
-        router.push('/login');
-      } else {
+      return;
+    }
+
+    // 最后提交表单
+    try {
+      const response = await axios({
+        method: 'post',
+        data: {
+          username: registerUsername,
+          password: registerPassword,
+          email: registerEmail,
+          phone: registerPhone,
+          recaptchaToken: recaptchaResponse,
+        },
+        withCredentials: true,
+        url: 'http://localhost:3001/api/register',
+      });
+
+      setIsLoading(false);
+      if (response.data.message) {
         setError('');
+        router.push('/login');
       }
-    })
-    .catch((err) => {
+    } catch (err) {
       setIsLoading(false);
       setError(err.response?.data?.message || 'Registration failed, please try again later.');
+      if (window.grecaptcha && recaptchaWidget) {
+        window.grecaptcha.reset(recaptchaWidget);
+      }
+    }
+  };
+
+  // 修改返回登录页面的逻辑
+  const handleBackToLogin = () => {
+    const originalPath = router.query.returnTo || '/'; // 获取原始路径，默认为首页
+    router.push({
+      pathname: '/login',
+      query: { 
+        from: 'register',
+        originalPath: originalPath 
+      }
     });
   };
-  
+
+  const handleBackgroundMouseDown = (e) => {
+    setMouseDownTarget(e.target);
+  };
+
+  const handleBackgroundMouseUp = (e) => {
+    if (e.target === mouseDownTarget && e.target.classList.contains('modal-backdrop')) {
+      handleBackToLogin();
+    }
+    setMouseDownTarget(null);
+  };
 
   return (
-    <div className="flex h-screen slide-in">
-      <div className="w-full h-full flex flex-col justify-center items-center bg-white p-8">
-        <Link href="/">
-          <img src="/logo.png" alt="Logo" className="h-16 my-3 cursor-pointer" />
-        </Link>
-        <h1 className="text-3xl font-bold mb-6 text-blue-600">Create Account</h1>
-        {(isEmailFixed || isUsernameFixed) && (
-          <p className="text-gray-600 text-sm mt-2 text-center">
-            This email address hasn't been registered yet. Please complete the registration to continue with third-party login in the future.
-          </p>
-        )}
-        <form className="w-full max-w-sm" onSubmit={register}>
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username">
-              Username
-            </label>
-            <input
-              type="text"
-              value={registerUsername}
-              onChange={(e) => setRegisterUsername(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-                      </div>
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={registerPassword}
-              onChange={(e) => setRegisterPassword(e.target.value)}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="passwordConfirm">
-              Confirm Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="passwordConfirm"
-              type="password"
-              placeholder="Confirm Password"
-              value={registerPasswordConfirm}
-              onChange={(e) => setRegisterPasswordConfirm(e.target.value)}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              value={registerEmail}
-              onChange={(e) => setRegisterEmail(e.target.value)}
-              disabled={isEmailFixed} // 仅在从 Google 登录传递的邮箱时禁用
-              className={`shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline ${isEmailFixed ? 'bg-gray-200 cursor-not-allowed' : 'text-gray-700'}`}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="phone">
-              Phone Number
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="phone"
-              type="text"
-              placeholder="Phone Number"
-              value={registerPhone}
-              onChange={(e) => setRegisterPhone(e.target.value)}
-            />
-          </div>
+    <div className="min-h-screen">
 
-          {isClient && (
-            <div id="recaptcha-container" className="g-recaptcha ml-10"></div>
-          )}
-
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-3 rounded focus:outline-none focus:shadow-outline w-full"
-            type="submit"
-            disabled={isLoading}
+      {/* 登录模态框覆盖层 */}
+      <div 
+        className="fixed inset-0 z-50 flex justify-center items-center bg-black/30 backdrop-blur-sm modal-backdrop"
+        onMouseDown={handleBackgroundMouseDown}
+        onMouseUp={handleBackgroundMouseUp}
+      >
+        {/* 内容容器 - 添加 overflow-hidden */}
+        <div className="relative w-[95%] max-w-[400px] max-h-[95vh] bg-white p-4 sm:p-6 lg:p-8 rounded-2xl border-2 shadow-xl flex flex-col overflow-hidden">
+          {/* 返回按钮 - 固定在左上角 */}
+          <button 
+            onClick={handleBackToLogin}
+            className="absolute left-4 top-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Back to login"
           >
-            {isLoading ? 'Please wait...' : 'Register'}
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth={2} 
+              stroke="currentColor" 
+              className="w-6 h-6 text-gray-900"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" 
+              />
+            </svg>
           </button>
-          {error && (
-            <p className="text-red-500 text-center mt-4">
-              {error}
-            </p>
-          )}
-        </form>
+
+          {/* Logo 容器 - 独立居中显示 */}
+          <div className="w-full flex justify-center items-center mb-1 mt-">
+            <div className="w-[40%] max-w-[160px]">
+              <img
+                src="/new-logo.png"
+                alt="Logo"
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </div>
+
+          {/* 表单内容区域 */}
+          <div className="w-full flex-1 min-h-0 overflow-y-auto">
+            <h1 className="text-xl font-bold mb-2 text-center text-gray-800">Create Account</h1>
+            
+            {(isEmailFixed || isUsernameFixed) && (
+              <p className="text-gray-600 text-xs mb-2 text-center">
+                This email address hasn't been registered yet. Please complete the registration to continue.
+              </p>
+            )}
+
+            <form className="flex flex-col gap-2 flex-1" onSubmit={register}>
+              <div className="flex-column">
+                <label className="text-[#151717] font-semibold mb-1 block text-sm" htmlFor="username">
+                  Username
+                </label>
+                <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[40px] flex items-center px-3 focus-within:border-[#2d79f3]">
+                  <input
+                    className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none text-sm"
+                    type="text"
+                    id="username"
+                    value={registerUsername}
+                    onChange={(e) => setRegisterUsername(e.target.value)}
+                    disabled={isUsernameFixed}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-column">
+                <label className="text-[#151717] font-semibold mb-1 block text-sm" htmlFor="password">
+                  Password
+                </label>
+                <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[40px] flex items-center px-3 focus-within:border-[#2d79f3]">
+                  <input
+                    className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none text-sm"
+                    type="password"
+                    id="password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-column">
+                <label className="text-[#151717] font-semibold mb-1 block text-sm" htmlFor="confirmPassword">
+                  Confirm Password
+                </label>
+                <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[40px] flex items-center px-3 focus-within:border-[#2d79f3]">
+                  <input
+                    className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none text-sm"
+                    type="password"
+                    id="confirmPassword"
+                    value={registerPasswordConfirm}
+                    onChange={(e) => setRegisterPasswordConfirm(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-column">
+                <label className="text-[#151717] font-semibold mb-1 block text-sm" htmlFor="email">
+                  Email
+                </label>
+                <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[40px] flex items-center px-3 focus-within:border-[#2d79f3]">
+                  <input
+                    className={`ml-2 rounded-[10px] border-none w-full h-full focus:outline-none text-sm ${
+                      isEmailFixed ? 'bg-gray-100' : ''
+                    }`}
+                    type="email"
+                    id="email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    disabled={isEmailFixed}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-column">
+                <label className="text-[#151717] font-semibold mb-1 block text-sm" htmlFor="phone">
+                  Phone Number
+                </label>
+                <div className="border-[1.5px] border-[#ecedec] rounded-[10px] h-[40px] flex items-center px-3 focus-within:border-[#2d79f3]">
+                  <input
+                    className="ml-2 rounded-[10px] border-none w-full h-full focus:outline-none text-sm"
+                    type="text"
+                    id="phone"
+                    value={registerPhone}
+                    onChange={(e) => setRegisterPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {isClient && (
+                <div className="flex justify-center w-full mb-2">
+                  <div id="register-recaptcha" className="g-recaptcha"></div>
+                </div>
+              )}
+
+              <button
+                className="mt-2 bg-[#151717] text-white text-[15px] font-medium rounded-[10px] h-[40px] w-full cursor-pointer disabled:opacity-50"
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Please wait...' : 'Register'}
+              </button>
+
+              {error && <p className="text-center text-red-500 text-xs mt-1">{error}</p>}
+
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

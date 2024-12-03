@@ -1,102 +1,121 @@
-const { Review, Customer } = require('../../../server/models'); 
+const { Review, Customer } = require('../../../server/models');
+const { 
+  cacheProductReviews, 
+  getCachedProductReviews,
+  invalidateProductReviews 
+} = require('../../../lib/redisUtils/productOps');
 
-// Code in this page helped with chatGPT
-// Function name: getReviewByProductId
-// Description: Retrieves reviews with product id.
-// Parameters:
-//   req (object): The HTTP request object.
-//   res (object): The HTTP response object used to return the reviews or an error message.
-// Functionality:
-//   This function retrieves reviews from database and return data in JSON format.
+// Get reviews by product ID
 const getReviewByProductId = async (req, res) => {
-    const { productId } = req.params;
-    try {
-        // fetch reviews by product id using Sequelize ORM
-        const reviews = await Review.findAll({
-            where: {
-                product_id: productId,
-            },
-            include: {
-                model: Customer,
-                attributes:['customer_name'],
-            }
-        });
-    
-        // Return to the list of reviews
-        // In order to return the queried review data to the front-end via an API and deliver it in a standard, easy-to-handle format.
-        res.status(200).json(reviews);
-    } catch (error) {
-        console.error('Error fetching reviews:', error);
-        res.status(500).json({ error: 'An error occurred while fetching reviews.' });
+  const { productId } = req.params;
+  try {
+    // First try to get reviews from cache
+    const cachedReviews = await getCachedProductReviews(productId);
+    if (cachedReviews) {
+      console.log(`Found ${cachedReviews.length} reviews in cache for product ${productId}`);
+      return res.json({
+        source: 'cache',
+        data: cachedReviews
+      });
     }
+
+    // If not in cache, get from database
+    const reviews = await Review.findAll({
+      where: { 
+        product_id: productId,
+        visibility: true
+      },
+      include: [{
+        model: Customer,
+        attributes: ['customer_id', 'customer_name']
+      }],
+      raw: false
+    });
+
+    // Before caching, convert to plain object
+    const reviewsData = reviews.map(review => review.toJSON());
+
+    // Cache the reviews
+    await cacheProductReviews(productId, reviewsData);
+    console.log(`Cached ${reviewsData.length} reviews for product ${productId}`);
+
+    res.json({
+      source: 'database',
+      data: reviewsData
+    });
+  } catch (error) {
+    console.error('Error retrieving reviews:', error);
+    res.status(500).json({ 
+      error: 'An error occurred while retrieving reviews.',
+      data: [] 
+    });
+  }
 };
 
-
-// Function name: addReview
-// Description: Add a new review to database
-// Parameters:
-//   req (object): The HTTP request object.
-//   res (object): The HTTP response object used to return the review or an error message.
-// Functionality:
-//   This function adds a review to database and return data in JSON format.
+// Add new review
 const addReview = async (req, res) => {
-    const review = req.body;
-
-    try {
-        const newReview = await Review.create({
-            customer_id: review.customer_id,
-            product_id: review.product_id,
-            content: review.content,
-            rating: review.rating,
-            review_time: new Date(),
-            visibility: true,
-            pin_top: false
-        });
-        res.status(201).json(newReview);
-    } catch (error) {
-        console.error('Error submitting review:', error);
-        res.status(500).json({ error: 'An error occurred while submitting review.' });
-    }
-};
-
-// Function name: checkReviewStatus
-// Description: Check if the product in an order has been reviewed or not
-// Parameters:
-//   req (object): The HTTP request object.
-//   res (object): The HTTP response object used to return the review status or an error message.
-const checkReviewStatus = async (req, res) => {
-    //const {customerId, productId} = req.query;
-    const customerId = parseInt(req.query.customerId, 10);
-    const productId = parseInt(req.query.productId, 10); 
-
-    if (isNaN(customerId) || isNaN(productId)) {
-        console.error('Invalid customerId or productId');
-        return res.status(400).json({ error: 'Invalid parameters.' });
-    }
-    try {
-        const review = await Review.findOne({
-            where: {
-              customer_id: customerId,
-              product_id: productId
-            }
-        });
-        // if review exists
-        if (review) {
-            return res.status(200).json({ reviewed: true });
-        }
-        // if review does not exist
-        res.status(200).json({ reviewed: false });
+  try {
+    const newReview = await Review.create(req.body);
     
-    } catch (error) {
-        console.error('Error checking review:', error);
-        res.status(500).json({ error: 'An error occurred while checking review.' });
-    }
+    // Invalidate the reviews cache for this product
+    await invalidateProductReviews(req.body.product_id);
+    
+    // Get updated reviews and recache them
+    const updatedReviews = await Review.findAll({
+      where: { 
+        product_id: req.body.product_id,
+        visibility: true
+      },
+      include: [{
+        model: Customer,
+        attributes: ['customer_id', 'customer_name']
+      }]
+    });
+
+    await cacheProductReviews(req.body.product_id, updatedReviews.map(review => review.toJSON()));
+
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error('Error adding review:', error);
+    res.status(500).json({ error: 'Failed to add review' });
+  }
 };
 
+// Check if a product has been reviewed by a customer
+const checkReviewStatus = async (req, res) => {
+  const { customer_id, product_id } = req.query;
+  try {
+    const review = await Review.findOne({
+      where: { 
+        customer_id: customer_id,
+        product_id: product_id 
+      }
+    });
+    res.json({ hasReviewed: !!review });
+  } catch (error) {
+    console.error('Error checking review status:', error);
+    res.status(500).json({ error: 'Error checking review status' });
+  }
+};
 
+// Cache reviews handler
+const cacheReviewsHandler = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const reviews = req.body;
+    
+    await cacheProductReviews(productId, reviews);
+    console.log(`Manually cached ${reviews.length} reviews for product ${productId}`);
+    res.status(200).json({ message: 'Reviews cached successfully' });
+  } catch (error) {
+    console.error('Error caching reviews:', error);
+    res.status(500).json({ error: 'Failed to cache reviews' });
+  }
+};
 
 module.exports = { 
-    getReviewByProductId, 
-    addReview,
-    checkReviewStatus
+  getReviewByProductId, 
+  addReview, 
+  checkReviewStatus,
+  cacheReviewsHandler
 };
