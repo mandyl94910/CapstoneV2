@@ -18,6 +18,11 @@ export const useAuth = () => {
           setUser(JSON.parse(storedUser));
         }
       }, []);
+
+      const updateUser = (userData) => {
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+      };
     
       // method to log out
       const onLogout = () => {
@@ -25,5 +30,5 @@ export const useAuth = () => {
         setUser(null);
       }
 
-    return{ user, onLogout };
+    return{ user, updateUser, onLogout };
 }

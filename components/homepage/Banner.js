@@ -55,10 +55,11 @@ function Banner() {
 
   
   return (
-    <div className="relative h-[550px] px-16 py-6">
+    // <div className="relative h-[550px] px-16 py-6">
+    <div className="relative w-full min-h-[300px] sm:min-h-[400px] md:min-h-[550px] px-4 sm:px-8 py-6">
       <Slider {...settings}>
         {banners.map((banner, index) => (
-          <div key={index} className="relative h-[500px]">
+          <div key={index} className="relative w-full min-h-[250px] sm:min-h-[350px] md:min-h-[500px]">
             <Image
               src={banner.src}
               alt={banner.alt}
@@ -74,6 +75,7 @@ function Banner() {
                 className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
               >
                 Shop {banner.categoryName}
+
               </Link>
             </div>
           </div>
