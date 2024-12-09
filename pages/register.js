@@ -221,17 +221,6 @@ export default function Register() {
             </svg>
           </button>
 
-          {/* Logo 容器 - 独立居中显示 */}
-          <div className="w-full flex justify-center items-center mb-1 mt-">
-            <div className="w-[40%] max-w-[160px]">
-              <img
-                src="/new-logo.png"
-                alt="Logo"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
-
           {/* 表单内容区域 */}
           <div className="w-full flex-1 min-h-0 overflow-y-auto">
             <h1 className="text-xl font-bold mb-2 text-center text-gray-800">Create Account</h1>
