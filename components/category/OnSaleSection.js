@@ -17,10 +17,10 @@ export default function OnSaleSection() {
               className="w-full h-48 object-cover rounded-md mb-4"
             />
             <h3 className="text-lg font-bold mb-1">{product.name}</h3>
-            <p className="text-gray-600 line-through">
+            <p className="text-gray-600 line-through text-base">
               ${product.originalPrice}
             </p>
-            <p className="text-red-500 font-semibold">${product.salePrice}</p>
+            <p className="text-red-500 font-semibold text-base">${product.salePrice}</p>
           </div>
         ))}
       </div>

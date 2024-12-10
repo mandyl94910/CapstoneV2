@@ -1,0 +1,84 @@
+.marqueeContainer {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  padding: 20px 40px; /* 修改这里：增加左右内边距 */
+}
+
+/* 添加左侧渐变遮罩 */
+.marqueeContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100%;
+  background: linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  z-index: 2;
+}
+
+/* 添加右侧渐变遮罩 */
+.marqueeContainer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100%;
+  background: linear-gradient(to left, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  z-index: 2;
+}
+
+.marqueeWrapper {
+  display: flex;
+  width: 100%;
+}
+
+.marquee {
+  display: flex;
+  animation: scroll 20s linear infinite;
+  will-change: transform;
+}
+
+.marqueeItem {
+  flex-shrink: 0;
+  margin-right: 20px;
+  min-width: 120px;
+}
+
+.marqueeItem img {
+  height: 80px;
+  object-fit: contain;
+}
+
+.brandImage {
+  height: 80px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.brandImage:hover {
+  transform: scale(1.1);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 3));
+  }
+}
+
+/* Pause animation on hover */
+.marqueeContainer:hover .marquee {
+  animation-play-state: paused;
+}
+
+.marqueeSection {
+  width: 100%;
+  padding: 0 63px;  /* 左右各留出120px的空白 */
+  margin: 0 auto;
+  box-sizing: border-box;
+}

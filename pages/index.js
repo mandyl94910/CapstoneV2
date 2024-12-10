@@ -6,6 +6,7 @@ import axios from 'axios'; // Use axios for HTTP requests
 import Footer from '../components/common/Footer';
 import CategoryHomeGrid from '../components/homepage/CategoryHomeGrid';
 import OnSale from '../components/homepage/OnSale';
+import ScrollingBar from '../components/homepage/ScrollingBar';
 
 function Home() {
   const [items, setItems] = useState([]);
@@ -75,38 +76,9 @@ function Home() {
     <div>
       <Header/>
       <Banner/>
-      {/* testing add funtion ///////////////////
-      <div className="container mx-auto mt-8">
-        <input
-          type="text"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          placeholder="Add new item"
-          className="border p-2 rounded mr-2"
-        />
-        <button onClick={addItem} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Add Item
-        </button>
-        <ul className="mt-4">
-          {Array.isArray(items) && items.length > 0 ? (
-            items.map(item => (
-              <li key={item.product_id} className="flex justify-between items-center border-b py-2">
-                {item.product_name} {/* Use the new field names to display product names */}
-                {/* <button
-                  onClick={() => deleteItem(item.product_id)} // Use the new field name to delete products
-                  className="bg-red-600 text-white px-2 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <li>No items found</li>
-          )}
-        </ul>
-      </div> */} 
       <CategoryHomeGrid />
       <OnSale />
+      <ScrollingBar />
       <Footer />
     </div>
   );
