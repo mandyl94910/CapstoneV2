@@ -172,6 +172,7 @@ export default function Products() {
     // 修改这里：当选择 "All Products" 时，使用不同的 API 端点
     if (category.name === 'All Products') {
       try {
+        router.push(`/all-products?categoryId=1`); // 确保更新路由参数
         const response = await axios.get('http://localhost:3001/api/products');
         // 确保正确处理返回的数据结构
         const productsData = response.data.data || response.data;
