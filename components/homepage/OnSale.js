@@ -31,11 +31,11 @@ export default function OnSale() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                 />
                 <div className="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                  <span className="text-gray-300 line-through font-bold text-3xl">
+                  <span className="text-gray-300 line-through font-bold text-base">
                     ${onSaleProducts[0].originalPrice}
                   </span>
-                  <span className="text-2xl font-bold text-gray-300">→</span>
-                  <span className="font-bold text-3xl text-red-500">
+                  <span className="text-base font-bold text-gray-300">→</span>
+                  <span className="font-bold text-base text-red-500">
                     ${onSaleProducts[0].salePrice}
                   </span>
                 </div>
@@ -68,13 +68,13 @@ export default function OnSale() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                     />
                     <div className="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                      <span className="text-gray-300 line-through font-bold text-2xl">
+                      <span className="text-gray-300 line-through font-bold text-base">
                         ${product.originalPrice}
                       </span>
-                      <span className="text-2xl font-bold text-gray-300">
+                      <span className="text-base font-bold text-gray-300">
                         →
                       </span>
-                      <span className="font-bold text-2xl text-red-500">
+                      <span className="font-bold text-base text-red-500">
                         ${product.salePrice}
                       </span>
                     </div>
