@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Link from 'next/link';  // Add this import
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRecaptcha } from '../../../hooks/useRecaptcha';
 
 const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   const [loginIdentifier, setLoginIdentifier] = useState("");
@@ -29,6 +30,7 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const { getResponse, reset, isReady } = useRecaptcha('login-recaptcha');
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -100,61 +102,48 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   };
 
   // Handles the login logic
-  const handleLogin = () => {
-    // Check if the username matches admin login pattern
-    const adminRegex = /^Admin[a-zA-Z]+$/;
-  if (adminRegex.test(loginIdentifier)) {
-    handleAdminLogin();
-    return; // Exit to prevent further processing
-  }
-
-  if (!isThirdPartyLogin && !validateLoginForm()) {
-    return;
-  }
-
-    if (!isThirdPartyLogin && !validateLoginForm()) {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!isReady) {
+      setError('Please wait for reCAPTCHA to load');
       return;
     }
 
+    if (!validateLoginForm()) return;
+
     setIsLoading(true);
-    let recaptchaResponse = "";
-    
-    try {
-      recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidget);
-    } catch (e) {
-      console.error("Error getting reCAPTCHA response:", e);
-    }
+    const recaptchaResponse = getResponse();
 
     if (!recaptchaResponse) {
-      setError("Please complete the reCAPTCHA.");
+      setError('Please complete the reCAPTCHA verification');
       setIsLoading(false);
       return;
     }
 
-    axios({
-      method: "post",
-      data: {
-        loginIdentifier: loginIdentifier,
-        password: loginPassword,
-        recaptchaToken: recaptchaResponse,
-      },
-      withCredentials: true,
-      url: "http://localhost:3001/api/login",
-    })
-      .then((res) => {
-        setIsLoading(false);
-        if (res.data.success) {
-          onSuccess();
-        } else {
-          setError(res.data.message);
-          window.grecaptcha.reset();
-        }
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        setError(err.response?.data?.message || err.message);
-        window.grecaptcha.reset();
+    try {
+      const response = await axios({
+        method: "post",
+        data: {
+          loginIdentifier,
+          password: loginPassword,
+          recaptchaToken: recaptchaResponse,
+        },
+        withCredentials: true,
+        url: "http://localhost:3001/api/login",
       });
+
+      if (response.data.success) {
+        onSuccess();
+      } else {
+        setError(response.data.message);
+        reset();
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      reset();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAdminLogin = () => {

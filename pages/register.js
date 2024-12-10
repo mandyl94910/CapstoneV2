@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Header from "../components/common/Header";  // Add this line
+import { useRecaptcha } from '../hooks/useRecaptcha';
 
 export default function Register() {
   const [registerUsername, setRegisterUsername] = useState('');
@@ -16,8 +17,8 @@ export default function Register() {
   const router = useRouter();
   const [isEmailFixed, setIsEmailFixed] = useState(false);
   const [isUsernameFixed, setIsUsernameFixed] = useState(false);
-  const [recaptchaWidget, setRecaptchaWidget] = useState(null);  // 添加这行
   const [mouseDownTarget, setMouseDownTarget] = useState(null);
+  const { getResponse, reset, isReady } = useRecaptcha('register-recaptcha');
 
   useEffect(() => {
     if (router.isReady) {
@@ -34,55 +35,6 @@ export default function Register() {
 
     if (typeof window !== 'undefined') {
       setIsClient(true);
-
-      const initRecaptcha = () => {
-        if (window.grecaptcha && document.getElementById('register-recaptcha')) {
-          try {
-            const recaptchaElement = document.getElementById('register-recaptcha');
-            if (recaptchaElement && !recaptchaElement.hasChildNodes()) {
-              // 重置现有的 widget
-              if (recaptchaWidget !== null) {
-                window.grecaptcha.reset(recaptchaWidget);
-              }
-              
-              // 渲染新的 widget
-              const widgetId = window.grecaptcha.render('register-recaptcha', {
-                sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ'
-              });
-              setRecaptchaWidget(widgetId);
-            }
-          } catch (e) {
-            console.error("Register reCAPTCHA render error:", e);
-          }
-        } else {
-          setTimeout(initRecaptcha, 500);
-        }
-      };
-
-      // 等待 grecaptcha API 加载完成
-      if (window.grecaptcha?.ready) {
-        window.grecaptcha.ready(initRecaptcha);
-      } else {
-        const checkRecaptcha = setInterval(() => {
-          if (window.grecaptcha?.ready) {
-            window.grecaptcha.ready(initRecaptcha);
-            clearInterval(checkRecaptcha);
-          }
-        }, 100);
-        
-        // 5秒后清除检查
-        setTimeout(() => clearInterval(checkRecaptcha), 5000);
-      }
-
-      return () => {
-        if (recaptchaWidget !== null && window.grecaptcha) {
-          try {
-            window.grecaptcha.reset(recaptchaWidget);
-          } catch (e) {
-            console.error("Error resetting reCAPTCHA:", e);
-          }
-        }
-      };
     }
   }, [router.isReady, router.query]);
 
@@ -114,29 +66,24 @@ export default function Register() {
 
   const register = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // 首先验证表单
-    if (!validateForm()) {
-      setIsLoading(false);
+    if (!isReady) {
+      setError('Please wait for reCAPTCHA to load');
       return;
     }
 
-    // 然后检查 reCAPTCHA
-    let recaptchaResponse = "";
-    try {
-      recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidget);
-    } catch (e) {
-      console.error("Error getting reCAPTCHA response:", e);
+    if (!validateForm()) {
+      return;
     }
+
+    setIsLoading(true);
+    const recaptchaResponse = getResponse();
 
     if (!recaptchaResponse) {
-      setError('Please complete the reCAPTCHA.');
+      setError('Please complete the reCAPTCHA verification');
       setIsLoading(false);
       return;
     }
 
-    // 最后提交表单
     try {
       const response = await axios({
         method: 'post',
@@ -151,17 +98,15 @@ export default function Register() {
         url: 'http://localhost:3001/api/register',
       });
 
-      setIsLoading(false);
       if (response.data.message) {
         setError('');
         router.push('/login');
       }
     } catch (err) {
-      setIsLoading(false);
       setError(err.response?.data?.message || 'Registration failed, please try again later.');
-      if (window.grecaptcha && recaptchaWidget) {
-        window.grecaptcha.reset(recaptchaWidget);
-      }
+      reset();
+    } finally {
+      setIsLoading(false);
     }
   };
 
