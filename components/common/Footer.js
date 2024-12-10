@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
       </div>
       <hr className="border-gray-300 mt-6" />
-      <p className="text-center text-gray-500 py-4">Top tradings - 2024</p>
+      <p className="text-center text-gray-500 py-4">© 2024 Top tradings. All Rights Reserved.</p>
 
       {/* Contact Us Modal */}
       <ContactUsModal

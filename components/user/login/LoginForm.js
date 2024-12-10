@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import Link from 'next/link';  // Add this import
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useRecaptcha } from '../../../hooks/useRecaptcha';
 
 const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   const [loginIdentifier, setLoginIdentifier] = useState("");
@@ -30,55 +29,75 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const { getResponse, reset, isReady } = useRecaptcha('login-recaptcha');
 
   useEffect(() => {
+    let initTimeout;
+    let mounted = true;
+
+    const initRecaptcha = () => {
+      if (!mounted) return;
+      
+      if (window.grecaptcha && window.grecaptcha.render) {
+        try {
+          const container = document.getElementById("login-recaptcha");
+          // Check if container exists and doesn't already have a reCAPTCHA widget
+          if (container && !container.firstChild && recaptchaWidget === null) {
+            const widgetId = window.grecaptcha.render("login-recaptcha", {
+              sitekey: "6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ",
+              callback: () => {
+                if (mounted) setError("");
+              },
+              "expired-callback": () => {
+                if (mounted && recaptchaWidget !== null) {
+                  window.grecaptcha.reset(recaptchaWidget);
+                }
+              },
+            });
+            if (mounted) setRecaptchaWidget(widgetId);
+          }
+        } catch (e) {
+          console.error("reCAPTCHA render error:", e);
+        }
+      } else {
+        // If grecaptcha is not ready, retry after delay
+        initTimeout = setTimeout(initRecaptcha, 100);
+      }
+    };
+
     if (typeof window !== "undefined") {
       setIsClient(true);
+      
+      // Clear any existing reCAPTCHA
+      const container = document.getElementById("login-recaptcha");
+      if (container) {
+        container.innerHTML = '';
+      }
+      
+      // Reset widget state
+      setRecaptchaWidget(null);
 
-      const initRecaptcha = () => {
-        if (window.grecaptcha && window.grecaptcha.render) {
-          try {
-            const container = document.getElementById("login-recaptcha");
-            if (container && !container.hasChildNodes()) {
-              const widgetId = window.grecaptcha.render("login-recaptcha", {
-                sitekey: "6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u8V713SJ",
-                callback: () => {
-                  setError(""); // Clear error when user completes captcha
-                },
-                "expired-callback": () => {
-                  window.grecaptcha.reset(recaptchaWidget);
-                },
-              });
-              setRecaptchaWidget(widgetId);
-            }
-          } catch (e) {
-            console.error("reCAPTCHA render error:", e);
-          }
-        } else {
-          setTimeout(initRecaptcha, 100);
-        }
-      };
-
-      // Wait for grecaptcha to be ready
+      // Initialize new reCAPTCHA
       if (window.grecaptcha && window.grecaptcha.ready) {
         window.grecaptcha.ready(initRecaptcha);
       } else {
-        setTimeout(initRecaptcha, 100);
+        initTimeout = setTimeout(initRecaptcha, 100);
       }
-
-      // Cleanup function
-      return () => {
-        if (recaptchaWidget !== null && window.grecaptcha) {
-          try {
-            window.grecaptcha.reset(recaptchaWidget);
-          } catch (e) {
-            console.error("Error resetting reCAPTCHA:", e);
-          }
-        }
-      };
     }
-  }, []);
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+      if (initTimeout) {
+        clearTimeout(initTimeout);
+      }
+      // Clear reCAPTCHA container on unmount
+      const container = document.getElementById("login-recaptcha");
+      if (container) {
+        container.innerHTML = '';
+      }
+      setRecaptchaWidget(null);
+    };
+  }, []); // Empty dependency array since we want this to run only once on mount
 
   // Validation Form
   const validateLoginForm = () => {
@@ -102,48 +121,70 @@ const LoginForm = ({ onSuccess, onSwitchToForgetPassword }) => {
   };
 
   // Handles the login logic
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!isReady) {
-      setError('Please wait for reCAPTCHA to load');
+  const handleLogin = () => {
+    // Check if the username matches admin login pattern
+    const adminRegex = /^Admin[a-zA-Z]+$/;
+  if (adminRegex.test(loginIdentifier)) {
+    handleAdminLogin();
+    return; // Exit to prevent further processing
+  }
+
+  if (!isThirdPartyLogin && !validateLoginForm()) {
+    return;
+  }
+
+    if (!isThirdPartyLogin && !validateLoginForm()) {
       return;
     }
-
-    if (!validateLoginForm()) return;
 
     setIsLoading(true);
-    const recaptchaResponse = getResponse();
-
-    if (!recaptchaResponse) {
-      setError('Please complete the reCAPTCHA verification');
+    let recaptchaResponse = "";
+    
+    try {
+      // 确保 recaptchaWidget 存在且有效
+      if (recaptchaWidget === null) {
+        setError("reCAPTCHA not loaded. Please refresh the page.");
+        setIsLoading(false);
+        return;
+      }
+      recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidget);
+    } catch (e) {
+      console.error("Error getting reCAPTCHA response:", e);
+      setError("reCAPTCHA error. Please refresh the page.");
       setIsLoading(false);
       return;
     }
 
-    try {
-      const response = await axios({
-        method: "post",
-        data: {
-          loginIdentifier,
-          password: loginPassword,
-          recaptchaToken: recaptchaResponse,
-        },
-        withCredentials: true,
-        url: "http://localhost:3001/api/login",
-      });
-
-      if (response.data.success) {
-        onSuccess();
-      } else {
-        setError(response.data.message);
-        reset();
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || err.message);
-      reset();
-    } finally {
+    if (!recaptchaResponse) {
+      setError("Please complete the reCAPTCHA.");
       setIsLoading(false);
+      return;
     }
+
+    axios({
+      method: "post",
+      data: {
+        loginIdentifier: loginIdentifier,
+        password: loginPassword,
+        recaptchaToken: recaptchaResponse,
+      },
+      withCredentials: true,
+      url: "http://localhost:3001/api/login",
+    })
+      .then((res) => {
+        setIsLoading(false);
+        if (res.data.success) {
+          onSuccess();
+        } else {
+          setError(res.data.message);
+          window.grecaptcha.reset();
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.response?.data?.message || err.message);
+        window.grecaptcha.reset();
+      });
   };
 
   const handleAdminLogin = () => {

@@ -1,5 +1,5 @@
 // C:\CPRG306\CapstoneV2\pages\login.js
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Header from "../components/common/Header";
 import LoginForm from "../components/user/login/LoginForm";
@@ -14,8 +14,6 @@ export default function Login() {
   const [fromRegister, setFromRegister] = useState(false);
   const [originalPath, setOriginalPath] = useState('');
   const [mouseDownTarget, setMouseDownTarget] = useState(null);
-  const [recaptchaRetries, setRecaptchaRetries] = useState(0);
-  const MAX_RETRIES = 3;
 
   // 在组件加载时检查来源和原始路径
   useEffect(() => {
@@ -62,37 +60,6 @@ export default function Login() {
     }
     setMouseDownTarget(null);
   };
-
-  const initRecaptcha = useCallback(() => {
-    if (recaptchaRetries >= MAX_RETRIES) {
-      console.error('Failed to load reCAPTCHA after maximum retries');
-      return;
-    }
-
-    if (window.grecaptcha && document.getElementById('login-recaptcha')) {
-      try {
-        const recaptchaElement = document.getElementById('login-recaptcha');
-        if (recaptchaElement && !recaptchaElement.hasChildNodes()) {
-          const widgetId = window.grecaptcha.render('login-recaptcha', {
-            sitekey: '6LfBy0IqAAAAACglebXLEuKwhzW1B1Y_u2V713SJ',
-            callback: () => setError(''),
-            'expired-callback': () => {
-              if (recaptchaWidget) {
-                window.grecaptcha.reset(recaptchaWidget);
-              }
-            }
-          });
-          setRecaptchaWidget(widgetId);
-        }
-      } catch (e) {
-        console.error("reCAPTCHA render error:", e);
-        setRecaptchaRetries(prev => prev + 1);
-        setTimeout(initRecaptcha, 1000); // 1秒后重试
-      }
-    } else {
-      setTimeout(initRecaptcha, 500);
-    }
-  }, [recaptchaRetries]);
 
   return (
     <div className="min-h-screen">
