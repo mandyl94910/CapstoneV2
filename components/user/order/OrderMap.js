@@ -4,9 +4,6 @@
 import React, { useEffect, useRef, useState  } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-// API accessToken for Mapbox
-mapboxgl.accessToken = 'pk.eyJ1Ijoic3ByaW5nc3VtbWVyIiwiYSI6ImNtMnR2a3pwajA3MTEyaXExcWplMzZuaWYifQ.i9HjquSgUMs8qZGDxK2emw';
-
 
 /**
  * Helped by chatGPT
@@ -19,14 +16,33 @@ const OrderMap = ({ location }) => {
     const mapContainer = useRef(null);
     const map = useRef(null);
     const [coordinates, setCoordinates] = useState(null);
+    const [accessToken, setAccessToken] = useState(null);
 
+    useEffect(() => {
+      const fetchAccessToken = async () => {
+        try {
+          const response = await fetch("http://localhost:3001/api/mapbox-token");
+          const data = await response.json();
+          if (data.accessToken) {
+            mapboxgl.accessToken = data.accessToken;
+            setAccessToken(data.accessToken);
+          } else {
+            console.error("Failed to fetch Mapbox Access Token:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching Mapbox Access Token:", error);
+        }
+      };
+  
+      fetchAccessToken();
+    }, []);
 
     useEffect(() => {
         // Use Mapbox Geocoding API tranfer the location to coordinates
         const fetchCoordinates = async () => {
         try {
             const response = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${accessToken}`
             );
             const data = await response.json();
 
@@ -43,7 +59,7 @@ const OrderMap = ({ location }) => {
         };
 
         fetchCoordinates();
-    }, [location]);
+    }, [location, accessToken]);
 
 
     useEffect(() => {
@@ -110,7 +126,7 @@ const OrderMap = ({ location }) => {
             map.current.setCenter([coordinates.longitude, coordinates.latitude]);
         }
 
-    }, [coordinates]);
+    }, [coordinates, accessToken]);
     
 
     return (

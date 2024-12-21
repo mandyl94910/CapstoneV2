@@ -465,6 +465,14 @@ app.post('/api/cache/product-details/:productId', cacheProductDetailsHandler);
 // Replace the route handler with the imported function
 app.post('/api/cache/reviews/:productId', cacheReviewsHandler);
 
+app.get('/api/mapbox-token', (req, res) => {
+  const accessToken = process.env.MAPBOX_ACCESS_TOKEN;
+  if (!accessToken) {
+    return res.status(500).json({ error: "Mapbox Access Token is not set in the server." });
+  }
+  res.json({ accessToken });
+});
+
 // Start the server
 app.listen(3001, () => {
   console.log("Server started on port 3001");
